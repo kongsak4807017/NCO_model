@@ -594,3 +594,178 @@ function showHniHelp() {
 function closeHniHelp() {
   document.getElementById('hniHelpModal').classList.remove('active');
 }
+
+// ========== DALY Reference Data (Thailand 2019) ==========
+const DALY_DATA = {
+  '0-14 ปี': {
+    totalMale: 641, totalFemale: 480,
+    male: [
+      { rank:1, disease:'ความพิการแต่กำเนิด', dalys:92, pct:14.3 },
+      { rank:2, disease:'การบาดเจ็บทางถนน', dalys:78, pct:12.2 },
+      { rank:3, disease:'การคลอดก่อนกำหนดของทารกแรกเกิด', dalys:57, pct:8.8 },
+      { rank:4, disease:'การติดเชื้อทางเดินหายใจส่วนล่าง', dalys:32, pct:4.9 },
+      { rank:5, disease:'โรคฟันผุ', dalys:19, pct:3.0 },
+      { rank:6, disease:'ความรุนแรงระหว่างบุคคล', dalys:17, pct:2.7 },
+      { rank:7, disease:'การจมน้ำ', dalys:17, pct:2.7 },
+      { rank:8, disease:'โรคสมองจากทารกแรกเกิด (หายใจไม่ออก)', dalys:16, pct:2.5 },
+      { rank:9, disease:'การติดเชื้อในทารกแรกเกิด', dalys:15, pct:2.4 },
+      { rank:10, disease:'โรคอุจจาระร่วง', dalys:15, pct:2.3 },
+    ],
+    female: [
+      { rank:1, disease:'ความพิการแต่กำเนิด', dalys:62, pct:13.0 },
+      { rank:2, disease:'การบาดเจ็บทางถนน', dalys:57, pct:12.0 },
+      { rank:3, disease:'การคลอดก่อนกำหนดของทารกแรกเกิด', dalys:32, pct:6.6 },
+      { rank:4, disease:'การติดเชื้อทางเดินหายใจส่วนล่าง', dalys:26, pct:5.3 },
+      { rank:5, disease:'โรคฟันผุ', dalys:19, pct:3.9 },
+      { rank:6, disease:'ความรุนแรงระหว่างบุคคล', dalys:17, pct:3.6 },
+      { rank:7, disease:'โรคอุจจาระร่วง', dalys:16, pct:3.4 },
+      { rank:8, disease:'โรคสมองจากทารกแรกเกิด (หายใจไม่ออก)', dalys:15, pct:3.2 },
+      { rank:9, disease:'การจมน้ำ', dalys:15, pct:3.0 },
+      { rank:10, disease:'การติดเชื้อในทารกแรกเกิด', dalys:12, pct:2.5 },
+    ]
+  },
+  '15-29 ปี': {
+    totalMale: 1164, totalFemale: 535,
+    male: [
+      { rank:1, disease:'การบาดเจ็บทางถนน', dalys:488, pct:41.9 },
+      { rank:2, disease:'ทำร้ายตัวเอง', dalys:81, pct:7.0 },
+      { rank:3, disease:'การติดเชื้อเอชไอวี/เอดส์', dalys:65, pct:5.6 },
+      { rank:4, disease:'การติดสารเสพติด', dalys:33, pct:2.9 },
+      { rank:5, disease:'ความผิดปกติในช่องปาก', dalys:28, pct:2.4 },
+      { rank:6, disease:'การเสพติดเครื่องดื่มที่มีแอลกอฮอล์', dalys:26, pct:2.2 },
+      { rank:7, disease:'ความรุนแรงระหว่างบุคคล', dalys:26, pct:2.2 },
+      { rank:8, disease:'การจมน้ำ', dalys:23, pct:2.0 },
+      { rank:9, disease:'โรคซึมเศร้า', dalys:15, pct:1.3 },
+      { rank:10, disease:'โรคจิตเภท', dalys:15, pct:1.3 },
+    ],
+    female: [
+      { rank:1, disease:'การบาดเจ็บทางถนน', dalys:114, pct:21.3 },
+      { rank:2, disease:'การติดเชื้อเอชไอวี/เอดส์', dalys:31, pct:5.8 },
+      { rank:3, disease:'โรคซึมเศร้า', dalys:29, pct:5.5 },
+      { rank:4, disease:'การติดสารเสพติด', dalys:27, pct:5.1 },
+      { rank:5, disease:'ความผิดปกติในช่องปาก', dalys:27, pct:5.0 },
+      { rank:6, disease:'ความผิดปกติของมารดา', dalys:22, pct:4.1 },
+      { rank:7, disease:'การเสพติดเครื่องดื่มที่มีแอลกอฮอล์', dalys:16, pct:2.9 },
+      { rank:8, disease:'ทำร้ายตัวเอง', dalys:14, pct:2.6 },
+      { rank:9, disease:'โรคจิตเภท', dalys:11, pct:2.1 },
+      { rank:10, disease:'โรคเบาหวาน', dalys:9, pct:1.7 },
+    ]
+  },
+  '30-59 ปี': {
+    totalMale: 5216, totalFemale: 2711,
+    male: [
+      { rank:1, disease:'การบาดเจ็บทางถนน', dalys:575, pct:11.0 },
+      { rank:2, disease:'โรคหัวใจขาดเลือด', dalys:393, pct:7.5 },
+      { rank:3, disease:'โรคหลอดเลือดสมอง', dalys:384, pct:7.4 },
+      { rank:4, disease:'โรคตับแข็งและโรคตับเรื้อรังอื่นๆ', dalys:377, pct:7.2 },
+      { rank:5, disease:'โรคเบาหวาน', dalys:354, pct:6.8 },
+      { rank:6, disease:'การติดเชื้อเอชไอวี/เอดส์', dalys:256, pct:4.9 },
+      { rank:7, disease:'โรคมะเร็งตับ', dalys:244, pct:4.7 },
+      { rank:8, disease:'ทำร้ายตัวเอง', dalys:182, pct:3.5 },
+      { rank:9, disease:'วัณโรค', dalys:166, pct:3.2 },
+      { rank:10, disease:'การเสพติดเครื่องดื่มที่มีแอลกอฮอล์', dalys:163, pct:3.1 },
+    ],
+    female: [
+      { rank:1, disease:'โรคเบาหวาน', dalys:270, pct:10.0 },
+      { rank:2, disease:'การบาดเจ็บทางถนน', dalys:232, pct:8.6 },
+      { rank:3, disease:'โรคมะเร็งเต้านม', dalys:169, pct:6.2 },
+      { rank:4, disease:'การติดเชื้อเอชไอวี/เอดส์', dalys:135, pct:5.0 },
+      { rank:5, disease:'โรคหลอดเลือดสมอง', dalys:128, pct:4.7 },
+      { rank:6, disease:'ความผิดปกติในช่องปาก', dalys:105, pct:3.9 },
+      { rank:7, disease:'โรคหัวใจขาดเลือด', dalys:81, pct:3.0 },
+      { rank:8, disease:'โรคตับแข็งและโรคตับเรื้อรังอื่นๆ', dalys:76, pct:2.8 },
+      { rank:9, disease:'โรคมะเร็งปากมดลูก', dalys:68, pct:2.5 },
+      { rank:10, disease:'โรคมะเร็งหลอดลมและปอด', dalys:63, pct:2.3 },
+    ]
+  },
+  '60 ปีขึ้นไป': {
+    totalMale: 4121, totalFemale: 3677,
+    male: [
+      { rank:1, disease:'โรคหลอดเลือดสมอง', dalys:485, pct:11.8 },
+      { rank:2, disease:'โรคเบาหวาน', dalys:446, pct:10.8 },
+      { rank:3, disease:'โรคหัวใจขาดเลือด', dalys:321, pct:7.8 },
+      { rank:4, disease:'โรคมะเร็งตับ', dalys:222, pct:5.4 },
+      { rank:5, disease:'โรคปอดอุดกั้นเรื้อรัง', dalys:214, pct:5.2 },
+      { rank:6, disease:'การบาดเจ็บทางถนน', dalys:195, pct:4.7 },
+      { rank:7, disease:'โรคมะเร็งหลอดลมและปอด', dalys:176, pct:4.3 },
+      { rank:8, disease:'โรคไตเรื้อรัง', dalys:135, pct:3.3 },
+      { rank:9, disease:'การพลัดตกหรือล้ม', dalys:107, pct:2.6 },
+      { rank:10, disease:'โรคมะเร็งลำไส้และทวารหนัก', dalys:103, pct:2.5 },
+    ],
+    female: [
+      { rank:1, disease:'โรคเบาหวาน', dalys:555, pct:15.1 },
+      { rank:2, disease:'โรคหลอดเลือดสมอง', dalys:474, pct:12.9 },
+      { rank:3, disease:'โรคหัวใจขาดเลือด', dalys:215, pct:5.8 },
+      { rank:4, disease:'โรคไตเรื้อรัง', dalys:160, pct:4.3 },
+      { rank:5, disease:'โรคอัลไซเมอร์และภาวะสมองเสื่อมอื่นๆ', dalys:158, pct:4.3 },
+      { rank:6, disease:'โรคมะเร็งตับ', dalys:105, pct:2.9 },
+      { rank:7, disease:'โรคมะเร็งหลอดลมและปอด', dalys:101, pct:2.7 },
+      { rank:8, disease:'การพลัดตกหรือล้ม', dalys:86, pct:2.3 },
+      { rank:9, disease:'การบาดเจ็บทางถนน', dalys:85, pct:2.3 },
+      { rank:10, disease:'โรคข้อเสื่อม', dalys:79, pct:2.1 },
+    ]
+  }
+};
+
+let currentDalyTab = '60 ปีขึ้นไป';
+
+function showDalyRef() {
+  document.getElementById('dalyRefModal').classList.add('active');
+  renderDalyTabs();
+  renderDalyTable(currentDalyTab);
+}
+function closeDalyRef() {
+  document.getElementById('dalyRefModal').classList.remove('active');
+}
+
+function renderDalyTabs() {
+  const container = document.getElementById('dalyTabs');
+  container.innerHTML = '';
+  Object.keys(DALY_DATA).forEach(key => {
+    const btn = document.createElement('button');
+    btn.className = 'daly-tab' + (key === currentDalyTab ? ' active' : '');
+    btn.textContent = key;
+    btn.onclick = () => {
+      currentDalyTab = key;
+      renderDalyTabs();
+      renderDalyTable(key);
+    };
+    container.appendChild(btn);
+  });
+}
+
+function renderDalyTable(ageGroup) {
+  const data = DALY_DATA[ageGroup];
+  const container = document.getElementById('dalyTableContainer');
+  
+  let html = `<div class="daly-summary">
+    <div class="daly-stat male"><span class="gender-icon">♂</span> ชาย: <strong>${data.totalMale.toLocaleString()}</strong> พัน DALYs</div>
+    <div class="daly-stat female"><span class="gender-icon">♀</span> หญิง: <strong>${data.totalFemale.toLocaleString()}</strong> พัน DALYs</div>
+  </div>`;
+
+  html += `<div class="daly-dual-table"><div class="daly-col">
+    <h4><span class="gender-icon">♂</span> ชาย</h4>
+    <table class="daly-tbl"><thead><tr><th>#</th><th>โรค</th><th>DALYs ('000)</th><th>%</th></tr></thead><tbody>`;
+  data.male.forEach(r => {
+    const barW = (r.pct / Math.max(...data.male.map(x=>x.pct))) * 100;
+    html += `<tr><td>${r.rank}</td><td>${r.disease}</td><td>${r.dalys.toLocaleString()}</td>
+      <td><div class="pct-bar"><div class="pct-fill male" style="width:${barW}%"></div><span>${r.pct}%</span></div></td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+  
+  html += `<div class="daly-col"><h4><span class="gender-icon">♀</span> หญิง</h4>
+    <table class="daly-tbl"><thead><tr><th>#</th><th>โรค</th><th>DALYs ('000)</th><th>%</th></tr></thead><tbody>`;
+  data.female.forEach(r => {
+    const barW = (r.pct / Math.max(...data.female.map(x=>x.pct))) * 100;
+    html += `<tr><td>${r.rank}</td><td>${r.disease}</td><td>${r.dalys.toLocaleString()}</td>
+      <td><div class="pct-bar"><div class="pct-fill female" style="width:${barW}%"></div><span>${r.pct}%</span></div></td></tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+  
+  html += `<p class="daly-note">แหล่งข้อมูล: รายงานภาระโรคจากปัจจัยเสี่ยงของประชากรไทย พ.ศ. 2562 (BOD Thailand 2019)</p>`;
+  
+  container.innerHTML = html;
+}
+
+// ========== Init ==========
+loadData();

@@ -320,3 +320,88 @@ body {
 .slider-group.disabled { opacity: 0.4; pointer-events: none; margin-bottom: 15px; }
 .slider.grayed { background: #333; cursor: not-allowed; }
 .future-roadmap-hni .badge { font-size: 9px; padding: 2px 6px; background: rgba(255,255,255,0.1); }
+
+/* DALY Reference Button */
+.daly-ref-btn {
+  display: block;
+  margin-top: 8px;
+  background: rgba(139,92,246,0.15);
+  border: 1px solid rgba(139,92,246,0.3);
+  color: #a78bfa;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.3s;
+  pointer-events: all;
+}
+.daly-ref-btn:hover { background: rgba(139,92,246,0.3); }
+
+/* DALY Tabs */
+.daly-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.daly-tab {
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s;
+}
+.daly-tab.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border-color: transparent;
+}
+.daly-tab:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+
+/* DALY Summary */
+.daly-summary { display: flex; gap: 16px; margin-bottom: 16px; }
+.daly-stat {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  text-align: center;
+}
+.daly-stat.male { background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); }
+.daly-stat.female { background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.2); }
+.gender-icon { font-size: 16px; margin-right: 4px; }
+
+/* DALY Dual Table */
+.daly-dual-table { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.daly-col h4 { font-size: 14px; margin-bottom: 8px; color: var(--text); }
+.daly-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.daly-tbl thead th {
+  background: rgba(255,255,255,0.05);
+  padding: 6px 8px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 11px;
+}
+.daly-tbl tbody tr { border-bottom: 1px solid rgba(255,255,255,0.03); }
+.daly-tbl tbody tr:hover { background: rgba(255,255,255,0.03); }
+.daly-tbl td { padding: 5px 8px; color: var(--text); }
+.daly-tbl td:first-child { text-align: center; color: var(--text2); width: 24px; }
+.daly-tbl td:nth-child(3) { text-align: right; font-family: monospace; }
+
+/* Percentage Bar */
+.pct-bar { position: relative; height: 18px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; min-width: 70px; }
+.pct-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+.pct-fill.male { background: linear-gradient(90deg, rgba(99,102,241,0.4), rgba(99,102,241,0.7)); }
+.pct-fill.female { background: linear-gradient(90deg, rgba(236,72,153,0.4), rgba(236,72,153,0.7)); }
+.pct-bar span { position: absolute; right: 4px; top: 1px; font-size: 10px; font-weight: 600; color: #fff; }
+
+/* DALY Note */
+.daly-note { font-size: 11px; color: var(--text2); margin-top: 16px; text-align: center; font-style: italic; }
+
+/* DALY Table Container */
+.daly-table-container { max-height: 60vh; overflow-y: auto; }
+
+@media (max-width: 768px) {
+  .daly-dual-table { grid-template-columns: 1fr; }
+  .daly-summary { flex-direction: column; }
+}
