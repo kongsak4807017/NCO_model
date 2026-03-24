@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NCO Simulation — เขตสุขภาพที่ 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="simulation.css">
+</head>
+<body>
+<div class="app">
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">NCO</div>
+      <div>
+        <h1>NCO Model Simulation</h1>
+        <p class="subtitle">Need — Capacity — Outcome | เขตสุขภาพที่ 1</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="badge" id="dataStatus">Loading data...</span>
+    </div>
+  </header>
+
+  <!-- Progress Bar -->
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+    <div class="steps-indicator" id="stepsIndicator"></div>
+  </div>
+
+  <!-- Step 0: Hospital Selector -->
+  <section class="step active" id="step0">
+    <div class="step-header">
+      <span class="step-number">0</span>
+      <div><h2>เลือกโรงพยาบาล</h2><p>Select a hospital to begin NCO analysis</p></div>
+    </div>
+    <div class="hospital-grid" id="hospitalGrid"></div>
+  </section>
+
+  <!-- Step 1: Data Quality -->
+  <section class="step" id="step1">
+    <div class="step-header">
+      <span class="step-number">1</span>
+      <div><h2>ตรวจสอบคุณภาพข้อมูล</h2><p>Data Quality Check (G01-G04)</p></div>
+    </div>
+    <div class="alert-box" id="dqAlert"></div>
+    <div class="metrics-grid" id="dqMetrics"></div>
+    <div class="step-verdict" id="dqVerdict"></div>
+  </section>
+
+  <!-- Step 2: Health Need -->
+  <section class="step" id="step2">
+    <div class="step-header">
+      <span class="step-number">2</span>
+      <div><h2>วิเคราะห์ภาระสุขภาพ (NEED)</h2><p>Health Need Index</p></div>
+    </div>
+    <div class="two-col">
+      <div class="card" id="popCard"></div>
+      <div class="card">
+        <h3>ปรับน้ำหนัก HNI</h3>
+        <div class="slider-group">
+          <label>ผู้สูงอายุ (Elderly): <span id="wElderly">40</span>%</label>
+          <input type="range" min="0" max="100" value="40" id="sliderElderly" class="slider">
+        </div>
+        <div class="slider-group">
+          <label>โรคเรื้อรัง (Chronic): <span id="wChronic">40</span>%</label>
+          <input type="range" min="0" max="100" value="40" id="sliderChronic" class="slider">
+        </div>
+        <div class="slider-group">
+          <label>สุขภาพจิต (Mental): <span id="wMental">20</span>%</label>
+          <input type="range" min="0" max="100" value="20" id="sliderMental" class="slider">
+        </div>
+        <div class="hni-result" id="hniResult"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 3: Capacity -->
+  <section class="step" id="step3">
+    <div class="step-header">
+      <span class="step-number">3</span>
+      <div><h2>วิเคราะห์กำลังคน (CAPACITY)</h2><p>Workforce Capacity Index</p></div>
+    </div>
+    <div class="metrics-grid" id="wfMetrics"></div>
+    <div class="card" id="wciCard"></div>
+  </section>
+
+  <!-- Step 4: Gap -->
+  <section class="step" id="step4">
+    <div class="step-header">
+      <span class="step-number">4</span>
+      <div><h2>วิเคราะห์ GAP</h2><p>ภาระ vs กำลังคน</p></div>
+    </div>
+    <div class="gap-display" id="gapDisplay"></div>
+    <div class="decision-matrix" id="decisionMatrix"></div>
+  </section>
+
+  <!-- Step 5: Performance -->
+  <section class="step" id="step5">
+    <div class="step-header">
+      <span class="step-number">5</span>
+      <div><h2>ตรวจย้อนกลับ Performance A-H</h2><p>Outcome Validation</p></div>
+    </div>
+    <div class="metrics-grid perf-grid" id="perfMetrics"></div>
+    <div class="step-verdict" id="perfVerdict"></div>
+  </section>
+
+  <!-- Step 6: Service Plan -->
+  <section class="step" id="step6">
+    <div class="step-header">
+      <span class="step-number">6</span>
+      <div><h2>เจาะลึก Service Plan</h2><p>Specialty Targeting</p></div>
+    </div>
+    <div class="sp-issues" id="spIssues"></div>
+  </section>
+
+  <!-- Step 7: Recommendations -->
+  <section class="step" id="step7">
+    <div class="step-header">
+      <span class="step-number">7</span>
+      <div><h2>สรุปข้อเสนอเชิงนโยบาย</h2><p>Policy Recommendations</p></div>
+    </div>
+    <div class="recommendations" id="recommendations"></div>
+    <div class="actions-bar">
+      <button onclick="window.print()" class="btn btn-print">พิมพ์รายงาน</button>
+      <button onclick="goToStep(0)" class="btn btn-restart">เริ่มใหม่</button>
+    </div>
+  </section>
+
+  <!-- Navigation -->
+  <div class="nav-bar" id="navBar">
+    <button class="btn btn-prev" id="btnPrev" onclick="prevStep()">ย้อนกลับ</button>
+    <button class="btn btn-next" id="btnNext" onclick="nextStep()">ถัดไป</button>
+  </div>
+</div>
+<script src="simulation.js"></script>
+</body>
+</html>

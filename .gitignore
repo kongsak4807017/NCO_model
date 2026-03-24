@@ -1,0 +1,18 @@
+# Exclude large databases
+*.db
+*.bak_*
+*.xlsx
+*.sql
+*.py
+*.csv
+!data_inputV1.csv
+
+# Exclude temporary files
+/tmp/
+.gemini/
+.agents/
+.agent/
+_agents/
+_agent/
+node_modules/
+.DS_Store
