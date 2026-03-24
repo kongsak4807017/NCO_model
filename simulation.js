@@ -80,7 +80,7 @@ function processData() {
     } else if (cat.startsWith('กำลังคน_เภสัช')) {
       if (!HOSPITALS[h].workforce.pharma) HOSPITALS[h].workforce.pharma = {};
       HOSPITALS[h].workforce.pharma[indicator] = parseFloat(val) || 0;
-    } else if (cat.startsWith('HNI')) {
+    } else if (cat.includes('HNI')) {
       HOSPITALS[h].hni[indicator] = parseFloat(val) || 0;
     } else if (cat.startsWith('ค่าจริง_')) {
       // CMI scraped data: indicator format is "A01_ColumnName"
@@ -282,6 +282,11 @@ function renderStep2() {
   `;
   
   computeHNI();
+
+  // Add event listeners for sliders
+  ['sliderElderly', 'sliderChronic', 'sliderMental'].forEach(id => {
+    document.getElementById(id).oninput = computeHNI;
+  });
 }
 
 function computeHNI() {
@@ -293,12 +298,30 @@ function computeHNI() {
   document.getElementById('wMental').textContent = wM;
   
   const h = HOSPITALS[selectedHospital];
-  const elderly = h.hni?.['Elderly_Rate_Norm'] || h.hni?.['elderly_rate_norm'] || 0.5;
-  const chronic = h.hni?.['Chronic_Rate_Norm'] || h.hni?.['chronic_rate_norm'] || 0.5;
-  const mental = h.hni?.['Mental_Rate_Norm'] || h.hni?.['mental_rate_norm'] || 0.5;
+  
+  // Use correct keys from CSV (HNI_MockData section)
+  const elderly = h.hni?.['Elderly_Rate_%'] || h.hni?.['elderly_rate_norm'] || 0;
+  const chronic = h.hni?.['Chronic_Rate_%'] || h.hni?.['chronic_rate_norm'] || 0;
+  const mental = h.hni?.['Mental_Risk_Rate_%'] || h.hni?.['mental_rate_norm'] || 0;
+  
+  // Dynamic Normalization (Optional but improves UX)
+  // For now, let's assume these percentages are the raw need.
+  // We multiply them by a scaling factor to make them look like a 0-100 score if they are small.
+  // But wait, the threshold in JS is 70 for Red, 50 for Yellow.
+  // If raw percentages are around 30%, they will always look "Green".
+  // So we SHOULD normalize them relative to the max in the region.
+  
+  const allHNI = Object.values(HOSPITALS).map(x => x.hni);
+  const maxE = Math.max(...allHNI.map(x => x['Elderly_Rate_%'] || 0)) || 1;
+  const maxC = Math.max(...allHNI.map(x => x['Chronic_Rate_%'] || 0)) || 1;
+  const maxM = Math.max(...allHNI.map(x => x['Mental_Risk_Rate_%'] || 0)) || 1;
+
+  const normE = elderly / maxE;
+  const normC = chronic / maxC;
+  const normM = mental / maxM;
   
   const total = wE + wC + wM || 100;
-  const hni = ((elderly * wE/total) + (chronic * wC/total) + (mental * wM/total)) * 100;
+  const hni = ((normE * wE/total) + (normC * wC/total) + (normM * wM/total)) * 100;
   
   const result = document.getElementById('hniResult');
   const color = hni > 70 ? 'var(--red)' : hni > 50 ? 'var(--yellow)' : 'var(--green)';
