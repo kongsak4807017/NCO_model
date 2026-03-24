@@ -587,3 +587,10 @@ document.getElementById('sliderMental').addEventListener('input', () => { if(sel
 
 // ========== Init ==========
 loadData();
+// ========== Modal Controls ==========
+function showHniHelp() {
+  document.getElementById('hniHelpModal').classList.add('active');
+}
+function closeHniHelp() {
+  document.getElementById('hniHelpModal').classList.remove('active');
+}
