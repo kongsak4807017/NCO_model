@@ -338,23 +338,33 @@ function computeHNI() {
   document.getElementById('wMental').textContent = wM;
   
   const h = HOSPITALS[selectedHospital];
+  const cfg = HOSP_CONFIG[selectedHospital];
   
-  // Use correct keys from CSV (HNI_MockData section)
   const elderly = h.hni?.['Elderly_Rate_%'] || h.hni?.['elderly_rate_norm'] || 0;
-  const chronic = h.hni?.['Chronic_Rate_%'] || h.hni?.['chronic_rate_norm'] || 0;
+  
+  // Use actual prevalence sum (CVD + Cancer + DM + CKD) for Chronic factor
+  let chronic = 0;
+  if (cfg && cfg.province && PROVINCE_PREVALENCE[cfg.province]) {
+    const p = PROVINCE_PREVALENCE[cfg.province];
+    chronic = p.CVD + p.Cancer + p.DM + p.CKD;
+  } else {
+    chronic = h.hni?.['Chronic_Rate_%'] || h.hni?.['chronic_rate_norm'] || 0;
+  }
+  
   const mental = h.hni?.['Mental_Risk_Rate_%'] || h.hni?.['mental_rate_norm'] || 0;
   
-  // Dynamic Normalization (Optional but improves UX)
-  // For now, let's assume these percentages are the raw need.
-  // We multiply them by a scaling factor to make them look like a 0-100 score if they are small.
-  // But wait, the threshold in JS is 70 for Red, 50 for Yellow.
-  // If raw percentages are around 30%, they will always look "Green".
-  // So we SHOULD normalize them relative to the max in the region.
+  // Dynamic Normalization
+  const allHospitals = Object.keys(HOSPITALS);
+  const maxE = Math.max(...allHospitals.map(name => HOSPITALS[name].hni?.['Elderly_Rate_%'] || 0)) || 1;
   
-  const allHNI = Object.values(HOSPITALS).map(x => x.hni);
-  const maxE = Math.max(...allHNI.map(x => x['Elderly_Rate_%'] || 0)) || 1;
-  const maxC = Math.max(...allHNI.map(x => x['Chronic_Rate_%'] || 0)) || 1;
-  const maxM = Math.max(...allHNI.map(x => x['Mental_Risk_Rate_%'] || 0)) || 1;
+  // Find max Chronic score based on prevalence map
+  const maxC = Math.max(...allHospitals.map(name => {
+    const pName = HOSP_CONFIG[name]?.province;
+    const pd = pName ? PROVINCE_PREVALENCE[pName] : null;
+    return pd ? (pd.CVD + pd.Cancer + pd.DM + pd.CKD) : (HOSPITALS[name].hni?.['Chronic_Rate_%'] || 0);
+  })) || 1;
+  
+  const maxM = Math.max(...allHospitals.map(name => HOSPITALS[name].hni?.['Mental_Risk_Rate_%'] || 0)) || 1;
 
   const normE = elderly / maxE;
   const normC = chronic / maxC;
