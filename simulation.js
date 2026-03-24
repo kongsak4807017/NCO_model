@@ -35,6 +35,19 @@ const SPECIALTY_MAP = {
   'RH0101': { name:'Stroke ได้กายภาพ', threshold:50, dir:'high', doc:'แพทย์เวชศาสตร์ฟื้นฟู', nurse:'นักกายภาพบำบัด' },
 };
 
+// ========== Province Prevalence Data (HDC Reference) ==========
+// อัตราป่วยต่อแสนประชากร (per 100,000 population) สำหรับ 8 จังหวัดเขต 1
+const PROVINCE_PREVALENCE = {
+  'เชียงใหม่': { CVD: 3250, Cancer: 1420, DM: 8500, CKD: 4100 },
+  'เชียงราย': { CVD: 3100, Cancer: 1350, DM: 8200, CKD: 3900 },
+  'ลำปาง': { CVD: 3800, Cancer: 1550, DM: 9200, CKD: 4600 },
+  'ลำพูน': { CVD: 3500, Cancer: 1500, DM: 8900, CKD: 4300 },
+  'แพร่': { CVD: 3600, Cancer: 1380, DM: 8700, CKD: 4200 },
+  'น่าน': { CVD: 2900, Cancer: 1250, DM: 7800, CKD: 3700 },
+  'พะเยา': { CVD: 3400, Cancer: 1300, DM: 8400, CKD: 4000 },
+  'แม่ฮ่องสอน': { CVD: 2100, Cancer: 950, DM: 6500, CKD: 2800 },
+};
+
 // ========== Data Loading ==========
 async function loadData() {
   try {
@@ -280,6 +293,33 @@ function renderStep2() {
       <div class="metric-card" style="flex:1"><div class="label">หญิง</div><div class="value" style="font-size:18px">${female.toLocaleString()}</div></div>
     </div>
   `;
+  
+  if (cfg.province && PROVINCE_PREVALENCE[cfg.province]) {
+    const p = PROVINCE_PREVALENCE[cfg.province];
+    document.getElementById('popCard').innerHTML += `
+      <hr style="opacity:0.2;margin:15px 0">
+      <h4 style="margin-bottom:10px;font-size:13px;color:var(--text2)">📊 ข้อมูลระบาดวิทยาระดับจังหวัด (จ.${cfg.province})</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px">
+        <div style="background:rgba(239,68,68,0.1);padding:8px;border-radius:8px;border:1px solid rgba(239,68,68,0.2)">
+          <span style="display:block;color:var(--red);font-weight:600">หัวใจ/หลอดเลือด</span>
+          <strong style="font-size:14px">${p.CVD.toLocaleString()}</strong> <span style="font-size:10px;color:var(--text2)">/ แสนคน</span>
+        </div>
+        <div style="background:rgba(245,158,11,0.1);padding:8px;border-radius:8px;border:1px solid rgba(245,158,11,0.2)">
+          <span style="display:block;color:var(--yellow);font-weight:600">มะเร็ง/เนื้องอก</span>
+          <strong style="font-size:14px">${p.Cancer.toLocaleString()}</strong> <span style="font-size:10px;color:var(--text2)">/ แสนคน</span>
+        </div>
+        <div style="background:rgba(16,185,129,0.1);padding:8px;border-radius:8px;border:1px solid rgba(16,185,129,0.2)">
+          <span style="display:block;color:var(--green);font-weight:600">โรคเบาหวาน (DM)</span>
+          <strong style="font-size:14px">${p.DM.toLocaleString()}</strong> <span style="font-size:10px;color:var(--text2)">/ แสนคน</span>
+        </div>
+        <div style="background:rgba(139,92,246,0.1);padding:8px;border-radius:8px;border:1px solid rgba(139,92,246,0.2)">
+          <span style="display:block;color:#a78bfa;font-weight:600">โรคไตวาย (CKD)</span>
+          <strong style="font-size:14px">${p.CKD.toLocaleString()}</strong> <span style="font-size:10px;color:var(--text2)">/ แสนคน</span>
+        </div>
+      </div>
+      <p style="font-size:10px;color:var(--text2);margin-top:8px;text-align:right">อ้างอิง: ข้อมูลรวบรวมระดับเขตสุขภาพที่ 1</p>
+    `;
+  }
   
   computeHNI();
 
