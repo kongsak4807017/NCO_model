@@ -79,6 +79,10 @@
         <div class="future-roadmap-hni">
           <p class="roadmap-title">Patch หน้า (รอการพัฒนา):</p>
           <div class="slider-group disabled">
+            <label>ภาระโรค (Burden of Disease - DALY): <span class="badge">Advanced</span></label>
+            <input type="range" disabled class="slider grayed">
+          </div>
+          <div class="slider-group disabled">
             <label>ปัจจัยสิ่งแวดล้อม (PM 2.5): <span class="badge">Future</span></label>
             <input type="range" disabled class="slider grayed">
           </div>
@@ -177,6 +181,7 @@ Norm_Factor = Raw_Value / Max_Value_in_Region
 Score = (Σ Weight_i * Norm_Factor_i) / Total_Weight * 100
         </pre>
         <p style="font-size:14px; color:var(--text2)">* การทำ Normalization ช่วยให้เราเปรียบเทียบความรุนแรงของภาระงานระหว่างโรงพยาบาลในเขต 1 ได้อย่างยุติธรรม โดยโรงพยาบาลที่มีสัดส่วนสูงสุดจะได้คะแนนฐานเป็น 1.0</p>
+        <p style="font-size:14px; color:var(--accent2); margin-top:10px">🚀 <strong>Next Gen HNI:</strong> ในอนาคตเราพร้อมจะพัฒนาไปสู่การใช้ดัชนี <strong>DALY (Disability-Adjusted Life Year)</strong> เพื่อวัดปีสุขภาวะที่สูญเสียจริงของประชากรเขต 1 เข้ามาเป็นตัวแปรหลัก</p>
       </div>
     </div>
   </div>
