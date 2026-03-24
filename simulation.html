@@ -170,9 +170,18 @@
       </div>
       <div class="modal-body">
         <p><strong>Health Need Index (HNI)</strong> คือดัชนีสะท้อน "ความจำเป็น" ทางสุขภาพของแต่ละพื้นที่ โดยใช้ข้อมูลจริงจาก HDC ปี 2569 มาประมวลผลประกอบด้วย 3 มิติหลัก:</p>
-        <ul>
+        <ul style="line-height:1.6">
           <li><strong>ผู้สูงอายุ (Elderly):</strong> สัดส่วนประชากร 60 ปีขึ้นไป</li>
-          <li><strong>โรคเรื้อรัง (Chronic):</strong> อัตราป่วยรวม 4 กลุ่มโรค (หัวใจ/หลอดเลือด + มะเร็ง + เบาหวาน + ไตวายเรื้อรัง) หญิง+ชาย ต่อแสนประชากรในจังหวัด</li>
+          <li>
+            <strong style="color:var(--yellow)">โรคเรื้อรัง (Chronic) — อัปเดตใหม่:</strong> วัดจากผลรวมความชุก (Prevalence) ของ 4 กลุ่มโรคคุกคามหลักต่อแสนประชากรระดับจังหวัด ได้แก่:
+            <ul style="margin-top:6px; margin-bottom:6px; font-size:13px; color:var(--text2); list-style-type:circle;">
+              <li>❤️ โรคหัวใจและหลอดเลือด (CVD)</li>
+              <li>🎗️ โรคมะเร็งและเนื้องอก (Cancer)</li>
+              <li>🩸 โรคเบาหวาน (DM)</li>
+              <li>🩺 โรคไตวายเรื้อรัง (CKD)</li>
+            </ul>
+            <em style="font-size:12px; color:var(--accent2); display:block; margin-bottom:10px;">นำตัวเลขทั้ง 4 โรคมาบวกกัน ใช้เป็น "ฐานคะแนนความชุกโรคเรื้อรัง" ประจำโรงพยาบาลนั้นๆ เพื่อเข้าสูตรการคำนวณ</em>
+          </li>
           <li><strong>สุขภาพจิต (Mental):</strong> อัตราความเสี่ยงปัญหาสุขภาพจิต</li>
         </ul>
         <hr style="margin:20px 0;opacity:0.2">
