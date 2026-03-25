@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>War Room - Decision Engine</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark-theme">
+    <nav class="sidebar">
+        <div class="logo">
+            <span class="logo-icon">▲</span>
+            <span>HR Blueprint</span>
+        </div>
+        <ul class="nav-links">
+            <li class="active"><a href="#">Dashboard</a></li>
+            <li><a href="#">Simulation</a></li>
+            <li><a href="#">Area View</a></li>
+        </ul>
+        <div class="sidebar-footer">
+            <small>Region 1 Health</small>
+        </div>
+    </nav>
+    <main class="main-content">
+        <header>
+            <h1>Health Needs vs Workforce Intelligence</h1>
+            <div class="user-info">Live Data Engine</div>
+        </header>
+
+        <section class="kpi-banner">
+            <div class="kpi-card" title="นับเฉพาะโรงพยาบาลที่มีครบข้อมูล">
+                <h3>Total Hospitals</h3>
+                <h2 id="kpi-total-districts">--</h2>
+            </div>
+            <div class="kpi-card danger">
+                <h3>Critical Priority</h3>
+                <h2 id="kpi-critical">--</h2>
+            </div>
+            <div class="kpi-card">
+                <h3>Average HNI</h3>
+                <h2 id="kpi-avg-hni">--</h2>
+            </div>
+            <div class="kpi-card" title="WCI (Workforce Capacity Index) ปัจจุบันคิดจากจำนวน Full-time Equivalent (FTE) ของทั้งหมดต่อประชากร 10,000 คน ไม่มีการถ่วงน้ำหนักเพื่อสะท้อนของจริง">
+                <h3>Average WCI ℹ️</h3>
+                <h2 id="kpi-avg-wci">--</h2>
+            </div>
+        </section>
+
+        <section class="dashboard-grid">
+            <div class="card map-card">
+                <h2>Region 1 Heatmap (Priority Score)</h2>
+                <div id="map-container" class="placeholder-box">Loading Map Data...</div>
+            </div>
+            
+            <div class="card chart-card">
+                <h2>Need vs Workforce Quadrant</h2>
+                <div class="chart-container">
+                    <canvas id="scatterChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card table-card">
+                <h2>Hospital Ranking <span style="font-size: 0.8rem; color: #94a3b8; font-weight: normal;">(FTE ต่อ 1หมื่นประชากร)</span></h2>
+                <div class="table-container">
+                    <table id="rankingTable">
+                        <thead>
+                            <tr>
+                                <th>HOSPITAL</th>
+                                <th>HNI</th>
+                                <th>หมอ</th>
+                                <th>พยาบาล</th>
+                                <th>เภสัช</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Specialty Drill-down -->
+    <div id="drilldownModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">รายละเอียดวิชาชีพ</h2>
+                <span class="close-btn" onclick="closeDrilldown()">&times;</span>
+            </div>
+            <div class="profession-summary" id="profSummary"></div>
+            
+            <div class="modal-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px;">
+                <div>
+                    <h3>รายชื่อแพทย์เฉพาะทาง (Service Plan)</h3>
+                    <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                        <table class="specialty-table">
+                            <thead>
+                                <tr>
+                                    <th>สาขาความเชี่ยวชาญ</th>
+                                    <th>จำนวน FTE จริง</th>
+                                </tr>
+                            </thead>
+                            <tbody id="specialtyBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3>Performance 6 หมวด (A-H)</h3>
+                    <div class="table-container" style="max-height: 400px; overflow-y: auto;">
+                        <table class="specialty-table">
+                            <thead>
+                                <tr>
+                                    <th>ตัวชี้วัด</th>
+                                    <th>ผลงาน (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cmiBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

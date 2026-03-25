@@ -220,8 +220,8 @@ function renderStep0() {
       <div class="name" style="color:${cfg.color}">${name}</div>
       <div class="pop">${cfg.province} | ${cfg.level} | ปชก. ${pop.toLocaleString?.()?pop.toLocaleString():pop}</div>
       <div class="staff">
-        <span>แพทย์ ${docs}</span>
-        <span>พยาบาล ${nurses}</span>
+        <span title="(นับเฉพาะกลุ่ม นายแพทย์)">แพทย์ ${docs}</span>
+        <span title="(นับเฉพาะกลุ่ม พยาบาลวิชาชีพ และ นักวิชาการฯ)">พยาบาล ${nurses}</span>
         <span>เภสัช ${pharma}</span>
       </div>
     `;
@@ -398,8 +398,8 @@ function renderStep3() {
   grid.innerHTML = '';
   
   const items = [
-    { label:'แพทย์ทั้งหมด', val:docs, ratio:(docs/pop*10000).toFixed(1), unit:'คน/หมื่นปชก.' },
-    { label:'พยาบาลทั้งหมด', val:nurses, ratio:(nurses/pop*10000).toFixed(1), unit:'คน/หมื่นปชก.' },
+    { label:'แพทย์ทั้งหมด', note:'(นับเฉพาะ นายแพทย์)', val:docs, ratio:(docs/pop*10000).toFixed(1), unit:'คน/หมื่นปชก.' },
+    { label:'พยาบาลทั้งหมด', note:'(พยาบาลวิชาชีพ / นักวิชาการฯ)', val:nurses, ratio:(nurses/pop*10000).toFixed(1), unit:'คน/หมื่นปชก.' },
     { label:'เภสัชกรทั้งหมด', val:pharma, ratio:(pharma/pop*10000).toFixed(1), unit:'คน/หมื่นปชก.' },
     { label:'รวมบุคลากร', val:docs+nurses+pharma, ratio:((docs+nurses+pharma)/pop*10000).toFixed(1), unit:'คน/หมื่นปชก.' },
   ];
@@ -408,7 +408,7 @@ function renderStep3() {
     const card = document.createElement('div');
     card.className = 'metric-card';
     card.innerHTML = `
-      <div class="label">${it.label}</div>
+      <div class="label" title="${it.note || ''}">${it.label} ${it.note ? `<span style="display:block;font-size:10px;color:var(--text2);font-weight:normal;margin-top:2px;">${it.note}</span>` : ''}</div>
       <div class="value" style="color:var(--accent2)">${it.val.toLocaleString()}</div>
       <div class="unit">${it.ratio} ${it.unit}</div>
     `;

@@ -1,0 +1,24 @@
+
+# Column Mapping (จากการวิเคราะห์ไฟล์ Excel จริง)
+
+## Personal Information
+- A: employment_type (1.ข้าราชการ, 2.พนักงานราชการ, etc.)
+- C: employee_id (UUID)
+- AK: citizen_id (เลขบัตรประชาชน 13 หลัก) 
+- AL: name_prefix_name (คำนำหน้า - นาย, นาง, นางสาว, ว่าที่ร.ต., etc.)
+- AM: name (ชื่อจริง)
+- AN: surname (นามสกุล)
+- BC: gender (t=female, f=male หรืออาจสลับ)
+- BG: birthdate (วันเกิด)
+- BH: retirement_date (วันเกษียณ)
+- BI: enrollment_date (วันบรรจุ)
+
+## Position Information  
+- E: position_code (รหัสตำแหน่งตัวเลข)
+- BS: position_name (ชื่อตำแหน่ง - เช่น "พยาบาลวิชาชีพ")
+
+## Organizational Unit
+- O: province_code (รหัสจังหวัด - 50, 51, 52, etc.)
+- Q: amphur_code (รหัสอำเภอ - 50_12, 57_07, etc.)
+- S: ou_path3_code (รหัสหน่วยงาน)
+- U: unit_name (ชื่อหน่วยงาน)

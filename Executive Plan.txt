@@ -1,0 +1,364 @@
+Executive Plan
+คุณกำลังจะทำ **Health Needs vs Health Workforce Dashboard (ระดับเขต/จังหวัด/อำเภอ)** โดยใช้
+
+* ฐานบุคลากร + ALL API (กผย.)
+* เชื่อมกับ Health Needs (HNI/SGI/HSI)
+* เพื่อสร้าง **Decision Intelligence Dashboard (Gap / Priority / Allocation)**
+
+ด้านล่างคือ **แผนพร้อมเอาไปสั่ง Antigravity ได้ทันที (Production-grade)**
+
+---
+
+# 🔷 1. Concept Architecture (ภาพรวมระบบ)
+
+```
+[Data Sources]
+- HR Database (บุคลากร)
+- กผย. ALL API (กำลังคน + facility)
+- HDC / 43 แฟ้ม / Health Atlas (Health Needs)
+- Service Plan Data (Capacity)
+
+        ↓
+
+[Data Integration Layer]
+- ETL / API Pull / Data Cleaning
+- Mapping จังหวัด / อำเภอ / facility
+
+        ↓
+
+[Analytic Layer]
+- HNI / SGI / HSI
+- Workforce Capacity Index (WCI)
+- Gap Index (GI)
+- Priority Score
+
+        ↓
+
+[Dashboard Layer]
+- Heatmap (Need vs Workforce)
+- Gap Visualization
+- Scenario Simulation
+```
+
+---
+
+# 🔷 2. Data Model (สำคัญที่สุด)
+
+## 2.1 ตารางหลัก (Core Tables)
+
+### (A) dim_area
+
+```
+province_code
+province_name
+district_code
+district_name
+population_total
+```
+
+---
+
+### (B) fact_health_need
+
+```
+district_code
+year
+
+elderly_rate
+chronic_rate
+mental_risk_rate
+mortality_rate
+
+HNI
+SGI
+HSI
+```
+
+---
+
+### (C) fact_workforce
+
+(จาก HR + API กผย.)
+
+```
+district_code
+facility_id
+
+doctor
+nurse
+pharmacist
+dentist
+public_health
+
+fte_total
+```
+
+---
+
+### (D) fact_service_capacity (optional แต่สำคัญมาก)
+
+```
+district_code
+
+opd_per_year
+ipd_bed
+icu_bed
+or_room
+
+service_capacity_index (SCI)
+```
+
+---
+
+# 🔷 3. การ "จับคู่ข้อมูล" (Data Matching Logic)
+
+## 3.1 Key ที่ต้องใช้ (Critical)
+
+```
+district_code = Primary Key
+```
+
+## 3.2 Mapping Strategy
+
+| Data Source  | วิธี map                     |
+| ------------ | ---------------------------- |
+| HR           | map ด้วย hospital → district |
+| กผย. API     | ใช้ facility_code → district |
+| HDC          | ใช้ district_code ตรง        |
+| Service Plan | manual mapping               |
+
+---
+
+## 3.3 Data Cleaning Rule
+
+```
+- normalize ชื่อจังหวัด/อำเภอ
+- remove duplicate facility
+- convert workforce → FTE
+- handle missing = 0 or impute
+```
+
+---
+
+# 🔷 4. Indicator Framework (หัวใจ Dashboard)
+
+## 4.1 Health Need Index
+
+```
+HNI = weighted(population + elderly + chronic + risk)
+```
+
+## 4.2 Workforce Capacity Index (WCI)
+
+```
+WCI = (doctor*5 + nurse*3 + other*1) / population
+```
+
+---
+
+## 4.3 Gap Index (GI)
+
+🔥 สำคัญที่สุด
+
+```
+GI = HNI - WCI
+```
+
+---
+
+## 4.4 Priority Score
+
+```
+Priority = GI * SGI * (1 - HSI)
+```
+
+👉 ใช้จัดลำดับ "ควรแก้ที่ไหนก่อน"
+
+---
+
+# 🔷 5. Dashboard Design (โครงสร้างหน้าจอ)
+
+## 5.1 หน้า 1: Strategic Overview
+
+* Map เขตสุขภาพ 1
+* สี = Gap Index
+* Filter:
+
+  * Service Plan
+  * จังหวัด
+  * กลุ่มวัย
+
+---
+
+## 5.2 หน้า 2: Need vs Workforce
+
+Scatter Plot:
+
+```
+X = Workforce Capacity
+Y = Health Need
+
+Quadrant:
+- High Need / Low Workforce → 🔴 Crisis
+- High Need / High Workforce → Optimize
+- Low Need / Low Workforce → Monitor
+```
+
+---
+
+## 5.3 หน้า 3: จังหวัด / อำเภอ Ranking
+
+Table:
+
+```
+จังหวัด | HNI | WCI | GI | Priority | Rank
+```
+
+---
+
+## 5.4 หน้า 4: Workforce Distribution
+
+* Doctor / Nurse / PH per 10,000 pop
+* เทียบจังหวัด
+
+---
+
+## 5.5 หน้า 5: Scenario Simulation (Advanced)
+
+```
++ เพิ่มแพทย์ 10 คน → GI ลดเท่าไร
++ ย้าย nurse → impact อย่างไร
+```
+
+---
+
+# 🔷 6. Pipeline สำหรับ Antigravity (Ready to use)
+
+## 🔹 Step 1: Data Ingestion
+
+```
+- Pull API กผย. → JSON
+- Load HR Excel → table
+- Load HDC → CSV
+```
+
+---
+
+## 🔹 Step 2: Data Merge
+
+```
+JOIN ON district_code
+```
+
+---
+
+## 🔹 Step 3: Feature Engineering
+
+```
+calculate:
+- HNI
+- WCI
+- GI
+- Priority
+```
+
+---
+
+## 🔹 Step 4: Export Dataset
+
+```
+final_dataset.csv
+```
+
+---
+
+## 🔹 Step 5: Dashboard
+
+ใช้:
+
+* Power BI / Superset / Metabase / Streamlit
+
+---
+
+# 🔷 7. Prompt สำหรับ Antigravity (Ready to Copy)
+
+```
+OBJECTIVE:
+Build Health Needs vs Workforce Dashboard for Health Region 1 (Thailand)
+
+TASK:
+1. Ingest multiple datasets:
+   - Workforce (HR + API กผย.)
+   - Health Needs (HDC / indicators)
+   - Population
+
+2. Normalize all data to district level
+
+3. Create following indicators:
+   - HNI (Health Need Index)
+   - WCI (Workforce Capacity Index)
+   - GI (Gap Index)
+   - Priority Score
+
+4. Merge all into single dataset
+
+5. Generate:
+   - Ranking table (district + province)
+   - Heatmap dataset
+   - Scatter dataset
+
+6. Build dashboard structure:
+   - Overview map
+   - Need vs Workforce scatter
+   - Priority ranking
+   - Workforce distribution
+
+7. Ensure:
+   - scalable
+   - reusable pipeline
+   - real-time API ready
+
+OUTPUT:
+- final_dataset.csv
+- dashboard-ready tables
+- schema documentation
+```
+
+---
+
+# 🔷 8. Strategic Insight (สำคัญมาก)
+
+## สิ่งที่คุณกำลังสร้าง = 🔥 "War Room Data Engine"
+
+ไม่ใช่แค่ dashboard แต่คือ:
+
+### 👉 Decision System
+
+* จัดสรรแพทย์
+* ย้าย nurse
+* ลงทุน service plan
+
+---
+
+## Use Case จริง:
+
+* ตอบ ผตร. ได้ทันที
+* ใช้เสนอ ครม. ได้
+* ใช้ต่อรองงบ สปสช. ได้
+
+---
+
+# 🔷 9. คำถามต่อเพื่อยกระดับ (Strategic Thinking)
+
+1. คุณต้องการให้ “หน่วยตัดสินใจ” อยู่ระดับ
+
+   * เขต
+   * จังหวัด
+   * อำเภอ
+
+2. จะใช้ dashboard นี้เพื่อ:
+
+   * บริหารกำลังคน
+   * หรือ redesign system
+
+

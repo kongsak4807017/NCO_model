@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="2716668" uniqueCount="122925"><si><t>ข้อมูลตำแหน่งและบุคลากรของเขตสุขภาพที่ 1</t></si><si><t>ประเภทบุคลากร</t></si><si><t>1.มีคนครอง</t></si><si><t>2.ตำแหน่งว่าง</t></si><si><t>ผลรวมทั้งหมด</t></si><si><t>ร้อยละของ
+จำนวนตน.</t></si><si><t>1.ข้าราชการ</t></si><si><t>2.พนักงานราชการ</t></si><si><t>3.พนักงานกระทรวง</t></si><si><t>4.ลูกจ้างประจำ</t></si><si><t>5.ลูกจ้างชั่วคราว</t></si><si><t>สถานะ
+การยุบเลข</t></si><si><t>employee_id</t></si><si><t>position_id</t></si><si><t>เลขที่ตำแหน่ง</t></si><si><t>หมายเหตุ</t></si><si><t>ตามจ.18 - 
+รหัสกรม</t></si><si><t>ตามจ.18 - 
+ชื่อกรม</t></si><si><t>ตามจ.18 - 
+code5</t></si><si><t>ตามจ.18 - 
+code9</t></si><si><t>ตามจ.18 - 
+service_plan</t></si><si><t>ตามจ.18 - 
+actived_bed_name</t></si><si><t>ตามจ.18 - เขต</t></si><si><t>ตามจ.18 - 
+รหัสจังหวัด</t></si><si><t>ตามจ.18 - 
+จังหวัด</t></si><si><t>ตามจ.18 - 

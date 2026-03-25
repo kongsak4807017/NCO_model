@@ -1,0 +1,116 @@
+
+-- ============================================================
+-- HR Blueprint Database - ERD Visualization Schema
+-- สำหรับใช้แสดงผลใน DBeaver, dbdiagram.io, หรือ ER Tool อื่นๆ
+-- ============================================================
+
+-- ใช้คำสั่งนี้ใน dbdiagram.io: https://dbdiagram.io
+/*
+Table hr_personnel {
+  id integer [primary key]
+  employment_type_name varchar(100) [note: 'ประเภทบุคลากร (A)']
+  employment_rev_status varchar(100) [note: 'สถานะ/การยุบเลข (B)']
+  employee_id varchar(50) [note: 'รหัสพนักงาน (C)']
+  position_id varchar(50) [note: 'รหัสตำแหน่ง (D)']
+  position_code varchar(50) [note: 'เลขที่ตำแหน่ง (E)']
+  remark text [note: 'หมายเหตุ (F)']
+  
+  // ข้อมูลหน่วยงานตามจ.18
+  ou_path2_code varchar(50) [note: 'รหัสกรม-จ.18 (G)']
+  ou_path2_name varchar(255) [note: 'ชื่อกรม-จ.18 (H)']
+  province_code varchar(10) [note: 'รหัสจังหวัด-จ.18 (O)']
+  province_name varchar(100) [note: 'จังหวัด-จ.18 (P)']
+  amphur_code varchar(10) [note: 'รหัสอำเภอ-จ.18 (Q)']
+  amphur_name varchar(100) [note: 'อำเภอ-จ.18 (R)']
+  
+  // ข้อมูลหน่วยงานตามอัตรา
+  pos_ou_path2_code varchar(50) [note: 'รหัสกรม-อต. (AC)']
+  pos_ou_path2_name varchar(255) [note: 'ชื่อกรม-อต. (AD)']
+  pos_province_code varchar(10) [note: 'รหัสจังหวัด-อต. (AK)']
+  pos_province_name varchar(100) [note: 'จังหวัด-อต. (AL)']
+  
+  // ข้อมูลส่วนตัว
+  citizen_no varchar(13) [note: 'เลขบัตรปชช (AY)']
+  name_prefix_name varchar(50) [note: 'คำนำหน้า (AZ)']
+  name varchar(100) [note: 'ชื่อ (BA)']
+  surname varchar(100) [note: 'นามสกุล (BB)']
+  gender varchar(10) [note: 'รหัสเพศ (BC)']
+  gender_name varchar(10) [note: 'เพศ (BD)']
+  
+  // วันที่สำคัญ
+  birthdate date [note: 'วันเกิด (BG)']
+  retirement_date date [note: 'วันครบเกษียณ (BH)']
+  enrollment_date date [note: 'วันบรรจุ/จ้าง (BI)']
+  position_entry_date date [note: 'วันเข้าตำแหน่งปัจจุบัน (BJ)']
+  line_entry_date date [note: 'วันเข้าสายงาน (BK)']
+  ou_entry_date date [note: 'วันเข้าหน่วยงาน (BL)']
+  level_entry_date date [note: 'วันเข้าระดับ (BM)']
+  
+  // ตำแหน่งงานตามอัตรา
+  manage_position_name varchar(255) [note: 'ตำแหน่งทางการบริหาร-อต. (BO)']
+  position_specialist_name varchar(255) [note: 'สาขาความเชี่ยวชาญ-อต. (BQ)']
+  line_position_name varchar(255) [note: 'ตำแหน่งสายงาน-อต. (BS)']
+  position_type_name varchar(100) [note: 'ประเภทตำแหน่ง-อต. (BU)']
+  from_level_name varchar(100) [note: 'ระดับเริ่มต้น-อต. (BW)']
+  to_level_name varchar(100) [note: 'ระดับสิ้นสุด-อต. (BY)']
+  
+  // ตำแหน่งงานตามจ.18
+  pay_manage_position_name varchar(255) [note: 'ตำแหน่งทางการบริหาร-จ.18 (CA)']
+  pay_position_specialist_name varchar(255) [note: 'สาขาความเชี่ยวชาญ-จ.18 (CC)']
+  pay_line_position_name varchar(255) [note: 'ตำแหน่งสายงาน-จ.18 (CE)']
+  pay_position_type_name varchar(100) [note: 'ประเภทตำแหน่ง-จ.18 (CH)']
+  
+  // วุฒิการศึกษา
+  enrollment_education_level_name varchar(100) [note: 'วุฒิบรรจุ-ระดับ (DA)']
+  enrollment_degree_name varchar(255) [note: 'วุฒิบรรจุ-ชื่อ (DC)']
+  enrollment_subject_name varchar(255) [note: 'วุฒิบรรจุ-สาขา (DF)']
+  enrollment_specialist_name varchar(255) [note: 'วุฒิบรรจุ-ความเชี่ยวชาญ (DH)']
+  
+  highest_education_level_name varchar(100) [note: 'วุฒิสูงสุด-ระดับ (DY)']
+  highest_degree_name varchar(255) [note: 'วุฒิสูงสุด-ชื่อ (EA)']
+  highest_subject_name varchar(255) [note: 'วุฒิสูงสุด-สาขา (ED)']
+  highest_specialist_name varchar(255) [note: 'วุฒิสูงสุด-ความเชี่ยวชาญ (EF)']
+  
+  // การเคลื่อนไหว
+  movement_name varchar(255) [note: 'ชื่อการเคลื่อนไหว (FA)']
+  movement_name2 varchar(255) [note: 'สาเหตุการย้าย-จ.18 (FB)']
+  from_date date [note: 'วันที่มีผล (FC)']
+  empty_movement_name varchar(255) [note: 'สาเหตุการย้าย-ว่าง (FG)']
+  
+  // เงินเดือน
+  salary decimal [note: 'เงินเดือน (FH)']
+  other_income1 decimal [note: 'เงินประจำตำแหน่ง (FI)']
+  other_income2 decimal [note: 'เงินค่าตอบแทนพิเศษ (FJ)']
+  other_income3 decimal [note: 'เงิน บ.ม. (FK)']
+  other_income4 decimal [note: 'เงิน บ.ช. (FL)']
+  other_income5 decimal [note: 'เงิน บ.ล. (FM)']
+  other_income6 decimal [note: 'เงินค่าตอบแทนเจ้าหน้าที่เวชสถิติ (FN)']
+  other_income7 decimal [note: 'เงินเพิ่มค่าครองชีพ (FO)']
+  
+  // Metadata
+  created_at timestamp
+  updated_at timestamp
+  
+  indexes {
+    (employee_id) [name: "idx_employee_id"]
+    (citizen_no) [name: "idx_citizen_no"]
+    (name) [name: "idx_name"]
+    (province_name) [name: "idx_province"]
+    (employment_type_name) [name: "idx_employment_type"]
+  }
+}
+
+Table data_dictionary {
+  id integer [primary key]
+  table_name varchar(100)
+  column_no integer
+  column_name varchar(10)
+  thai_header varchar(255)
+  eng_field varchar(255)
+  description text
+  data_type varchar(50)
+  created_at timestamp
+}
+
+Ref: hr_personnel.id < data_dictionary.column_no
+*/

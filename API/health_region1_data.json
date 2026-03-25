@@ -1,0 +1,306 @@
+{
+  "metadata": {
+    "region_name": "เขตสุขภาพที่ 1",
+    "region_name_en": "Health Region 1",
+    "provinces": ["เชียงใหม่", "เชียงราย", "ลำพูน", "ลำปาง", "แพร่", "น่าน", "พะเยา", "แม่ฮ่องสอน"],
+    "province_count": 8,
+    "population_2566": "5.5-6.0 ล้านคน",
+    "update_date": "2026-03-08",
+    "data_source": ["deep-research-report.md", "deep-research-report2.md", "opendata.moph.go.th"]
+  },
+  "years": {
+    "2566": {
+      "year": 2566,
+      "population": {
+        "total": 5800000,
+        "elderly_ratio": null,
+        "aging_society": true
+      },
+      "ncd": {
+        "diabetes": {
+          "total_patients": 368724,
+          "rate_per_100k": 6292,
+          "trend": "increasing"
+        },
+        "hypertension": {
+          "total_patients": 900073,
+          "rate_per_100k": 16700,
+          "trend": "increasing"
+        },
+        "risk_factors": {
+          "smoking_percent": 6.8,
+          "alcohol_percent": 21.8,
+          "overweight_bmi25_plus_percent": 31.1
+        }
+      },
+      "infectious_diseases": {
+        "dengue": {
+          "cases": null,
+          "deaths": null,
+          "rate_per_100k": null
+        },
+        "tuberculosis": {
+          "status": "พบในพื้นที่สูง"
+        },
+        "hiv": {
+          "status": "พบในชาติพันธุ์บนพื้นที่สูง"
+        }
+      },
+      "accidents": {
+        "traffic_mortality_rate_per_100k": 15.46,
+        "national_average": 12.90,
+        "status": "สูงกว่าค่าเฉลี่ยประเทศ"
+      },
+      "budget": {
+        "uc_capitation_per_person": 3798,
+        "previous_year": 3719
+      }
+    },
+    "2567": {
+      "year": 2567,
+      "population": {
+        "total": 5800000,
+        "elderly_ratio": null,
+        "aging_society": true
+      },
+      "ncd": {
+        "diabetes": {
+          "total_patients": 368724,
+          "rate_per_100k": 6292,
+          "trend": "increasing"
+        },
+        "hypertension": {
+          "total_patients": 900073,
+          "rate_per_100k": 16700,
+          "trend": "increasing"
+        },
+        "risk_factors": {
+          "smoking_percent": 6.8,
+          "alcohol_percent": 21.8,
+          "overweight_bmi25_plus_percent": 31.1
+        }
+      },
+      "infectious_diseases": {
+        "dengue": {
+          "cases": 6745,
+          "deaths": 3,
+          "rate_per_100k": 114.92,
+          "cfr_percent": 0.04
+        },
+        "tuberculosis": {
+          "status": "พบในพื้นที่สูง"
+        },
+        "hiv": {
+          "status": "พบในชาติพันธุ์บนพื้นที่สูง"
+        }
+      },
+      "accidents": {
+        "traffic_mortality_rate_per_100k": 15.46,
+        "national_average": 12.90,
+        "status": "สูงกว่าค่าเฉลี่ยประเทศ"
+      },
+      "healthcare_system": {
+        "cups_chiangmai": 11,
+        "rpst_chiangmai": 83,
+        "rpst_transferred": {
+          "chiangrai": "100%",
+          "lamphun": "100%",
+          "phrae": "100%"
+        }
+      },
+      "budget": {
+        "uc_capitation_per_person": 3798
+      },
+      "programs": {
+        "rlu_savings_baht": 3000000000,
+        "telehealth": "active",
+        "ncd_remission_clinic": "active"
+      }
+    },
+    "2568": {
+      "year": 2568,
+      "population": {
+        "total": 5750000,
+        "elderly_ratio": null,
+        "aging_society": true,
+        "projected": true
+      },
+      "ncd": {
+        "diabetes": {
+          "total_patients": null,
+          "rate_per_100k": null,
+          "trend": "increasing",
+          "projected": true
+        },
+        "hypertension": {
+          "total_patients": null,
+          "rate_per_100k": null,
+          "trend": "increasing",
+          "projected": true
+        },
+        "risk_factors": {
+          "smoking_percent": null,
+          "alcohol_percent": null,
+          "overweight_bmi25_plus_percent": null,
+          "projected": true
+        }
+      },
+      "infectious_diseases": {
+        "dengue": {
+          "cases": null,
+          "deaths": null,
+          "rate_per_100k": null,
+          "projected": true
+        }
+      },
+      "accidents": {
+        "traffic_mortality_rate_per_100k": null,
+        "target": "ลดลงจากปี 2567",
+        "projected": true
+      },
+      "healthcare_system": {
+        "digital_health": "expanding",
+        "ai_audit": "implementing",
+        "big_data_analytics": "active"
+      },
+      "budget": {
+        "uc_capitation_per_person": null,
+        "projected": true
+      },
+      "strategic_goals": [
+        "ลดภาระโรคไม่ติดต่อ",
+        "ขยายระบบปฐมภูมิ",
+        "พัฒนาระบบดิจิทัลสุขภาพ",
+        "ลดอุบัติเหตุจราจร"
+      ]
+    },
+    "2569": {
+      "year": 2569,
+      "population": {
+        "total": 5700000,
+        "elderly_ratio": null,
+        "aging_society": true,
+        "super_aging": true,
+        "projected": true
+      },
+      "ncd": {
+        "diabetes": {
+          "total_patients": null,
+          "rate_per_100k": null,
+          "trend": "stable_or_decreasing",
+          "target": "ควบคุมได้",
+          "projected": true
+        },
+        "hypertension": {
+          "total_patients": null,
+          "rate_per_100k": null,
+          "trend": "stable_or_decreasing",
+          "target": "ควบคุมได้",
+          "projected": true
+        }
+      },
+      "healthcare_system": {
+        "vision": "Health City Chiang Mai",
+        "tourism_health": "promoting",
+        "integrated_care": "full_implementation"
+      },
+      "strategic_goals": [
+        "เขตสุขภาพต้นแบบดิจิทัล",
+        "ระบบบริการปฐมภูมิครอบคลุม 100%",
+        "ประชาชนเข้าถึงบริการสุขภาพด้วยเทคโนโลยี"
+      ],
+      "long_term_targets": {
+        "traffic_mortality": "ลดต่ำกว่าค่าเฉลี่ยประเทศ",
+        "ncd_control": "ลดภาวะแทรกซ้อนลง 20%",
+        "digital_health_adoption": "80% ของหน่วยบริการ"
+      }
+    }
+  },
+  "dashboard_indicators": {
+    "population_health": [
+      {"indicator": "ประชากรรวม", "unit": "คน", "frequency": "yearly"},
+      {"indicator": "สัดส่วนผู้สูงอายุ", "unit": "%", "frequency": "yearly"},
+      {"indicator": "อัตราป่วยเบาหวานต่อแสน", "unit": "ต่อแสน", "frequency": "yearly"},
+      {"indicator": "อัตราป่วยความดันโลหิตสูงต่อแสน", "unit": "ต่อแสน", "frequency": "yearly"},
+      {"indicator": "อัตราตายจากอุบัติเหตุจราจร", "unit": "ต่อแสน", "frequency": "yearly"}
+    ],
+    "risk_factors": [
+      {"indicator": "ร้อยละผู้สูบบุหรี่", "unit": "%", "frequency": "yearly"},
+      {"indicator": "ร้อยละผู้ดื่มสุรา", "unit": "%", "frequency": "yearly"},
+      {"indicator": "ร้อยละผู้มีน้ำหนักเกิน BMI≥25", "unit": "%", "frequency": "yearly"}
+    ],
+    "infectious_diseases": [
+      {"indicator": "ผู้ป่วยไข้เลือดออกสะสม", "unit": "ราย", "frequency": "yearly"},
+      {"indicator": "อัตราป่วยไข้เลือดออก", "unit": "ต่อแสน", "frequency": "yearly"},
+      {"indicator": "ผู้เสียชีวิตจากไข้เลือดออก", "unit": "ราย", "frequency": "yearly"},
+      {"indicator": "Case Fatality Rate ไข้เลือดออก", "unit": "%", "frequency": "yearly"}
+    ],
+    "healthcare_system": [
+      {"indicator": "จำนวน CUP", "unit": "แห่ง", "frequency": "yearly"},
+      {"indicator": "จำนวน รพ.สต.", "unit": "แห่ง", "frequency": "yearly"},
+      {"indicator": "งบเหมาจ่ายรายหัว UC", "unit": "บาท/คน", "frequency": "yearly"},
+      {"indicator": "การประหยัดจาก RLU", "unit": "บาท", "frequency": "yearly"}
+    ],
+    "service_coverage": [
+      {"indicator": "หน่วยบริการปฐมภูมิใน CUP", "unit": "แห่ง", "frequency": "yearly"},
+      {"indicator": "ร้อยละ รพ.สต. ถ่ายโอนไปท้องถิ่น", "unit": "%", "frequency": "yearly"},
+      {"indicator": "การใช้บริการ Telehealth", "unit": "ครั้ง", "frequency": "monthly"}
+    ]
+  },
+  "available_data_files": {
+    "opendata_links": [
+      {
+        "category": "ข้อมูลตอบสนอง Service Plan",
+        "url": "https://opendata.moph.go.th/th/services/summary-table/02e752187c7282ebc9315123aa1cabbe",
+        "subcategories": 17
+      },
+      {
+        "category": "สถานะสุขภาพ",
+        "url": "https://opendata.moph.go.th/th/services/summary-table/3e9b22afedc152096c7caf484c7d9629",
+        "subcategories": 8
+      },
+      {
+        "category": "ส่งเสริมป้องกัน",
+        "url": "https://opendata.moph.go.th/th/services/summary-table/73daf277928bc32a1b3c8e772192543c",
+        "subcategories": 8
+      },
+      {
+        "category": "การเข้าถึงบริการ",
+        "url": "https://opendata.moph.go.th/th/services/summary-table/9e99968996aa2b415260d14be393bd67",
+        "subcategories": 12
+      },
+      {
+        "category": "ข้อมูลทั่วไป",
+        "url": "https://opendata.moph.go.th/th/services/summary-table/ab1a986e53c42a71d7c42b2646e6e844",
+        "subcategories": 6
+      }
+    ],
+    "api_endpoints": [
+      "https://opendata.moph.go.th/api/main_report",
+      "https://opendata.moph.go.th/api/category",
+      "https://opendata.moph.go.th/api/category/{main_report_id}",
+      "https://opendata.moph.go.th/api/report/{main_report_id}"
+    ]
+  },
+  "recommendations": {
+    "for_dashboard": [
+      "สร้างกราฟแสดงแนวโน้มผู้ป่วย NCD (เบาหวาน ความดัน) ปี 2566-2569",
+      "แผนที่ความร้อน (Heatmap) แสดงอัตราป่วยรายจังหวัด",
+      "กราฟเปรียบเทียบอัตราตายจากอุบัติเหตุจราจรกับค่าเฉลี่ยประเทศ",
+      "แดชบอร์ดงบประมาณสาธารณสุขและประสิทธิภาพการใช้จ่าย",
+      "ระบบติดตามตัวชี้วัดแบบ Real-time จากข้อมูล opendata"
+    ],
+    "data_gaps": [
+      "ข้อมูลระดับจังหวัดรายปี 2566-2569 ยังไม่สมบูรณ์",
+      "ข้อมูลรายเดือนสำหรับโรคติดต่อ",
+      "ข้อมูลคุณภาพการให้บริการ (Quality Metrics)",
+      "ข้อมูลความพึงพอใจของผู้รับบริการ"
+    ],
+    "next_steps": [
+      "ติดต่อสำนักงานเขตสุขภาพที่ 1 เพื่อขอข้อมูลเพิ่มเติม",
+      "ขอ API Key สำหรับเข้าถึงข้อมูล OpenData แบบเต็มรูปแบบ",
+      "เชื่อมต่อกับระบบ HDC (Health Data Center) ถ้าได้รับอนุญาต",
+      "สำรวจข้อมูลจาก ThaiHealthStat (HISO) เพิ่มเติม"
+    ]
+  }
+}
