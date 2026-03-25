@@ -1,123 +1,163 @@
-# Mocking Hospital Plan
-**Project:** NCO Simulation - Sandbox Mode
-**Concept:** "Create-a-Character" for Hospitals (ระบบสร้างตัวละครโรงพยาบาลสมมติ)
-**Objective:** อนุญาตให้ผู้ใช้งานสร้างโรงพยาบาลใหม่ขึ้นมาเองทั้งหมด (Sandbox Mode) โดยสามารถบรรจุจำนวนประชากร ระบาดวิทยา สถิติความสูญเสีย ผลลัพธ์ Service Plan และ "อัตรากำลังแพทย์/พยาบาลเฉพาะทาง (Sub-specialty)" ในความตึงเครียดระดับต่างๆ เข้าไปสู่สมการการคำนวณของ NCO Model เสมือนกำลังประเมินโรงพยาบาลของจริง
+# Mocking Hospital Plan (Revised)
+**Project:** NCO Simulation - Sandbox Mode  
+**Version Date:** 25 March 2026  
+**Objective:** สร้างโรงพยาบาลจำลองเพื่อทดสอบการจัดสรรอัตรากำลังตามโมเดล **NCO (Need-Capacity-Outcome)** ว่า
+- ควรเพิ่มแพทย์/พยาบาลเฉพาะทางเท่าไร
+- หรือไม่ต้องเพิ่มคน แต่ต้องปรับกระบวนการอะไร
 
 ---
 
-## 1. System Overview (ภาพรวมระบบ)
-ระบบ Mocking Hospital ถูกออกแบบมาเพื่อเป็น **Strategic HR Simulator** แบบสมบูรณ์แบบ ทลายข้อจำกัดเชิงข้อมูลจากระบบเดิม โดยการโยน "โรงพยาบาลกระดาษเปล่า (Blank Canvas)" ให้ผู้วางแผนยุทธศาสตร์สามารถปรับจูนตัวแปรได้กว่า 50+ รายการ เพื่อทดสอบทฤษฎี (Scenario Test) ว่าจากบริบทโรคระบาดที่เพิ่มขึ้นนี้ หากเราเติมทรัพยากรบุคคลสายเฉพาะทางเข้าไป ผลประเมินและ Recommendation สุดท้ายของระบบจะรันออกมาเป็นภาพใด
+## 1) Minimum Dataset ที่ต้องมี
+### 1.1 Data Quality Gate (บังคับก่อนคำนวณข้อเสนอ)
+- **G01** %AdjRW=0 (เกณฑ์ `< 1%`)
+- **G02** %Pdx Ill-defined (เกณฑ์ `< 5%`)
+- **G03** %Pdx Ill-defined ในผู้เสียชีวิต (เกณฑ์ `< 10%`)
+- **G04** %ICD คุณภาพต่ำ (เกณฑ์ `< 5%`)
+
+> หากไม่ผ่าน Gate: ระบบยังแสดงผลได้ แต่ต้องติดธง `provisional` และไม่ใช้เป็นฐานอนุมัติอัตรากำลังถาวร
+
+### 1.2 Need (ภาระสุขภาพ)
+- ประชากรรับผิดชอบรวม (Population Type 1,3)
+- สัดส่วนผู้สูงอายุ 60+
+- ความชุกโรคหลัก 4 กลุ่ม (CVD, Cancer, DM, CKD) ต่อแสน
+- ความเสี่ยงสุขภาพจิต
+- ตัวเลือกเสริม DALY weighting (0-14, 15-59, 60+)
+
+### 1.3 Capacity (กำลังคนและความสามารถบริการ)
+- Headcount รายวิชาชีพ/รายสาขาเฉพาะทาง
+- **FTE factor** รายสาขา (เช่น 1.0, 0.8, 0.6)
+- Coverage รายเวร (กลางวัน/นอกเวลา/24x7)
+- Service readiness (Cath lab, Stroke fast track, NICU, OR trauma ฯลฯ)
+
+### 1.4 Outcome (ผลลัพธ์)
+- Performance A-H (ขั้นต่ำที่ต้องใช้: A01, A04, A09, B01, C02, D01, F10)
+- Service Plan เฉพาะโรคที่โยงสาขาเฉพาะทาง (เช่น DH0101, DN0101, DN0142, CI0101, CM0101, CM0203)
+
+### 1.5 Workload (บังคับถ้าจะคำนวณ “จำนวนที่ต้องเพิ่ม”)
+- OPD visits/วัน
+- IPD discharges/ปี
+- ICU bed-days/ปี
+- ER ESI1-2 cases/ปี
+- OR major cases/ปี
 
 ---
 
-## 2. Sandbox Workflow (ขั้นตอนการป้อนข้อมูลจำลองฉบับสมบูรณ์)
+## 2) Sandbox Workflow (ฉบับใช้งานจริง)
+### Step 0: Data Quality Gate
+ตรวจ G01-G04 และกำหนดสถานะ `pass/fail`
 
-### Step 1: Basic Profile & Demographics (โครงสร้างประชากรพื้นฐาน)
-เป็นตัวแปรตั้งต้นในการหาตัวหารเพื่อเทียบค่าแรงงานต่อขนาดประชากร:
-- **ชื่อหน่วยบริการ (Hospital Name):** (Text) สำหรับใช้อ้างอิงในรายงาน
-- **จังหวัดที่ตั้ง (Provincial Reference):** (Dropdown: เชียงใหม่, ลำปาง ฯลฯ) กำหนดพื้นที่เพื่อใช้เป็นค่าอ้างอิง
-- **ระดับโรงพยาบาล (Hospital Level):** (Dropdown: A, S, M1, M2, F) *[ระบบจะนำค่าตัวนี้ไปเทียบกับ Standard Median ของกระทรวง]*
-- **จำนวนประชากรรวมที่รับผิดชอบ (Population Type 1,3):** (Number) `ตัวแปรเศษส่วนหลัก` สำหรับสูตรคนต่อหมื่นประชากร
-- **สัดส่วนผู้สูงอายุ 60 ปีขึ้นไป (Elderly Population %):** (%) *[ใช้คำนวณแกนที่ 1 ของ HNI]*
+### Step 1: Basic Profile
+- ชื่อหน่วยบริการ
+- จังหวัด
+- ระดับ รพ. (A/S/M1/M2/F)
+- ประชากรรับผิดชอบ
 
-### Step 2: Epidemiology, Burden & DALYs (กำหนดภาระโรค - Health Need Engine)
-ผู้ใช้สามารถกำหนดความรุนแรงของโรคในพื้นที่ได้อย่างอิสระ:
-- **2.1 ความชุก 4 โรคคุกคามหลัก (Prevalence Rates - อัตราผู้ป่วยต่อแสนคน)** *[แกนที่ 2 ของ HNI]*
-  - ❤️ หลอดเลือดและหัวใจ (Cardiovascular Disease): _____ (รายต่อแสนคน)
-  - 🎗️ มะเร็งและเนื้องอก (Cancer): _____ (รายต่อแสนคน)
-  - 🩸 โรคเบาหวาน (Diabetes Mellitus): _____ (รายต่อแสนคน)
-  - 🩺 โรคไตวายเรื้อรัง (CKD): _____ (รายต่อแสนคน)
-  *(ระบบจะนำผลรวมทั้ง 4 เลขนี้มาคำนวณเป็น "ฐานคะแนนโรคเรื้อรัง")*
+### Step 2: Need Engine (HNI)
+- Elderly + Chronic burden + Mental risk
+- เลือกน้ำหนักแกน (เช่น 40:40:20)
+- เลือกเปิด/ปิด DALY modifier
 
-- **2.2 ความเสี่ยงสุขภาพจิต (Mental Health Risk)** *[แกนที่ 3 ของ HNI]*
-  - 🧠 อัตราผู้มีความเสี่ยงปัญหาสุขภาพจิต: _____ (รายต่อแสนคน)
+### Step 3: Capacity Engine (WCI)
+- กรอกอัตรากำลังรายสาขา
+- กรอก FTE factor และความครอบคลุมเวร
+- กรอก workload เพื่อปรับ WCI ตามภาระงานจริง
 
-- **2.3 กลไกปรับแก้ด้วย DALY (Disability-Adjusted Life Year) 💡[Advanced Feature]**
-  - **โหมดใช้งาน:** `[ ] เปิดใช้สูตรการนำ DALY มาถ่วงน้ำหนัก (Weight Modifier)`
-  - **การตั้งค่า:** หากเปิดใช้ ให้ผู้ใช้สัดส่วนปีสุขภาวะที่สูญเสียแยกตามกลุ่มวัย เช่น:
-    - 🧒 ประชากร 0-14 ปี (สูญเสีย __%) 👉 *Link ไปหากลุ่มกุมารแพทย์*
-    - 👨‍💼 ประชากร 15-59 ปี (สูญเสีย __%) 👉 *Link ไปหากลุ่มศัลยกรรมอุบัติเหตุ*
-    - 👵 ประชากร 60+ ปี (สูญเสีย __%) 👉 *Link ไปหากลุ่มอายุรกรรมโรคเรื้อรัง*
-  *(ระบบจะนำเปอร์เซ็นต์เหล่านี้ไปคูณเป็นโบนัสคะแนนคูณเพิ่มให้กับ HNI ทำให้สะท้อน "มูลค่าความสูญเสียคุณภาพชีวิตจริงๆ" ไม่ใช่แค่จำนวนคนไข้ที่เดินเข้า รพ.)*
+### Step 4: Gap
+- คำนวณ `Gap = HNI - AdjWCI`
 
-### Step 3: Sub-specialty Workforce (อัตรากำลังเจาะลึกเฉพาะทาง)
-เปลี่ยนจากการกรอก "แพทย์รวม/พยาบาลรวม" เป็นการกรอก Sub-specialty เพื่อรันระบบ **Deep Gap Analysis**:
+### Step 5: Outcome Validation
+- ตรวจ A-H ชุดหลัก
 
-**3.1 สาขาอายุรศาสตร์ และ หลอดเลือด (Medicine & Cardio/Neuro):**
-- อายุรแพทย์ทั่วไป: __ คน
-- อายุรแพทย์หัวใจและหลอดเลือด (Cardiologist) / แพทย์ทำหัตถการ (Interventional): __ คน
-- อายุรแพทย์ประสาทวิทยา (Neurologist): __ คน
-- อายุรแพทย์มะเร็งวิทยา (Oncologist): __ คน
-- พยาบาลวิชาชีพ หอผู้ป่วยอายุรกรรม: __ คน
-- พยาบาลผู้เชี่ยวชาญ คลินิก CCU / Cath Lab: __ คน
-- พยาบาลผู้เชี่ยวชาญ Stroke Unit / Fast Track: __ คน
-- พยาบาลให้ยาเคมีบำบัด: __ คน
+### Step 6: Service Plan Deep Dive
+- วิเคราะห์ตัวชี้วัดรายโรค
+- Map ไปยังแพทย์/พยาบาลเฉพาะทางที่เกี่ยวข้อง
 
-**3.2 สาขาศัลยกรรม และ อุบัติเหตุ (Surgery & Trauma):**
-- ศัลยแพทย์ทั่วไป: __ คน
-- ศัลยแพทย์สมองและระบบประสาท (Neurosurgeon): __ คน
-- ศัลยแพทย์กระดูกและข้อ (Orthopedist): __ คน
-- พยาบาลวิชาชีพ OR / Trauma Unit: __ คน
-
-**3.3 สาขาทารกแรกเกิด และ มารดา (Maternal & Child):**
-- สูตินรีแพทย์: __ คน
-- กุมารแพทย์ทั่วไป: __ คน
-- กุมารแพทย์ทารกแรกเกิด (Neonatologist): __ คน
-- พยาบาล NICU / ห้องคลอด: __ คน
-
-**3.4 สาขาพื้นฐานและวิชาชีพอื่น:**
-- แพทย์เวชศาสตร์ฉุกเฉิน (EP): __ คน
-- จิตแพทย์ (Psychiatrist): __ คน
-- เภสัชกร (Pharmacist): __ คน
-- พยาบาลวิชาชีพ OPD/IPD ทั่วไป: __ คน
-
-### Step 4: Outcome & Service Plan Performance (เป้าหมายเชิงผลลัพธ์)
-เมื่อมีกำลังคนแล้ว แต่ละโรงพยาบาลจะรอดพ้นเกณฑ์ (Threshold) ได้หรือไม่ ต้องทดสอบด้วยข้อมูลหน้างาน (Outcome):
-
-**4.1 ตัวชี้วัดคุณภาพภาพรวม (General Performance - กก. A, B, C, H)**
-- **A01** Case Mix Index (CMI): _____ *(สะท้อนความยาก/ซับซ้อนของโรค)*
-- **A04** ความพึงพอใจร้อยละ: ____ % *(สะท้อนคุณภาพบริการ)*
-- **A08** อัตราตายรวมตลอดปี (Mortality Rate): ____ %
-- **H** ร้อยละการขาดทุน หรืออัตราส่วนสภาพคล่อง (หากจะผูกด้านการเงิน): ____
-
-**4.2 ตัวชี้วัดสมรรถนะรายสาขา (Service Plan Indicators)**
-**❤️ 1. สาขาหัวใจและหลอดเลือด (Cardiovascular):**
-- อัตราตายผู้ป่วยกล้ามเนื้อหัวใจตายเฉียบพลัน (STEMI Mortality) - *(เกณฑ์ < 12%)*: ____ %
-- อัตราการรับบริการสวนหัวใจ (PCI) ทันเวลา: ____ %
-**🧠 2. สาขาระบบประสาท (Neurology):**
-- อัตราตายผู้ป่วยหลอดเลือดสมองตีบ (Ischemic Stroke Mortality) - *(เกณฑ์ < 15%)*: ____ %
-- ร้อยละของผู้ป่วยระดับรุนแรงที่ได้รับยาละลายลิ่มเลือด (rt-PA) ทัน 4.5 ชม.: ____ %
-**🚑 3. สาขาศัลยกรรมและอุบัติเหตุ (Surgery & Trauma):**
-- อัตราตายผู้ป่วยติดเชื้อในกระแสเลือด (Severe Sepsis Mortality) - *(เกณฑ์ < 20%)*: ____ %
-- อัตราตายผู้ป่วยอุบัติเหตุบาดเจ็บรุนแรง (Major Trauma): ____ %
-**🎗️ 4. สาขามะเร็ง และ ทารกแรกเกิด (Oncology & Neonatal):**
-- อัตราตายทารกแรกเกิดน้ำหนักน้อยกว่ากำหนด (LBW Mortality): ____ %
-- ร้อยละผู้ป่วยมะเร็งลุกลามที่ได้รับรังสีรักษาด่วน: ____ %
+### Step 7: Recommendation
+- เพิ่มคน (พร้อมจำนวน)
+- หรือ Process/Protocol adjustment
+- พร้อมระดับความเชื่อมั่น (confidence)
 
 ---
 
-## 3. Calculation Core Logic (สมการคำนวณเบื้องหลังเมื่อรันผล)
-ทันทีที่กด "📌 อนุมัติการสร้างรพ.จำลอง (Run Simulation)" ระบบจะใช้สมการดังนี้:
+## 3) Core Indicator Dictionary (ฉบับย่อ)
+### 3.1 Outcome A-H (ใช้ยืนยันระดับระบบ)
+- **A01** Crude Death Rate (`ต่ำ=ดี`, threshold `3.5%`)
+- **A04** AMI Mortality (`ต่ำ=ดี`, threshold `8%`)
+- **A09** Septicemia Mortality (`ต่ำ=ดี`, threshold `20%`)
+- **B01** Maternal Mortality (`ต่ำ=ดี`, threshold `70/100k`)
+- **C02** CMI (`สูง=ดี`, threshold `1.5`)
+- **D01** Bed Occupancy (`ช่วงเหมาะสม 80-85%`)
+- **F10** Referral leakage to tertiary (`ต่ำ=ดี`, threshold `15%`)
 
-**1. Dynamic Normalization HNI (เทียบกับข้อมูลภูมิภาค):**
-- **สมการ:** `Base Score = ( Input_Value / Zone_Max_Value_จากของจริง )`
-- ระบบนำ **%ผู้สูงอายุ**, **ยอดป่วย 4 โรคต่อแสนคน**, **ความเสี่ยงจิต** หารด้วยค่าสูงสุด (Max) ของเขตสุขภาพที่ 1 เพื่อสร้างดัชนี 0-100 ให้แฟร์ที่สุด
-- *ถ้าเปิดใช้งานตัวเลือก DALY:* `Final_HNI = Base Score * (1 + (DALY_Weight_Age_Group / 100))` 
+### 3.2 Service Plan (ใช้ชี้เป้าสาขาเฉพาะทาง)
+- **DH0101** STEMI mortality (`<12%`) -> Interventional cardio + CCU/Cath nurse
+- **DN0101** Stroke mortality (`<15%`) -> Neurologist + Stroke nurse
+- **DN0142** rtPA timely (`>5%`) -> Neuro + ER team
+- **CI0101** Sepsis mortality (`<20%`) -> ID/Internal med + ICU nurse
+- **CM0101** Maternal mortality (`<70/100k`) -> OB + labor nurse
+- **CM0203** Neonatal mortality (`<10/1000`) -> Neonatologist + NICU nurse
 
-**2. Specialty Capacity Fraction (WCI ระดับย่อย):**
-- ระบบจะคำนวณเป็นแผนกย่อย (เช่น WCI-Neuro, WCI-Cardio) 
-- `WCI-Cardio = (จน. อายุรแพทย์หัวใจ / ปชก.ที่กรอก) * 10,000` แล้วเทียบกับเป้าหมายระดับ S/A
+---
 
-**3. Advanced Decision Matrix (ผลการวิเคราะห์ AI Recommendation):**
-- ระบบจะไขว้ข้อมูลระหว่าง **HNI Disease Specific × Sub-specialty WCI × Service Plan Outcome**
-- **ตัวอย่างการรันผล: (Scenario #1)** 
-  > **Mock Input:** *(อัตราป่วย CVD: 9,000, อายุรแพทย์หัวใจ: 0 คน, CMI รวม: 1.8(สูง), อัตราตาย STEMI: 22%)*
-  > **AI Output:** `"⚠️ วิกฤติระดับแดง (Urgent Need): ความชุกของโรคหัวใจสูงมาก และ CMI สะท้อนเคสหนัก แต่อัตราตายทะลุเป้าที่ 22% เนื่องจากไม่มีอัตรากำลัง Interventional Cardiologist. Recommendation: ไม่ควรเพิ่มแค่พยาบาลทั่วไป แต่ให้เร่งบรรจุ/ขอรับโควตา อายุรแพทย์หัวใจ 1 อัตรา และ พยาบาล CCU 2 อัตราโดยตรง"`
-- **ตัวอย่างการรันผล: (Scenario #2)**
-  > **Mock Input:** *(อัตราป่วย Sepsis/Trauma ปานกลาง, พยาบาล NICU/ICU = 20 คน (เกจเต็ม), อัตราตาย Sepsis = 35%)*
-  > **AI Output:** `"🟡 อาการน่าเป็นห่วง (Process Adjustment Need): จำนวนพยาบาลในหน่วยดูแลวิกฤติอยู่ในระดับสูง (WCI เต็ม) แต่อัตราผลสำเร็จการรักษายังต่ำมากชี้ให้เห็นว่า 'บุคลากรไม่ใช่คอขวด'. Recommendation: ควรรื้อระบบ Sepsis Fast Track, พัฒนา Skill Mix หรือของบประมาณอุปกรณ์การแพทย์ฉุกเฉิน แทนการขอเพิ่มอัตรากำลังพยาบาล"`
+## 4) Calculation Core Logic (Production-ready)
+### 4.1 HNI (Need)
+```text
+Norm_i = Input_i / Max_i_in_zone
+HNI = ((wE*Norm_Elderly) + (wC*Norm_Chronic4D) + (wM*Norm_Mental)) / (wE+wC+wM) * 100
+If DALY enabled:
+HNI_final = HNI * (1 + DALY_weight/100)
+```
 
-## 4. The Value of Sandbox Engine (คุณค่าที่คุณคู่ควร)
-ฟีเจอร์นี้ทำให้ตัววิเคราะห์ไม่ตายตัวอยู่แต่กับฐานข้อมูลปีที่ผ่านมา เพราะผู้บริหารระดับสูงสามารถจัด Workshop แบบ **"What-If Analysis"** ได้ทันที เช่น:
-1. "ถ้าอีก 5 ปี ผู้สูงวัยทะลุ 35%... เราจะต้องจ้างแพทย์เพิ่มกี่คน โควตาวันนี้จะเอาอยู่ไหม?" (Predictive)
-2. "ถ้าฉันดึงหมอผ่าตัดสมองจากรพท.ก ไปรพ.ชุมชนข... Service Plan หน้าจอ รพท.ก จะติดลบจนอัตราตาย Stroke พุ่งไหม?" (Resource Strategy)
+### 4.2 WCI (Capacity, รายสาขา)
+```text
+HeadcountRate = (Headcount_specialty / Population) * 10,000
+CapacityScore = (HeadcountRate / StandardRate_by_level) * 100
+FTE_available = Headcount_specialty * FTE_factor
+LoadPressure = ActualWorkload / StandardWorkload
+AdjWCI_specialty = CapacityScore * (FTE_available / Headcount_specialty) / LoadPressure
+```
+
+### 4.3 Gap
+```text
+Gap_specialty = HNI_disease_specific - AdjWCI_specialty
+```
+
+### 4.4 สูตรแปลงเป็น “จำนวนที่ต้องเพิ่ม”
+```text
+Need_FTE = ActualWorkload / Productivity_per_FTE
+Deficit_FTE = max(0, Need_FTE - Available_FTE)
+Suggested_Headcount = ceil(Deficit_FTE / Avg_FTE_per_person)
+```
+
+> ถ้าไม่มี Workload/FTE ให้แสดงผลเป็น `Scenario Headcount` เท่านั้น และติดธงความเชื่อมั่นปานกลาง
+
+---
+
+## 5) Decision Rules (NCO Matrix)
+1. **Gap สูง + Outcome แย่** -> เพิ่มคนเร่งด่วน + ปรับ process
+2. **Gap สูง + Outcome ดี** -> เพิ่มคนเชิงป้องกัน (preventive staffing)
+3. **Gap ต่ำ + Outcome แย่** -> ไม่เน้นเพิ่มคน ให้ปรับ protocol/skill mix/equipment
+4. **Gap ต่ำ + Outcome ดี** -> รักษาระดับ และ benchmark
+5. **Data Quality fail** -> ทุกข้อเสนอเป็น `provisional`
+
+---
+
+## 6) Output Spec ที่ระบบต้องส่งออก
+- Risk level: `red/yellow/green`
+- ข้อเสนอรายสาขา:
+  - แพทย์เฉพาะทาง `+N`
+  - พยาบาลเฉพาะทาง `+N`
+  - Process action ที่ต้องทำทันที
+- Confidence score: `high/medium/low` (ขึ้นกับ Data Quality + ความครบ workload/FTE)
+- Assumptions log: สมมติฐานที่ใช้คำนวณ
+
+---
+
+## 7) Data Gap ที่ยังต้องเติมเพื่อความแม่นยำสูง
+- วุฒิเฉพาะทางแพทย์จริง (แพทยสภา)
+- FTE จริงรายบุคคล/หน่วยงาน
+- Workload รายหน่วยบริการ (OPD/IPD/ER/OR/ICU)
+- Coverage เวรนอกเวลาและ on-call burden
+- Service readiness (เครื่องมือ/เตียงเฉพาะทาง)
+
+> สถานะปัจจุบัน: ระบบพร้อมสำหรับ Scenario planning และ workshop เชิงนโยบาย แต่ถ้าจะใช้เพื่ออนุมัติอัตราถาวรต้องเติม FTE + workload + specialty registry ให้ครบ

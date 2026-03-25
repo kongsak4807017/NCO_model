@@ -19,6 +19,8 @@
 ### 3. ไฟล์เอกสารประกอบ (Documentation)
 *   `recommendation_guide.md`: คู่มือข้อเสนอแนะเชิงนโยบาย
 *   `health_metrics_analysis_report.md`: รายงานการวิเคราะห์ตัวชี้วัดสุขภาพ
+*   `MockingHospitalPlan.md`: แผน sandbox ฉบับใช้งานจริง (Data Quality gate + FTE/Workload + สูตรแปลงจำนวนอัตรา)
+*   `NCO_INDICATOR_STANDARD.md`: มาตรฐานนิยามตัวชี้วัดกลาง (canonical thresholds)
 
 ---
 

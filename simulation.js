@@ -21,18 +21,18 @@ const HOSP_CONFIG = {
 
 // Specialty mapping
 const SPECIALTY_MAP = {
-  'DH0101': { name:'STEMI Mortality', threshold:12, dir:'low', doc:'อายุรแพทย์หัวใจ Interventional', nurse:'พยาบาล CCU / Cath Lab' },
-  'DH0102': { name:'AMI Mortality', threshold:10, dir:'low', doc:'อายุรแพทย์หัวใจ', nurse:'พยาบาล CCU' },
-  'DN0101': { name:'Stroke Mortality', threshold:15, dir:'low', doc:'อายุรแพทย์ประสาท', nurse:'พยาบาล Stroke Unit' },
-  'DN0142': { name:'Ischemic Stroke ได้ rtPA', threshold:5, dir:'high', doc:'อายุรแพทย์ประสาท + ER', nurse:'พยาบาล ER / Stroke Fast Track' },
-  'CI0101': { name:'Sepsis Mortality', threshold:30, dir:'low', doc:'อายุรแพทย์โรคติดเชื้อ', nurse:'พยาบาล ICU' },
-  'PE0102': { name:'Pneumonia เด็ก Mortality', threshold:3, dir:'low', doc:'กุมารแพทย์ระบบหายใจ', nurse:'พยาบาล PICU' },
-  'CM0203': { name:'Neonatal Mortality', threshold:10, dir:'low', doc:'กุมารแพทย์ทารกแรกเกิด', nurse:'พยาบาล NICU' },
-  'CM0101': { name:'Maternal Mortality', threshold:70, dir:'low', doc:'สูตินรีแพทย์', nurse:'พยาบาลห้องคลอด' },
-  'DC0401': { name:'มะเร็ง Mortality', threshold:15, dir:'low', doc:'อายุรแพทย์มะเร็ง', nurse:'พยาบาลเคมีบำบัด' },
-  'DG0201': { name:'ไส้ติ่งทะลุ', threshold:30, dir:'low', doc:'ศัลยแพทย์ทั่วไป', nurse:'พยาบาล ER / OR' },
-  'PS0001': { name:'อัตราฆ่าตัวตาย', threshold:5, dir:'low', doc:'จิตแพทย์', nurse:'พยาบาลจิตเวช' },
-  'RH0101': { name:'Stroke ได้กายภาพ', threshold:50, dir:'high', doc:'แพทย์เวชศาสตร์ฟื้นฟู', nurse:'นักกายภาพบำบัด' },
+  'DH0101': { name:'STEMI Mortality', threshold:12, dir:'low', unit:'%', doc:'อายุรแพทย์หัวใจ Interventional', nurse:'พยาบาล CCU / Cath Lab', baseDoc:1, baseNurse:2, process:'ทบทวน Door-to-Needle / Door-to-Balloon time' },
+  'DH0102': { name:'AMI Mortality', threshold:10, dir:'low', unit:'%', doc:'อายุรแพทย์หัวใจ', nurse:'พยาบาล CCU', baseDoc:1, baseNurse:2, process:'จัดทำ STEMI fast track 24/7' },
+  'DN0101': { name:'Stroke Mortality', threshold:15, dir:'low', unit:'%', doc:'อายุรแพทย์ประสาท', nurse:'พยาบาล Stroke Unit', baseDoc:1, baseNurse:2, process:'ลด Door-to-CT / Door-to-Needle' },
+  'DN0142': { name:'Ischemic Stroke ได้ rtPA', threshold:5, dir:'high', unit:'%', doc:'อายุรแพทย์ประสาท + ER', nurse:'พยาบาล ER / Stroke Fast Track', baseDoc:1, baseNurse:2, process:'ปรับระบบคัดกรอง stroke เร่งด่วน' },
+  'CI0101': { name:'Sepsis Mortality', threshold:20, dir:'low', unit:'%', doc:'อายุรแพทย์โรคติดเชื้อ', nurse:'พยาบาล ICU', baseDoc:1, baseNurse:3, process:'ใช้ Sepsis 1-hour bundle และ early warning score' },
+  'PE0102': { name:'Pneumonia เด็ก Mortality', threshold:3, dir:'low', unit:'%', doc:'กุมารแพทย์ระบบหายใจ', nurse:'พยาบาล PICU', baseDoc:1, baseNurse:2, process:'ปรับ pediatric sepsis/pneumonia pathway' },
+  'CM0203': { name:'Neonatal Mortality', threshold:10, dir:'low', unit:'/1000', doc:'กุมารแพทย์ทารกแรกเกิด', nurse:'พยาบาล NICU', baseDoc:1, baseNurse:3, process:'เพิ่มคุณภาพการดูแลทารกวิกฤติและ refer-in protocol' },
+  'CM0101': { name:'Maternal Mortality', threshold:70, dir:'low', unit:'/100k', doc:'สูตินรีแพทย์', nurse:'พยาบาลห้องคลอด', baseDoc:1, baseNurse:2, process:'ทบทวน high-risk ANC และ obstetric emergency drill' },
+  'DC0401': { name:'มะเร็ง Mortality', threshold:15, dir:'low', unit:'%', doc:'อายุรแพทย์มะเร็ง', nurse:'พยาบาลเคมีบำบัด', baseDoc:1, baseNurse:2, process:'ลด delay ใน diagnosis-to-treatment interval' },
+  'DG0201': { name:'ไส้ติ่งทะลุ', threshold:30, dir:'low', unit:'%', doc:'ศัลยแพทย์ทั่วไป', nurse:'พยาบาล ER / OR', baseDoc:1, baseNurse:2, process:'ทบทวน triage และเวลารอผ่าตัด' },
+  'PS0001': { name:'อัตราฆ่าตัวตาย', threshold:5, dir:'low', unit:'/100k', doc:'จิตแพทย์', nurse:'พยาบาลจิตเวช', baseDoc:1, baseNurse:2, process:'ขยายระบบคัดกรองซึมเศร้า/ฆ่าตัวตายเชิงรุก' },
+  'RH0101': { name:'Stroke ได้กายภาพ', threshold:50, dir:'high', unit:'%', doc:'แพทย์เวชศาสตร์ฟื้นฟู', nurse:'นักกายภาพบำบัด', baseDoc:1, baseNurse:2, process:'เพิ่ม early rehab protocol ใน ward/ICU' },
 };
 
 // ========== Province Prevalence Data (HDC Reference) ==========
@@ -156,6 +156,68 @@ function getIndicatorValue(hosp, code, colPattern) {
 
 function sumObj(obj) { return obj ? Object.values(obj).reduce((a,b) => a + (parseFloat(b)||0), 0) : 0; }
 
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
+function getMetricStatus(item, val) {
+  if (val === null || Number.isNaN(val)) return { status:'', isBad:false, unitHint:'ข้อมูลไม่พอ' };
+  if (item.goodDir === 'low') {
+    const isBad = val > item.threshold;
+    return { status:isBad ? 'bad' : 'good', isBad, unitHint:`น้อย=ดี | เกณฑ์: < ${item.threshold}` };
+  }
+  if (item.goodDir === 'high') {
+    const isBad = val < item.threshold;
+    return { status:isBad ? 'warn' : 'good', isBad, unitHint:`มาก=ดี | เกณฑ์: > ${item.threshold}` };
+  }
+  if (item.goodDir === 'range') {
+    const min = item.threshold[0];
+    const max = item.threshold[1];
+    const inRange = val >= min && val <= max;
+    return { status:inRange ? 'good' : 'warn', isBad:!inRange, unitHint:`ช่วงเหมาะสม=${min}-${max}` };
+  }
+  return { status:'', isBad:false, unitHint:'' };
+}
+
+function formatThreshold(spec) {
+  const unit = spec.unit || '';
+  return spec.dir === 'low'
+    ? `< ${spec.threshold}${unit}`
+    : `> ${spec.threshold}${unit}`;
+}
+
+function formatMetricValue(val, unit) {
+  if (val === null || Number.isNaN(val)) return 'N/A';
+  return `${val.toFixed(2)}${unit || ''}`;
+}
+
+function computeSpecialtyDemand(spec, numVal, gapLevel) {
+  let severity = 0;
+  if (spec.dir === 'low') {
+    severity = (numVal - spec.threshold) / spec.threshold;
+  } else if (spec.dir === 'high') {
+    severity = (spec.threshold - numVal) / spec.threshold;
+  }
+  severity = Math.max(0, severity);
+  const issue = severity > 0;
+  if (!issue) {
+    return { issue:false, severity:0, addDoc:0, addNurse:0 };
+  }
+
+  const shortageFactor = gapLevel === 'red' ? 1.0 : gapLevel === 'yellow' ? 0.7 : 0.35;
+  const severityFactor = 1 + clamp(severity, 0, 2);
+  let addDoc = Math.ceil((spec.baseDoc || 1) * severityFactor * shortageFactor);
+  let addNurse = Math.ceil((spec.baseNurse || 2) * severityFactor * shortageFactor);
+
+  // ถ้า Gap ต่ำ ให้เน้น process ก่อน เว้นแต่ตัวชี้วัดวิกฤติจริง
+  if (gapLevel === 'green' && severity < 0.40) {
+    addDoc = 0;
+    addNurse = 0;
+  }
+
+  return { issue:true, severity, addDoc, addNurse };
+}
+
 // ========== Step Navigation ==========
 function buildStepDots() {
   const c = document.getElementById('stepsIndicator');
@@ -247,15 +309,16 @@ function renderStep1() {
   let allPass = true;
   gCodes.forEach((code, i) => {
     const val = getIndicatorValue(selectedHospital, code);
-    const numVal = parseFloat(val) || 0;
-    const pass = numVal <= gThresholds[i];
+    const hasVal = val !== null && !Number.isNaN(parseFloat(val));
+    const numVal = hasVal ? parseFloat(val) : NaN;
+    const pass = hasVal && numVal <= gThresholds[i];
     if (!pass) allPass = false;
     
     const card = document.createElement('div');
     card.className = `metric-card ${pass ? 'good' : 'bad'}`;
     card.innerHTML = `
       <div class="label">${code}: ${gNames[i]}</div>
-      <div class="value" style="color:${pass?'var(--green)':'var(--red)'}">${val !== null ? numVal.toFixed(2)+'%' : 'N/A'}</div>
+      <div class="value" style="color:${pass?'var(--green)':'var(--red)'}">${hasVal ? numVal.toFixed(2)+'%' : 'N/A'}</div>
       <div class="unit">เกณฑ์: < ${gThresholds[i]}% | ${pass ? '✓ ผ่าน' : '✗ ไม่ผ่าน'}</div>
     `;
     grid.appendChild(card);
@@ -275,6 +338,7 @@ function renderStep1() {
   verdict.innerHTML = allPass
     ? `<strong>${selectedHospital}</strong>: คุณภาพข้อมูลดี → ข้อมูล Performance เชื่อถือได้`
     : `<strong>${selectedHospital}</strong>: มีบางตัวชี้วัดไม่ผ่าน → ตีความ Performance ด้วยความระวัง`;
+  window._dqPass = allPass;
 }
 
 // ========== Step 2: Health Need ==========
@@ -466,8 +530,8 @@ function renderStep4() {
     <h3>Decision Matrix: Gap × Outcome</h3>
     <div class="matrix-grid">
       <div class="matrix-cell matrix-header"></div>
-      <div class="matrix-cell matrix-header">Outcome ดี (A01 ต่ำ)</div>
-      <div class="matrix-cell matrix-header">Outcome แย่ (A01 สูง)</div>
+      <div class="matrix-cell matrix-header">Outcome ดี (Composite)</div>
+      <div class="matrix-cell matrix-header">Outcome แย่ (Composite)</div>
       <div class="matrix-cell matrix-header">Gap สูง (คนน้อย)</div>
       <div class="matrix-cell matrix-orange ${isHighGap?'':''}">⚡ ระวัง — เพิ่มคนเชิงป้องกัน</div>
       <div class="matrix-cell matrix-red ${isHighGap?'':''}">🔴 วิกฤติ — เพิ่มคนทันที</div>
@@ -487,38 +551,44 @@ function renderStep5() {
   const perfItems = [
     { code:'A01', name:'Crude Death Rate', unit:'%', goodDir:'low', threshold:3.5 },
     { code:'A04', name:'AMI Mortality', unit:'%', goodDir:'low', threshold:8 },
-    { code:'A08', name:'Re-Admission 28d', unit:'%', goodDir:'low', threshold:5 },
-    { code:'A09', name:'Sepsis Mortality', unit:'%', goodDir:'low', threshold:30 },
+    { code:'A09', name:'Sepsis Mortality', unit:'%', goodDir:'low', threshold:20 },
     { code:'B01', name:'Maternal Mortality', unit:'/100k', goodDir:'low', threshold:70 },
     { code:'C02', name:'CMI', unit:'AdjRW', goodDir:'high', threshold:1.5 },
+    { code:'D01', name:'Bed Occupancy Rate', unit:'%', goodDir:'range', threshold:[80,85] },
+    { code:'F10', name:'Referral Leakage to Tertiary', unit:'%', goodDir:'low', threshold:15 },
   ];
   
   let outcomeGood = true;
+  let measuredCount = 0;
   perfItems.forEach(item => {
-    const val = getIndicatorValue(selectedHospital, item.code);
-    let status = 'good';
-    if (val !== null) {
-      if (item.goodDir === 'low' && val > item.threshold) { status = 'bad'; outcomeGood = false; }
-      if (item.goodDir === 'high' && val < item.threshold) { status = 'warn'; }
-    }
+    const rawVal = getIndicatorValue(selectedHospital, item.code);
+    const val = rawVal === null ? null : parseFloat(rawVal);
+    if (val !== null && !Number.isNaN(val)) measuredCount++;
+    const metric = getMetricStatus(item, val);
+    if (metric.isBad) outcomeGood = false;
     
     const card = document.createElement('div');
-    card.className = `metric-card ${val !== null ? status : ''}`;
+    card.className = `metric-card ${val !== null && !Number.isNaN(val) ? metric.status : ''}`;
     card.innerHTML = `
       <div class="label">${item.code}: ${item.name}</div>
-      <div class="value" style="color:${status==='bad'?'var(--red)':status==='warn'?'var(--yellow)':'var(--green)'}">${val !== null ? (typeof val==='number'?val.toFixed(2):val) : 'N/A'}</div>
-      <div class="unit">${item.unit} | ${item.goodDir==='low'?'น้อย=ดี':'มาก=ดี'} | เกณฑ์: ${item.goodDir==='low'?'<':'>'} ${item.threshold}</div>
+      <div class="value" style="color:${metric.status==='bad'?'var(--red)':metric.status==='warn'?'var(--yellow)':'var(--green)'}">${formatMetricValue(val, item.unit)}</div>
+      <div class="unit">${item.unit} | ${metric.unitHint}</div>
     `;
     grid.appendChild(card);
   });
-  
+
+  if (measuredCount === 0) outcomeGood = false;
   window._outcomeGood = outcomeGood;
+  window._outcomeDataCount = measuredCount;
   
   // Cross-validate with Gap
   const gapLevel = window._gapLevel || 'green';
   const verdict = document.getElementById('perfVerdict');
   
-  if (gapLevel === 'red' && !outcomeGood) {
+  if (measuredCount === 0) {
+    verdict.className = 'step-verdict yellow';
+    verdict.innerHTML = '⚠ <strong>ข้อมูล Outcome ไม่พอ:</strong> ยังประเมินขั้นยืนยันเชิงผลลัพธ์ไม่ได้ครบ ควรนำเข้า A-H เพิ่มเติมก่อนตัดสินใจเชิงนโยบาย';
+  } else if (gapLevel === 'red' && !outcomeGood) {
     verdict.className = 'step-verdict red';
     verdict.innerHTML = '🔴 <strong>วิกฤติ:</strong> Gap สูง + Outcome แย่ → ต้องเพิ่มอัตรากำลังเร่งด่วน + ปรับ Protocol';
   } else if (gapLevel !== 'green' && outcomeGood) {
@@ -537,6 +607,7 @@ function renderStep5() {
 function renderStep6() {
   const container = document.getElementById('spIssues');
   container.innerHTML = '<h3 style="margin-bottom:16px">ตัวชี้วัด Service Plan ที่ต้องเฝ้าระวัง</h3>';
+  const gapLevel = window._gapLevel || 'green';
   
   let issueCount = 0;
   Object.entries(SPECIALTY_MAP).forEach(([code, spec]) => {
@@ -555,15 +626,16 @@ function renderStep6() {
     div.innerHTML = `
       <div class="issue-head">
         <span class="issue-name">${code}: ${spec.name}</span>
-        <span class="issue-val ${isIssue?'bad':'warn'}">${numVal.toFixed(2)}${spec.dir==='low'?'%':''}</span>
+        <span class="issue-val ${isIssue?'bad':'warn'}">${formatMetricValue(numVal, spec.unit)}</span>
       </div>
       <div style="font-size:12px;color:var(--text2);margin-bottom:6px">
-        เกณฑ์: ${spec.dir==='low'?'< '+spec.threshold+'%':'> '+spec.threshold+'%'} | 
+        เกณฑ์: ${formatThreshold(spec)} | 
         สถานะ: ${isIssue?'<span style="color:var(--red)">ไม่ผ่าน</span>':'<span style="color:var(--green)">ผ่าน</span>'}
       </div>
       ${isIssue ? `<div>
         <span class="specialty-tag">แพทย์: ${spec.doc}</span>
         <span class="specialty-tag">พยาบาล: ${spec.nurse}</span>
+        <span class="specialty-tag">${gapLevel === 'green' ? 'โฟกัส Process เป็นลำดับแรก' : 'พิจารณาเพิ่มอัตรากำลังร่วมด้วย'}</span>
       </div>` : ''}
     `;
     container.appendChild(div);
@@ -584,6 +656,8 @@ function renderStep7() {
   
   const gapLevel = window._gapLevel || 'green';
   const outcomeGood = window._outcomeGood !== false;
+  const outcomeDataCount = window._outcomeDataCount || 0;
+  const dqPass = window._dqPass !== false;
   const issueCount = window._issueCount || 0;
   const h = HOSPITALS[selectedHospital];
   const pop = h.population?.['ประชากรรวม'] || 0;
@@ -592,7 +666,13 @@ function renderStep7() {
   
   // Main recommendation
   let mainType, mainTitle, mainDesc;
-  if (gapLevel === 'red' && !outcomeGood) {
+  if (!dqPass) {
+    mainType = 'process'; mainTitle = '⚠ ปรับคุณภาพข้อมูลก่อนอนุมัติอัตรากำลัง';
+    mainDesc = `${selectedHospital} มีตัวชี้วัด G01-G04 บางรายการไม่ผ่านเกณฑ์ จึงควรถือผลแนะนำนี้เป็น provisional และเร่งปรับ ICD/Data quality ควบคู่ไปก่อน`;
+  } else if (outcomeDataCount < 3) {
+    mainType = 'process'; mainTitle = '⚠ Outcome Data ยังไม่เพียงพอ';
+    mainDesc = `${selectedHospital} มีข้อมูล Outcome ที่ใช้ยืนยันน้อยกว่า 3 ตัวชี้วัด จึงควรเติมข้อมูล A-H ก่อนสรุปแผนกำลังคนแบบถาวร`;
+  } else if (gapLevel === 'red' && !outcomeGood) {
     mainType = 'urgent'; mainTitle = '🔴 เพิ่มอัตรากำลัง + ปรับกระบวนการ (เร่งด่วน)';
     mainDesc = `${selectedHospital} มี Gap สูง (ภาระมาก คนน้อย) และ Outcome ไม่ดี → ต้องดำเนินการทั้งเพิ่มบุคลากรและทบทวน Protocol`;
   } else if (gapLevel !== 'green' && outcomeGood) {
@@ -620,14 +700,20 @@ function renderStep7() {
       let isIssue = (spec.dir === 'low' && numVal > spec.threshold) || (spec.dir === 'high' && numVal < spec.threshold);
       if (!isIssue) return;
       
-      container.innerHTML += `<div class="rec-card urgent"><h4>${code}: ${spec.name} = ${numVal.toFixed(2)}</h4>
-        <p>เกินเกณฑ์ (${spec.dir==='low'?'< '+spec.threshold:'> '+spec.threshold}) → ต้องการ:</p>
-        <div class="rec-tags"><span class="rec-tag">${spec.doc}</span><span class="rec-tag">${spec.nurse}</span></div></div>`;
+      const demand = computeSpecialtyDemand(spec, numVal, gapLevel);
+      const docTag = demand.addDoc > 0 ? `${spec.doc} (+${demand.addDoc})` : `${spec.doc} (คงอัตรา)`;
+      const nurseTag = demand.addNurse > 0 ? `${spec.nurse} (+${demand.addNurse})` : `${spec.nurse} (คงอัตรา)`;
+      const modeTag = (demand.addDoc > 0 || demand.addNurse > 0) ? 'แนวทาง: เพิ่มคน + ปรับ process' : 'แนวทาง: ปรับ process ก่อนเพิ่มคน';
+
+      container.innerHTML += `<div class="rec-card urgent"><h4>${code}: ${spec.name} = ${formatMetricValue(numVal, spec.unit)}</h4>
+        <p>เกินเกณฑ์ (${formatThreshold(spec)}) → ต้องการ:</p>
+        <div class="rec-tags"><span class="rec-tag">${docTag}</span><span class="rec-tag">${nurseTag}</span><span class="rec-tag">${modeTag}</span></div>
+        <p style="margin-top:8px">ข้อเสนอเชิงกระบวนการ: ${spec.process}</p></div>`;
     });
   }
   
   // Data quality note
-  container.innerHTML += `<div class="rec-card"><h4>ข้อควรระวัง</h4><p>• HNI ใช้ Mock Data สำหรับ Chronic/Mental → ค่าเป็นเพียงตัวอย่าง<br>• ข้อมูล CMI เป็นปีงบประมาณ 2569 จาก CMI Web เขตสุขภาพที่ 1<br>• ข้อมูลเฉพาะทางแพทย์ยังไม่มี → ต้องนำเข้าจากแพทยสภา</p></div>`;
+  container.innerHTML += `<div class="rec-card"><h4>ข้อควรระวัง</h4><p>• HNI ใช้ Mock Data สำหรับ Chronic/Mental → ค่าเป็นเพียงตัวอย่าง<br>• ข้อมูล CMI เป็นปีงบประมาณ 2569 จาก CMI Web เขตสุขภาพที่ 1<br>• ข้อมูลเฉพาะทางแพทย์ยังไม่มี → ต้องนำเข้าจากแพทยสภา<br>• จำนวนที่แนะนำเป็น Scenario ระดับ Headcount (ไม่ใช่ FTE) ควรตรวจ workload OPD/IPD/ER ก่อนอนุมัติจริง</p></div>`;
 }
 
 // ========== Event Listeners ==========
