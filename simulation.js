@@ -9,6 +9,7 @@ const TOTAL_STEPS = 8;
 
 // ========== Hospital Config ==========
 const HOSP_CONFIG = {
+  'สร้าง Mocking Hospital': { province:'Sandbox', level:'Mocking', color:'#22d3ee' },
   'นครพิงค์': { province:'เชียงใหม่', level:'A (รพศ.)', color:'#6366f1' },
   'ลำปาง': { province:'ลำปาง', level:'A (รพท.)', color:'#8b5cf6' },
   'เชียงรายประชานุเคราะห์': { province:'เชียงราย', level:'A (รพศ.)', color:'#a78bfa' },
@@ -18,6 +19,7 @@ const HOSP_CONFIG = {
   'ลำพูน': { province:'ลำพูน', level:'S (รพท.)', color:'#f97316' },
   'เชียงคำ': { province:'เชียงราย', level:'M1 (รพท.)', color:'#ec4899' },
 };
+const MOCK_HOSPITAL_NAME = 'สร้าง Mocking Hospital';
 
 // Specialty mapping
 const SPECIALTY_MAP = {
@@ -156,6 +158,21 @@ function getIndicatorValue(hosp, code, colPattern) {
 
 function sumObj(obj) { return obj ? Object.values(obj).reduce((a,b) => a + (parseFloat(b)||0), 0) : 0; }
 
+function createEmptyHospitalProfile() {
+  return {
+    population: { 'ประชากรรวม':0, 'ประชากรชาย':0, 'ประชากรหญิง':0 },
+    workforce: { doctors:{}, nurses:{}, pharma:{} },
+    hni: {},
+    cmi: {},
+    indicators: {},
+  };
+}
+
+function ensureHospitalData(name) {
+  if (!HOSPITALS[name]) HOSPITALS[name] = createEmptyHospitalProfile();
+  return HOSPITALS[name];
+}
+
 function clamp(val, min, max) {
   return Math.max(min, Math.min(max, val));
 }
@@ -269,7 +286,8 @@ function renderStep0() {
   grid.innerHTML = '';
   
   Object.keys(HOSP_CONFIG).forEach(name => {
-    const h = HOSPITALS[name] || {};
+    const h = ensureHospitalData(name);
+    const isMock = name === MOCK_HOSPITAL_NAME;
     const pop = h.population?.['ประชากรรวม'] || '-';
     const docs = h.workforce?.doctors?.['นายแพทย์'] || 0;
     const nurses = (h.workforce?.nurses?.['พยาบาลวิชาชีพ'] || 0) + (h.workforce?.nurses?.['พยาบาลวิชาชีพ/นักวิชาการสาธารณสุข'] || 0);
@@ -277,16 +295,27 @@ function renderStep0() {
     const cfg = HOSP_CONFIG[name];
     
     const card = document.createElement('div');
-    card.className = 'hospital-card' + (selectedHospital === name ? ' selected' : '');
-    card.innerHTML = `
-      <div class="name" style="color:${cfg.color}">${name}</div>
-      <div class="pop">${cfg.province} | ${cfg.level} | ปชก. ${pop.toLocaleString?.()?pop.toLocaleString():pop}</div>
-      <div class="staff">
-        <span title="(นับเฉพาะกลุ่ม นายแพทย์)">แพทย์ ${docs}</span>
-        <span title="(นับเฉพาะกลุ่ม พยาบาลวิชาชีพ และ นักวิชาการฯ)">พยาบาล ${nurses}</span>
-        <span>เภสัช ${pharma}</span>
-      </div>
-    `;
+    card.className = 'hospital-card' + (selectedHospital === name ? ' selected' : '') + (isMock ? ' mock-hospital' : '');
+    if (isMock) {
+      card.innerHTML = `
+        <div class="name" style="color:${cfg.color}">+ ${name}</div>
+        <div class="pop">${cfg.province} | ${cfg.level} | ตั้งค่าข้อมูลจำลองเอง</div>
+        <div class="staff">
+          <span>Sandbox Mode</span>
+          <span>What-if Analysis</span>
+        </div>
+      `;
+    } else {
+      card.innerHTML = `
+        <div class="name" style="color:${cfg.color}">${name}</div>
+        <div class="pop">${cfg.province} | ${cfg.level} | ปชก. ${pop.toLocaleString?.()?pop.toLocaleString():pop}</div>
+        <div class="staff">
+          <span title="(นับเฉพาะกลุ่ม นายแพทย์)">แพทย์ ${docs}</span>
+          <span title="(นับเฉพาะกลุ่ม พยาบาลวิชาชีพ และ นักวิชาการฯ)">พยาบาล ${nurses}</span>
+          <span>เภสัช ${pharma}</span>
+        </div>
+      `;
+    }
     card.onclick = () => {
       selectedHospital = name;
       document.querySelectorAll('.hospital-card').forEach(c => c.classList.remove('selected'));

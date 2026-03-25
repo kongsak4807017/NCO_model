@@ -111,6 +111,15 @@ body {
 }
 .hospital-card:hover { border-color:var(--accent); transform:translateY(-2px); box-shadow:var(--glow); }
 .hospital-card.selected { border-color:var(--accent); background:rgba(99,102,241,0.08); box-shadow:var(--glow); }
+.hospital-card.mock-hospital {
+  border-style:dashed;
+  border-color:rgba(34,211,238,0.45);
+  background:linear-gradient(135deg, rgba(34,211,238,0.09), rgba(99,102,241,0.08));
+}
+.hospital-card.mock-hospital:hover {
+  border-color:#22d3ee;
+  box-shadow:0 0 0 1px rgba(34,211,238,0.35), 0 10px 28px rgba(34,211,238,0.15);
+}
 .hospital-card .name { font-size:15px; font-weight:600; margin-bottom:6px; }
 .hospital-card .pop { font-size:13px; color:var(--text2); }
 .hospital-card .staff { display:flex; gap:12px; margin-top:10px; flex-wrap:wrap; }
