@@ -209,8 +209,8 @@ function renderStep0() {
   Object.keys(HOSP_CONFIG).forEach(name => {
     const h = HOSPITALS[name] || {};
     const pop = h.population?.['ประชากรรวม'] || '-';
-    const docs = sumObj(h.workforce?.doctors);
-    const nurses = sumObj(h.workforce?.nurses);
+    const docs = h.workforce?.doctors?.['นายแพทย์'] || 0;
+    const nurses = (h.workforce?.nurses?.['พยาบาลวิชาชีพ'] || 0) + (h.workforce?.nurses?.['พยาบาลวิชาชีพ/นักวิชาการสาธารณสุข'] || 0);
     const pharma = sumObj(h.workforce?.pharma);
     const cfg = HOSP_CONFIG[name];
     
@@ -390,8 +390,8 @@ function computeHNI() {
 function renderStep3() {
   const h = HOSPITALS[selectedHospital];
   const pop = h.population?.['ประชากรรวม'] || 1;
-  const docs = sumObj(h.workforce?.doctors);
-  const nurses = sumObj(h.workforce?.nurses);
+  const docs = h.workforce?.doctors?.['นายแพทย์'] || 0;
+  const nurses = (h.workforce?.nurses?.['พยาบาลวิชาชีพ'] || 0) + (h.workforce?.nurses?.['พยาบาลวิชาชีพ/นักวิชาการสาธารณสุข'] || 0);
   const pharma = sumObj(h.workforce?.pharma);
   
   const grid = document.getElementById('wfMetrics');
