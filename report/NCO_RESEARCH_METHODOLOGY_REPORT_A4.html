@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>รายงานระเบียบวิธีวิจัย NCO Research Methodology</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
+        :root { --moph-green:#006B3E; --text-black:#202124; --bg-white:#ffffff; }
+        body { font-family:'Sarabun',sans-serif; background-color:#f0f0f0; margin:0; padding:0; color:var(--text-black); line-height:1.4; }
+        .page { width:210mm; height:297mm; min-height:297mm; max-height:297mm; padding:12mm 18mm 15mm 18mm; margin:10mm auto; background:var(--bg-white); box-shadow:0 0 10px rgba(0,0,0,0.1); position:relative; overflow:hidden; box-sizing:border-box; }
+        h1 { font-size:20px; color:var(--moph-green); border-left:6px solid var(--moph-green); padding-left:12px; margin:12px 0 10px 0; }
+        h2 { font-size:17px; color:var(--moph-green); border-bottom:1px solid #ddd; padding-bottom:4px; margin-top:12px; margin-bottom:8px; }
+        h3 { font-size:15px; color:var(--moph-green); margin-top:10px; margin-bottom:6px; }
+        p { margin:0 0 5px 0; text-align:justify; line-height:1.35; font-size:12.2px; }
+        .summary-box { background-color:#e8f5e9; border-left:4px solid var(--moph-green); padding:8px 10px; margin:8px 0; }
+        .info-box { background-color:#e3f2fd; border-left:4px solid #2196f3; padding:8px 10px; margin:8px 0; }
+        .warning-box { background-color:#fff3e0; border-left:4px solid #ff9800; padding:8px 10px; margin:8px 0; }
+        .model-box { background-color:#f3e5f5; border:2px solid #9c27b0; border-radius:6px; padding:8px 10px; margin:8px 0; }
+        table { width:100%; border-collapse:collapse; margin:8px 0; font-size:11.2px; }
+        th { background-color:var(--moph-green); color:white; padding:5px 6px; text-align:left; border:1px solid #ddd; font-size:11.2px; }
+        td { padding:4px 6px; border:1px solid #ddd; vertical-align:top; font-size:11.2px; }
+        tr:nth-child(even) { background-color:#f9f9f9; }
+        ul, ol { margin:5px 0; padding-left:18px; }
+        li { margin-bottom:3px; line-height:1.3; font-size:12px; }
+        .header { border-bottom:3px solid var(--moph-green); padding-bottom:9px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:flex-end; }
+        .header-title { color:var(--moph-green); font-size:21px; font-weight:bold; margin:0; }
+        .header-date { font-size:13px; color:#666; margin:0; }
+        .footer { position:absolute; bottom:8mm; left:20mm; right:20mm; border-top:1px solid #ddd; padding-top:5px; font-size:11px; color:#999; text-align:center; }
+        .export-btn { position:fixed; top:20px; right:20px; background-color:var(--moph-green); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-family:'Sarabun',sans-serif; font-size:14px; z-index:1000; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+        .export-btn:hover { background-color:#004d2e; }
+        .export-btn-pdf { position:fixed; top:20px; right:200px; background-color:#d32f2f; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-family:'Sarabun',sans-serif; font-size:14px; z-index:1000; box-shadow:0 2px 5px rgba(0,0,0,0.2); }
+        .export-btn-pdf:hover { background-color:#b71c1c; }
+        .page-export-btn { position:absolute; top:10mm; right:20mm; background-color:#ff9800; color:white; border:none; padding:5px 15px; border-radius:3px; cursor:pointer; font-family:'Sarabun',sans-serif; font-size:12px; z-index:100; }
+        .page-export-btn-pdf { position:absolute; top:10mm; right:55mm; background-color:#d32f2f; color:white; border:none; padding:5px 15px; border-radius:3px; cursor:pointer; font-family:'Sarabun',sans-serif; font-size:12px; z-index:100; }
+        .cover-title { font-size:24px; color:var(--moph-green); font-weight:700; line-height:1.3; margin:14px 0 8px 0; }
+        .cover-subtitle { font-size:15px; color:#4f5b62; line-height:1.45; margin-bottom:10px; }
+        .meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0; }
+        .meta-card { border:1px solid #cfd8dc; border-radius:6px; padding:8px 10px; background:#fafafa; }
+        .meta-card strong { display:block; color:var(--moph-green); margin-bottom:3px; font-size:12px; }
+        .two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .mini { font-size:11px; line-height:1.28; }
+        .tight li { margin-bottom:2px; }
+        .caption { font-size:11px; color:#607d8b; margin-top:3px; }
+        .ref-list li { font-size:11.2px; margin-bottom:2px; line-height:1.28; }
+        @media print {
+            body { background:none; }
+            .page { margin:0; box-shadow:none; page-break-after:always; }
+            .export-btn, .export-btn-pdf, .page-export-btn, .page-export-btn-pdf { display:none !important; }
+        }
+    </style>
+</head>
+<body>
+    <button class="export-btn" onclick="exportAllPages()">Export ทุกหน้าเป็น PNG</button>
+    <button class="export-btn-pdf" onclick="exportAllPagesPDF()">Export ทุกหน้าเป็น PDF</button>
+
+    <div class="page" id="page1">
+        <button class="page-export-btn" onclick="exportPage('page1', '01_NCO_Methodology_Cover')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page1', '01_NCO_Methodology_Cover')">PDF</button>
+        <div class="header">
+            <p class="header-title">รายงานระเบียบวิธีวิจัย</p>
+            <p class="header-date">วันที่ 7 เมษายน 2569</p>
+        </div>
+        <div class="cover-title">NCO Research Methodology and Calculation Framework</div>
+        <p class="cover-subtitle">เอกสารรายงานฉบับ A4 สำหรับอธิบายหลักการวิเคราะห์ ตัวแปรนำเข้า ขั้นตอนการคำนวณ เหตุผลเชิงสถิติ และฐานอ้างอิงเชิงวิชาการของระบบ NCO/HR Blueprint ตาม implementation ปัจจุบัน</p>
+        <div class="meta-grid">
+            <div class="meta-card"><strong>ผู้เขียน</strong><p>นพ.คงศักดิ์ ชัยชนะ</p></div>
+            <div class="meta-card"><strong>แหล่งข้อมูลต้นฉบับ</strong><p>`report/NCO_RESEARCH_METHODOLOGY.md` และ implementation files ที่เกี่ยวข้อง</p></div>
+            <div class="meta-card"><strong>ขอบเขตรายงาน</strong><p>Data quality, HNI, profession mix, WCI, denominator, workload pressure, Need_FTE, gap, specialty recommendation, confidence scoring</p></div>
+            <div class="meta-card"><strong>สถานะเชิงวิธีวิจัย</strong><p>Hybrid decision-support model ที่ผสาน need, workload, capacity, outcome และ governance</p></div>
+        </div>
+        <div class="summary-box">
+            <p><b>สาระสำคัญ:</b> ระบบนี้ไม่ใช่สูตรจัดอัตรากำลังเชิงกฎหมายโดยตรง และไม่ใช่ WISN เต็มรูปแบบ แต่เป็นโมเดลช่วยตัดสินใจเชิงกำลังคนที่ปรับตามภาระสุขภาพของประชากร ภาระงานบริการจริง ศักยภาพกำลังคน ผลลัพธ์บริการ และความน่าเชื่อถือของข้อมูล เพื่อหลีกเลี่ยงการสรุปปัญหาว่าเกิดจาก “ขาดคน” เพียงสาเหตุเดียว</p>
+        </div>
+        <h1>วัตถุประสงค์และประเด็นหลักของรายงาน</h1>
+        <ol class="tight">
+            <li>อธิบายว่าระบบใช้ข้อมูลใดบ้างและตัวแปรใดมีผลต่อการคำนวณ</li>
+            <li>อธิบายขั้นตอนคำนวณตั้งแต่ data quality gate จนถึง recommendation</li>
+            <li>อธิบายเหตุผลเชิงสถิติและเหตุผลเชิงระบบบริการที่อยู่เบื้องหลังแต่ละสูตร</li>
+            <li>แยกให้ชัดว่าอะไรเป็น external evidence และอะไรเป็น internal provisional benchmark</li>
+        </ol>
+        <div class="info-box">
+            <p><b>กรอบคิดหลัก 5 ชั้น:</b> need-based logic, capacity-based logic, workload-based logic, outcome-based validation และ governance/confidence logic ซึ่งสอดคล้องกับกรอบ structure-process-outcome ของการประเมินคุณภาพบริการสุขภาพ</p>
+        </div>
+        <h2>ขอบเขตการประยุกต์ใช้</h2>
+        <p>รายงานฉบับนี้ใช้สำหรับภาควิธีวิจัย ภาคเครื่องมือ ภาคผนวกเชิงเทคนิค และการชี้แจงที่มาของ recommendation ในระบบ NCO/HR Blueprint โดยเน้น calculation path ที่ระบบใช้งานจริง ไม่ได้เสนอการ refactor architecture หรือเปลี่ยนแหล่งข้อมูลนอกขอบเขต implementation ปัจจุบัน</p>
+        <div class="footer">NCO Research Methodology Report | หน้า 1/8</div>
+    </div>
+
+    <div class="page" id="page2">
+        <button class="page-export-btn" onclick="exportPage('page2', '02_NCO_Methodology_Framework')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page2', '02_NCO_Methodology_Framework')">PDF</button>
+        <div class="header">
+            <p class="header-title">กรอบแนวคิดและฐานอ้างอิง</p>
+            <p class="header-date">NCO Methodology Report</p>
+        </div>
+        <h1>กรอบแนวคิดเชิงวิธีวิจัย</h1>
+        <div class="model-box">
+            <p><b>นิยามเชิงวิธีวิจัย:</b> ระบบนี้เป็น <b>hybrid, workload-calibrated, need-capacity-outcome decision-support model</b> สำหรับการวิเคราะห์กำลังคนโรงพยาบาล โดยผสาน burden ของประชากร ข้อมูลบริการจริง สัดส่วนกำลังคน ผลลัพธ์บริการ และ governance metadata เข้าด้วยกัน</p>
+        </div>
+        <div class="two-col">
+            <div>
+                <h2>แกนหลักของโมเดล</h2>
+                <ul class="tight">
+                    <li><b>Need-based:</b> elderly, chronic, mental burden</li>
+                    <li><b>Capacity-based:</b> headcount และ profession mix</li>
+                    <li><b>Workload-based:</b> OPD, IPD, ER, OR, delivery, mental, chronic</li>
+                    <li><b>Outcome-based:</b> A-H outcomes และ service plan indicators</li>
+                    <li><b>Governance:</b> source, year, completeness, scope, audit</li>
+                </ul>
+            </div>
+            <div>
+                <h2>โครงสร้างตีความ</h2>
+                <ul class="tight">
+                    <li><b>Structure:</b> workforce, benchmark, denominator scope</li>
+                    <li><b>Process:</b> workload, referral flow, coding quality, pathway</li>
+                    <li><b>Outcome:</b> mortality, CMI, BOR, referral leakage, specialty metrics</li>
+                </ul>
+            </div>
+        </div>
+        <h2>ฐานอ้างอิงเชิงแนวคิดจากภายนอก</h2>
+        <table>
+            <thead>
+                <tr><th style="width:22%">โดเมน</th><th style="width:43%">หลักการที่นำมาใช้</th><th style="width:35%">แหล่งอ้างอิงหลัก</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Workforce planning</td><td>การประเมินกำลังคนควรผูกกับ workload และ skill mix มากกว่า headcount ratio ล้วน</td><td>WHO WISN</td></tr>
+                <tr><td>Health systems</td><td>การประเมินบริการต้องดู building blocks และบริบทระบบ ไม่อ่าน staffing แบบแยกขาดจากระบบบริการ</td><td>WHO health systems building blocks</td></tr>
+                <tr><td>Quality measurement</td><td>ต้องอ่าน structure, process, outcome ร่วมกัน</td><td>AHRQ, National Academies, Donabedian lineage</td></tr>
+                <tr><td>Routine data quality</td><td>การตัดสินใจเชิงบริหารต้องมี data quality review ก่อนตีความ</td><td>WHO RHIS / DQA toolkit</td></tr>
+                <tr><td>Population burden</td><td>Ageing, NCD และ mental burden เป็นแรงขับสำคัญของ demand และ skill mix</td><td>WHO Ageing, NCD, Suicide, ICOPE, Rehabilitation</td></tr>
+            </tbody>
+        </table>
+        <div class="warning-box">
+            <p><b>ข้อควรระบุในงานวิจัย:</b> แม้ฐานคิดของระบบสอดคล้องกับ evidence ภายนอก แต่ค่า benchmark หลายตัวที่อยู่ในระบบปัจจุบันยังเป็น <b>internal provisional seeds</b> และไม่ควรอธิบายเกินจริงว่าเป็น national staffing standard ที่รับรองแล้ว</p>
+        </div>
+        <div class="footer">NCO Research Methodology Report | หน้า 2/8</div>
+    </div>
+
+    <div class="page" id="page3">
+        <button class="page-export-btn" onclick="exportPage('page3', '03_NCO_Methodology_Data')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page3', '03_NCO_Methodology_Data')">PDF</button>
+        <div class="header">
+            <p class="header-title">ข้อมูลและตัวแปรนำเข้า</p>
+            <p class="header-date">NCO Methodology Report</p>
+        </div>
+        <h1>แหล่งข้อมูลที่ระบบใช้จริง</h1>
+        <div class="two-col">
+            <div>
+                <h2>แหล่งข้อมูลเชิงระบบ</h2>
+                <ul class="tight">
+                    <li>`simulation.js`</li>
+                    <li>`API/need_fte_engine.py`</li>
+                    <li>`API/clinical_denominator_store.py`</li>
+                    <li>`API/analysis_governance_store.py`</li>
+                    <li>`API/district_baseline_store.py`</li>
+                    <li>`API/hr_workforce_dictionary.py`</li>
+                    <li>`NCO_INDICATOR_STANDARD.md`</li>
+                </ul>
+            </div>
+            <div>
+                <h2>ตาราง/แหล่ง runtime หลัก</h2>
+                <ul class="tight">
+                    <li>`assignment`, `position`, `organizational_unit`</li>
+                    <li>`workload`</li>
+                    <li>`hospital_scope_config`</li>
+                    <li>`hdc_amphur_population_reference`</li>
+                    <li>`analysis_benchmark_reference`</li>
+                    <li>`analysis_workload_reference`</li>
+                    <li>`analysis_indicator_policy`</li>
+                    <li>`analysis_run_history` และ `data_inputV1.csv`</li>
+                </ul>
+            </div>
+        </div>
+        <h2>ตัวแปรนำเข้าหลักใน calculation path</h2>
+        <table>
+            <thead>
+                <tr><th style="width:24%">กลุ่มตัวแปร</th><th style="width:38%">ตัวแปรสำคัญ</th><th style="width:38%">บทบาทต่อโมเดล</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Data Quality</td><td>G01, G02, G03, G04</td><td>ใช้เป็น data admissibility / interpretability gate ก่อนตีความ recommendation</td></tr>
+                <tr><td>Population need</td><td>`population_total`, `elderly_pct`, `prevalence_cvd`, `prevalence_cancer`, `prevalence_dm`, `prevalence_ckd`, `mental_risk_rate`</td><td>ใช้สร้าง HNI และ burden profile ของพื้นที่</td></tr>
+                <tr><td>Clinical workforce</td><td>`doctor_total`, `nurse_total`, `pharmacist_total`, `physical_therapist_total`, `psychologist_total`, `clinical_psychologist_total`</td><td>ใช้คำนวณ WCI และ available FTE</td></tr>
+                <tr><td>Workload functions</td><td>OPD, IPD, ER, OR, delivery, mental, chronic</td><td>ใช้สร้าง workload pressure และ denominator proxy</td></tr>
+                <tr><td>Outcome validation</td><td>A01, A04, A09, B01, C02, D01, F10</td><td>ใช้แยก shortage ออกจาก process failure หรือ data issue</td></tr>
+                <tr><td>Service plan</td><td>DH0101, DH0102, DN0101, DN0142D, CI0101, PE0102, CM0203, CM0101, DC0401, DG0201, PS0001, RH0101</td><td>ใช้ทำ specialty-specific recommendation</td></tr>
+            </tbody>
+        </table>
+        <div class="info-box">
+            <p><b>นิยาม workforce counts:</b> ระบบนับบุคลากรจาก `assignment.status = 'active'` และ `end_date` ต้องว่างหรือไม่มี พร้อมจับคู่กับ `position_name_th` ตาม dictionary กลาง ทำให้จำนวนกำลังคนที่ใช้ในสูตรมี provenance ตรวจสอบย้อนกลับได้</p>
+        </div>
+        <div class="warning-box">
+            <p><b>ข้อสังเกตด้านหน่วยวัด:</b> ใน implementation ปัจจุบันชื่อ field บางตัวมีลักษณะเป็น naming debt เช่น chronic/mental labels ที่ผสมทั้งเปอร์เซ็นต์และค่าต่อแสน ดังนั้นในรายงานวิจัยควรใช้คำว่า <b>composite burden indicator</b> และระบุหน่วยจริงทุกครั้ง</p>
+        </div>
+        <div class="footer">NCO Research Methodology Report | หน้า 3/8</div>
+    </div>
+
+    <div class="page" id="page4">
+        <button class="page-export-btn" onclick="exportPage('page4', '04_NCO_Methodology_Steps_1_4')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page4', '04_NCO_Methodology_Steps_1_4')">PDF</button>
+        <div class="header">
+            <p class="header-title">ขั้นตอนคำนวณ ส่วนที่ 1</p>
+            <p class="header-date">Data Quality, Denominator, HNI, Mix</p>
+        </div>
+        <h1>ขั้นที่ 1-4: Data Quality, Denominator, HNI, Profession Mix</h1>
+        <h2>ขั้นที่ 1: Data Quality Gate</h2>
+        <p>ระบบตรวจ G01-G04 ก่อนเพื่อป้องกันการตีความผลจาก administrative/coding data ที่ผิดพลาด หาก data quality fail อย่างน้อย 1 ตัว ผลลัพธ์จะยังคำนวณได้ แต่ recommendation ควรถูกตีความแบบ <b>provisional</b></p>
+        <h2>ขั้นที่ 2: Clinical Denominator</h2>
+        <div class="model-box mini">
+            <p><b>Workload proxy:</b></p>
+            <p>`outpatient_visits + 12*inpatient_visits + 1.5*emergency_visits + 20*surgery_count + 15*delivery_count + 1.2*mental_health_visits + 1.1*chronic_disease_visits + total_workload_score`</p>
+        </div>
+        <table>
+            <thead>
+                <tr><th style="width:27%">วิธี denominator</th><th style="width:33%">ตรรกะ</th><th style="width:40%">เหตุผล</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>`amphur_population`</td><td>ใช้ประชากรพื้นที่รับผิดชอบโดยตรง</td><td>เหมาะกับหน่วยที่ burden หลักมาจาก catchment เดิม</td></tr>
+                <tr><td>`province_workload_blend`</td><td>ใช้ max ระหว่าง amphur, province floor 30%, และ workload proxy x 1.20 แล้ว cap ไม่เกินจังหวัด</td><td>รองรับบทบาท referral ของโรงพยาบาลจังหวัด/ศูนย์</td></tr>
+                <tr><td>`network_zone_workload_adjusted`</td><td>ใช้ max ระหว่าง amphur กับ workload proxy x 1.10 แล้ว cap ไม่เกิน 60% ของจังหวัด</td><td>รองรับ general hospital/network hub</td></tr>
+                <tr><td>`workload_population_proxy`</td><td>ใช้ประชากรเทียบเท่าจาก workload</td><td>ลด bias จากการใช้ทะเบียนประชากรอย่างเดียว</td></tr>
+            </tbody>
+        </table>
+        <h2>ขั้นที่ 3: Health Need Index (HNI)</h2>
+        <div class="summary-box mini">
+            <p><b>Reference defaults:</b> elderly = 30, chronic = 25, mental = 5000 ต่อ 100,000</p>
+            <p><b>Normalization:</b> `norm = clamp(actual/reference, 0, 1.5)`</p>
+            <p><b>Weights:</b> elderly 40, chronic 40, mental 20</p>
+            <p><b>Formula:</b> `HNI = ((normE*wE)+(normC*wC)+(normM*wM))/total_weight * 100`</p>
+        </div>
+        <p>เหตุผลของ HNI คือการรวม need-side burden หลายมิติไว้ใน composite เดียว โดยใช้ bounded normalization เพื่อป้องกันค่าผิดปกติรบกวน index ทั้งระบบ</p>
+        <h2>ขั้นที่ 4: Profession-sensitive need mix</h2>
+        <table>
+            <thead>
+                <tr><th style="width:35%">วิชาชีพ</th><th style="width:65%">สูตร raw weight ที่ใช้จริง</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Doctor</td><td>`28 + 18*norm_chronic + 8*norm_elderly`</td></tr>
+                <tr><td>Nurse</td><td>`28 + 12*norm_chronic + 10*norm_elderly + 6*norm_mental`</td></tr>
+                <tr><td>Pharmacist</td><td>`10 + 8*norm_chronic`</td></tr>
+                <tr><td>Physical therapist</td><td>`8 + 10*rehab_pressure + 6*norm_elderly`</td></tr>
+                <tr><td>Psychologist</td><td>`8 + 10*norm_mental + 4*suicide_pressure`</td></tr>
+                <tr><td>Clinical psychologist</td><td>`6 + 10*norm_mental + 6*suicide_pressure`</td></tr>
+            </tbody>
+        </table>
+        <p class="caption">จากนั้นระบบ normalize raw weights เป็นสัดส่วนรวม 100% เพื่อใช้เป็น need-sensitive mix ใน WCI และ Need_FTE engine</p>
+        <div class="footer">NCO Research Methodology Report | หน้า 4/8</div>
+    </div>
+
+    <div class="page" id="page5">
+        <button class="page-export-btn" onclick="exportPage('page5', '05_NCO_Methodology_Steps_5_8')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page5', '05_NCO_Methodology_Steps_5_8')">PDF</button>
+        <div class="header">
+            <p class="header-title">ขั้นตอนคำนวณ ส่วนที่ 2</p>
+            <p class="header-date">WCI, Burden Multiplier, Workload Pressure, Need_FTE</p>
+        </div>
+        <h1>ขั้นที่ 5-8: Capacity, Workload Pressure และ Need_FTE</h1>
+        <h2>ขั้นที่ 5: Workforce Capacity Index (WCI)</h2>
+        <div class="summary-box mini">
+            <p><b>Ratio รายวิชาชีพ:</b> `ratio_i = (headcount_i / population) * rate_per`</p>
+            <p><b>Score รายวิชาชีพ:</b> `score_i = min(140, (ratio_i / target_i) * 100)`</p>
+            <p><b>Composite:</b> `WCI = sum(score_i * mix_pct_i / 100)`</p>
+        </div>
+        <table>
+            <thead>
+                <tr><th>วิชาชีพ</th><th>Target ต่อ 10,000</th><th>Default weight</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>doctor_total</td><td>3.5</td><td>32</td></tr>
+                <tr><td>nurse_total</td><td>12.0</td><td>38</td></tr>
+                <tr><td>pharmacist_total</td><td>1.5</td><td>10</td></tr>
+                <tr><td>physical_therapist_total</td><td>0.8</td><td>8</td></tr>
+                <tr><td>psychologist_total</td><td>0.4</td><td>6</td></tr>
+                <tr><td>clinical_psychologist_total</td><td>0.2</td><td>6</td></tr>
+            </tbody>
+        </table>
+        <h2>ขั้นที่ 6: Burden multiplier</h2>
+        <p>`burden_multiplier = clamp(0.75 + HNI/100, 0.75, 1.6)` ใช้ให้ HNI ทำหน้าที่เป็น moderating factor ไม่ใช่ตัวครอบสูตรทั้งหมด</p>
+        <h2>ขั้นที่ 7: Workload function pressure</h2>
+        <table>
+            <thead>
+                <tr><th style="width:30%">Profession signal</th><th style="width:70%">สูตรที่ใช้จริง</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Doctor</td><td>`0.30*ipd + 0.25*er + 0.25*or + 0.20*delivery`</td></tr>
+                <tr><td>Nurse</td><td>`0.35*opd + 0.25*ipd + 0.20*er + 0.20*delivery`</td></tr>
+                <tr><td>Pharmacist</td><td>`0.45*opd + 0.55*chronic`</td></tr>
+                <tr><td>PT</td><td>`0.60*ipd + 0.40*or`</td></tr>
+                <tr><td>Psych / Clinical Psych</td><td>`mental_per_10k` เป็น signal หลัก</td></tr>
+            </tbody>
+        </table>
+        <p>ทุก signal ถูกคำนวณจาก intensity ที่เทียบ actual rate ต่อ reference rate และ clamp ระหว่าง 0 ถึง 2 จากนั้นแปลงเป็น profession-specific pressure factor ด้วยช่วง lower-upper bounds ที่ต่างกันตามวิชาชีพ</p>
+        <h2>ขั้นที่ 8: Need_FTE</h2>
+        <div class="model-box mini">
+            <p>`baseline_need_fte = target_value * effective_population_total / rate_per`</p>
+            <p>`mix_adjustment = max(0.65, actual_mix_pct / default_weight_pct)`</p>
+            <p>`pressure_factor = base_pressure_factor * workload_pressure_factor`</p>
+            <p>`need_fte = baseline_need_fte * burden_multiplier * mix_adjustment * pressure_factor`</p>
+            <p>`available_fte = headcount * fte_per_headcount`</p>
+            <p>`gap_fte = max(0, need_fte - available_fte)`</p>
+            <p>`suggested_add = ceil(gap_fte)` ในเชิงตรรกะ implementation ปัจจุบันใช้สูตรปัดขึ้นแบบใกล้เคียง</p>
+        </div>
+        <div class="info-box">
+            <p><b>เหตุผลเชิงระบบบริการ:</b> สูตร Need_FTE ถูกออกแบบให้สะท้อนทั้ง demand base, burden profile, skill mix และ service workload พร้อมกัน จึงเหมาะกับบทบาท decision-support มากกว่าการใช้ headcount ratio เดี่ยว ๆ</p>
+        </div>
+        <div class="footer">NCO Research Methodology Report | หน้า 5/8</div>
+    </div>
+
+    <div class="page" id="page6">
+        <button class="page-export-btn" onclick="exportPage('page6', '06_NCO_Methodology_Steps_9_12')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page6', '06_NCO_Methodology_Steps_9_12')">PDF</button>
+        <div class="header">
+            <p class="header-title">ขั้นตอนคำนวณ ส่วนที่ 3</p>
+            <p class="header-date">Gap, Outcome Validation, Specialty, Confidence</p>
+        </div>
+        <h1>ขั้นที่ 9-12: การตีความผลลัพธ์และความเชื่อมั่น</h1>
+        <h2>ขั้นที่ 9: Need-Capacity Gap</h2>
+        <div class="summary-box mini">
+            <p><b>Gap score:</b> `gap = HNI - WCI`</p>
+            <p><b>เกณฑ์:</b> red ถ้า &gt; 20, yellow ถ้า &gt; 0, green ถ้า &lt;= 0</p>
+        </div>
+        <p>แนวคิดคือ HNI แทนแรงกดดันฝั่ง demand และ WCI แทนความเพียงพอฝั่ง capacity เมื่อ HNI สูงกว่า WCI มาก แปลว่าภาระนำหน้าศักยภาพกำลังคน</p>
+        <h2>ขั้นที่ 10: Outcome validation</h2>
+        <table>
+            <thead>
+                <tr><th style="width:32%">รูปแบบผลลัพธ์</th><th style="width:68%">การตีความ</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Gap สูง + Outcome แย่</td><td>มีความเป็นไปได้สูงว่าขาด capacity ร่วมกับ process issue</td></tr>
+                <tr><td>Gap สูง + Outcome ดี</td><td>ระบบอาจยังพยุงตัวได้ แต่เสี่ยง over-stretched ต้องเฝ้าระวัง</td></tr>
+                <tr><td>Gap ต่ำ + Outcome แย่</td><td>มีแนวโน้มเป็น process/protocol/referral/data quality issue มากกว่าขาดคนอย่างเดียว</td></tr>
+            </tbody>
+        </table>
+        <h2>ขั้นที่ 11: Service plan specialty deep dive</h2>
+        <p>เมื่อ specialty indicator ผิด threshold ระบบจะคำนวณ severity จากระยะห่างจาก threshold และแปลงเป็นจำนวนแพทย์/พยาบาลเฉพาะทางเพิ่มเติมตาม base demand ของแต่ละโรคหรือ pathway</p>
+        <div class="model-box mini">
+            <p>`severity = (actual - threshold)/threshold` เมื่อ low is good</p>
+            <p>`severity = (threshold - actual)/threshold` เมื่อ high is good</p>
+            <p>`shortage_factor = 1.0, 0.7, 0.35` ตาม gap level red, yellow, green</p>
+            <p>`severity_factor = 1 + clamp(severity, 0, 2)`</p>
+            <p>`addDoc = ceil(baseDoc * severity_factor * shortage_factor)`</p>
+            <p>`addNurse = ceil(baseNurse * severity_factor * shortage_factor)`</p>
+        </div>
+        <div class="warning-box">
+            <p><b>Process-first rule:</b> หาก overall gap เป็นสีเขียวและ severity ต่ำกว่า 0.40 ระบบจะไม่แนะนำเพิ่มคนทันที แต่ให้เน้น pathway/process review ก่อน</p>
+        </div>
+        <h2>ขั้นที่ 12: Confidence scoring</h2>
+        <p>ระบบให้คะแนนความเชื่อมั่นจาก source, year, scope, completeness และ audit availability สำหรับ PP และจาก source, scope match, dictionary, audit และ year note สำหรับ HR เพื่อให้ผู้ใช้รู้ว่า recommendation นี้ “น่าเชื่อถือแค่ไหน” ไม่ใช่แค่ “คำนวณออกมาเท่าไร”</p>
+        <div class="footer">NCO Research Methodology Report | หน้า 6/8</div>
+    </div>
+
+    <div class="page" id="page7">
+        <button class="page-export-btn" onclick="exportPage('page7', '07_NCO_Methodology_Statistics')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page7', '07_NCO_Methodology_Statistics')">PDF</button>
+        <div class="header">
+            <p class="header-title">สถิติ เครื่องมือ และข้อจำกัด</p>
+            <p class="header-date">NCO Methodology Report</p>
+        </div>
+        <h1>สถิติและเหตุผลที่ใช้ในโมเดล</h1>
+        <table>
+            <thead>
+                <tr><th style="width:28%">เทคนิค</th><th style="width:32%">ใช้ในส่วนใด</th><th style="width:40%">เหตุผลเชิงวิธีวิจัย</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Rate per population</td><td>Headcount ratio, workload ratio, mortality ratio</td><td>ทำให้เทียบหน่วยบริการต่างขนาดกันได้</td></tr>
+                <tr><td>Weighted composite index</td><td>HNI, WCI</td><td>รวมหลายมิติให้เป็น summary เดียวแต่ยังย้อนดู component ได้</td></tr>
+                <tr><td>Bounded normalization / clamp</td><td>HNI, workload intensity, burden multiplier, specialty severity</td><td>ลดผลของ outlier และเพิ่ม numerical stability</td></tr>
+                <tr><td>Median</td><td>District baseline, peer aggregation</td><td>robust ต่อ outlier มากกว่า mean</td></tr>
+                <tr><td>Percentile p50 / p75</td><td>Workload reference calibration</td><td>ใช้ p75 เป็นค่ามาตรฐานเชิงปฏิบัติการที่ไม่ไวต่อ extreme value เกินไป</td></tr>
+                <tr><td>Ceiling-style rounding</td><td>`suggested_add`</td><td>แปลง gap FTE ไปเป็นข้อเสนอระดับคนจริง</td></tr>
+            </tbody>
+        </table>
+        <h2>จุดแข็งเชิงวิธีวิจัย</h2>
+        <ul class="tight">
+            <li>ผสาน need, capacity, workload, outcome และ governance ในโมเดลเดียว</li>
+            <li>ไม่ตีความ outcome โดยไม่ดู data quality และ process context</li>
+            <li>ให้ recommendation ระดับวิชาชีพและ specialty ได้</li>
+            <li>มี audit/replay และ benchmark governance table รองรับการตรวจสอบย้อนหลัง</li>
+            <li>ใช้ median และ percentile ในส่วนที่ต้องการ robustness ต่อ outlier</li>
+        </ul>
+        <h2>ข้อจำกัดที่ต้องระบุอย่างตรงไปตรงมา</h2>
+        <div class="warning-box">
+            <ul class="tight">
+                <li>benchmark หลายตัวเป็น `provisional internal seeds`</li>
+                <li>โมเดลยังไม่ใช่ WISN เต็มรูปแบบ เพราะยังไม่มี activity-time standards ครบทุก service task</li>
+                <li>ตัวแปรบางชื่อยังไม่สะท้อนหน่วยจริงเต็มที่</li>
+                <li>workload บาง function ยังพึ่ง manual-preferred หรือ manual-required source</li>
+                <li>HR year versioning ยังไม่ explicit ในทุก schema</li>
+                <li>outcome ยังอาจถูกรบกวนจาก severity mix, referral pattern และ practice variation</li>
+            </ul>
+        </div>
+        <div class="info-box">
+            <p><b>ถ้อยคำที่เหมาะใช้ในงานวิชาการ:</b> “a hybrid, workload-calibrated, need-capacity-outcome decision-support model for hospital workforce analysis”</p>
+        </div>
+        <div class="footer">NCO Research Methodology Report | หน้า 7/8</div>
+    </div>
+
+    <div class="page" id="page8">
+        <button class="page-export-btn" onclick="exportPage('page8', '08_NCO_Methodology_References')">PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page8', '08_NCO_Methodology_References')">PDF</button>
+        <div class="header">
+            <p class="header-title">เอกสารอ้างอิง</p>
+            <p class="header-date">NCO Methodology Report</p>
+        </div>
+        <h1>Internal Implementation References</h1>
+        <ul class="ref-list">
+            <li>`report/NCO_RESEARCH_METHODOLOGY.md`</li>
+            <li>`simulation.js`</li>
+            <li>`API/need_fte_engine.py`</li>
+            <li>`API/clinical_denominator_store.py`</li>
+            <li>`API/analysis_governance_store.py`</li>
+            <li>`API/district_baseline_store.py`</li>
+            <li>`API/hr_workforce_dictionary.py`</li>
+            <li>`NCO_INDICATOR_STANDARD.md`</li>
+        </ul>
+        <h2>External References</h2>
+        <ol class="ref-list">
+            <li>World Health Organization. Workload indicators of staffing need (WISN). https://www.who.int/tools/wisn</li>
+            <li>World Health Organization. Workload Indicators for Staffing Need methodology for health workforce planning and estimation. https://www.who.int/news-room/articles-detail/workload-indicators-for-staffing-need-%28wisn%29-methodology-for-health-workforce-planning-and-estimation</li>
+            <li>World Health Organization. Monitoring the building blocks of health systems. https://iris.who.int/handle/10665/258734</li>
+            <li>Agency for Healthcare Research and Quality. Types of Health Care Quality Measures. https://www.ahrq.gov/talkingquality/measures/types.html</li>
+            <li>National Academies of Sciences, Engineering, and Medicine. Crossing the Quality Chasm. https://nap.nationalacademies.org/catalog/10027/crossing-the-quality-chasm-a-new-health-system-for-the</li>
+            <li>World Health Organization. Health Service Data. https://www.who.int/data/data-collection-tools/health-service-data</li>
+            <li>World Health Organization. Data Quality Assurance (DQA). https://www.who.int/data/data-collection-tools/health-service-data/data-quality-assurance-dqa</li>
+            <li>World Health Organization. Toolkit for analysis and use of routine health facility data. https://www.who.int/publications/i/item/9789240060616</li>
+            <li>World Health Organization. Strategy for optimizing national routine health information systems. https://www.who.int/publications/i/item/9789240087163</li>
+            <li>World Health Organization. Ageing and health. https://www.who.int/news-room/fact-sheets/detail/ageing-and-health</li>
+            <li>World Health Organization. Integrated care for older people (ICOPE). https://www.who.int/publications-detail-redirect/9789241550109</li>
+            <li>World Health Organization. Noncommunicable diseases. https://www.who.int/news-room/fact-sheets/detail/noncommunicable-diseases</li>
+            <li>World Health Organization. Suicide. https://www.who.int/news-room/fact-sheets/detail/suicide</li>
+            <li>World Health Organization. Rehabilitation in health systems: guide for action. https://www.who.int/publications/i/item/9789241515986</li>
+            <li>National Institute of Standards and Technology. Median Confidence Limits. https://itl.nist.gov/div898/software/dataplot/refman1/auxillar/mediancl.htm</li>
+            <li>Open Government Data of Thailand. รายงานข้อมูลบุคลากรด้านสาธารณสุข. https://www.data.go.th/dataset/gdpublish-public-health-personnel-report-65</li>
+            <li>Open Government Data of Thailand. จำนวนประชากรในประเทศไทย แยกตามพื้นที่. https://www.data.go.th/th/dataset/statbyyear</li>
+            <li>Open Government Data of Thailand. จำนวนผู้ป่วยโรคซึมเศร้าเข้าถึงบริการสุขภาพจิต. https://www.data.go.th/dataset/depression-report</li>
+        </ol>
+        <div class="summary-box">
+            <p><b>บทสรุป:</b> รายงานฉบับนี้ถอดความจาก methodology master file ให้เป็นรูปแบบ A4 HTML ตาม template เดิม โดยยังคงสาระสำคัญเรื่องตัวแปร สูตร เหตุผลเชิงสถิติ ข้อจำกัด และฐานอ้างอิงครบสำหรับใช้ประกอบรายงานเชิงวิชาการและการนำเสนอเชิงนโยบาย</p>
+        </div>
+        <div class="footer">NCO Research Methodology Report | หน้า 8/8</div>
+    </div>
+
+    <script>
+        function showLoading(message) {
+            const loader = document.createElement('div');
+            loader.id = 'pdf-loader';
+            loader.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.7); display: flex; flex-direction: column;
+                justify-content: center; align-items: center; z-index: 9999;
+                color: white; font-size: 18px; font-family: 'Sarabun', sans-serif;
+            `;
+            loader.innerHTML = `
+                <div>${message}</div>
+                <div style="margin-top: 20px; width: 40px; height: 40px;
+                    border: 4px solid #fff; border-top-color: #006B3E;
+                    border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            `;
+            document.body.appendChild(loader);
+        }
+        function hideLoading() {
+            const loader = document.getElementById('pdf-loader');
+            if (loader) loader.remove();
+        }
+        async function exportPage(pageId, fileName) {
+            const page = document.getElementById(pageId);
+            const btns = page.querySelectorAll('.page-export-btn, .page-export-btn-pdf');
+            btns.forEach(btn => btn.style.visibility = 'hidden');
+            page.scrollIntoView({ behavior: 'instant', block: 'start' });
+            await new Promise(r => setTimeout(r, 300));
+            try {
+                const canvas = await html2canvas(page, { scale:2, useCORS:true, allowTaint:true, backgroundColor:'#ffffff', width:794, height:1123 });
+                const link = document.createElement('a');
+                link.download = fileName + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                alert('Export ล้มเหลว: ' + err.message);
+            } finally {
+                btns.forEach(btn => btn.style.visibility = 'visible');
+            }
+        }
+        async function exportAllPages() {
+            const pages = document.querySelectorAll('.page');
+            if (!confirm(`Export ${pages.length} หน้าเป็น PNG?`)) return;
+            showLoading('กำลังสร้าง PNG...');
+            for (let i = 0; i < pages.length; i++) {
+                const loaderText = document.querySelector('#pdf-loader div');
+                if (loaderText) loaderText.textContent = `กำลังสร้าง PNG หน้า ${i + 1}/${pages.length}...`;
+                await exportPage(pages[i].id, `Page_${i + 1}`);
+                await new Promise(r => setTimeout(r, 500));
+            }
+            hideLoading();
+            alert('Export ครบทุกหน้าแล้ว');
+        }
+        async function exportPagePDF(pageId, fileName) {
+            const page = document.getElementById(pageId);
+            const btns = page.querySelectorAll('.page-export-btn, .page-export-btn-pdf');
+            btns.forEach(btn => btn.style.visibility = 'hidden');
+            showLoading('กำลังสร้าง PDF...');
+            await document.fonts.ready;
+            await new Promise(r => setTimeout(r, 500));
+            try {
+                const canvas = await html2canvas(page, { scale:2, useCORS:true, allowTaint:true, backgroundColor:'#ffffff', width:794, height:1123 });
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pdf = new window.jspdf.jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                pdf.save(fileName + '.pdf');
+            } catch (err) {
+                alert('PDF Export ล้มเหลว: ' + err.message);
+            } finally {
+                hideLoading();
+                btns.forEach(btn => btn.style.visibility = 'visible');
+            }
+        }
+        async function exportAllPagesPDF() {
+            const pages = document.querySelectorAll('.page');
+            if (!confirm(`Export ${pages.length} หน้าเป็น PDF ไฟล์เดียว?`)) return;
+            const allBtns = document.querySelectorAll('.page-export-btn, .page-export-btn-pdf, .export-btn, .export-btn-pdf');
+            allBtns.forEach(btn => btn.style.visibility = 'hidden');
+            showLoading('กำลังสร้าง PDF...');
+            const pdf = new window.jspdf.jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+            for (let i = 0; i < pages.length; i++) {
+                const loaderText = document.querySelector('#pdf-loader div');
+                if (loaderText) loaderText.textContent = `กำลังสร้าง PDF หน้า ${i + 1}/${pages.length}...`;
+                pages[i].scrollIntoView({ behavior: 'instant', block: 'start' });
+                await new Promise(r => setTimeout(r, 300));
+                try {
+                    const canvas = await html2canvas(pages[i], { scale:2, useCORS:true, allowTaint:true, backgroundColor:'#ffffff', width:794, height:1123 });
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                } catch (err) {
+                    console.error('Error page', i + 1, err);
+                }
+                await new Promise(r => setTimeout(r, 200));
+            }
+            hideLoading();
+            pdf.save('NCO_Research_Methodology_Report_A4.pdf');
+            allBtns.forEach(btn => btn.style.visibility = 'visible');
+            alert('Export PDF ครบทุกหน้าแล้ว');
+        }
+    </script>
+</body>
+</html>

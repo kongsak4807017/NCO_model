@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>A4 Report Template - Minimal</title>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* ============================================
+           A4 HTML REPORT TEMPLATE - MINIMAL VERSION
+           ============================================ */
+        
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap');
+        
+        /* CSS Variables */
+        :root {
+            --moph-green: #006B3E;
+            --text-black: #202124;
+            --bg-white: #ffffff;
+        }
+        
+        /* Body Setup */
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            color: var(--text-black);
+            line-height: 1.4;
+        }
+        
+        /* ============================================
+           A4 PAGE SETUP - สำคัญที่สุด
+           ============================================ */
+        .page {
+            width: 210mm;
+            height: 297mm;           /* ความสูงคงที่ */
+            min-height: 297mm;
+            max-height: 297mm;       /* ไม่ให้เกิน A4 */
+            padding: 12mm 18mm 15mm 18mm;  /* บน ซ้ายขวา ล่าง */
+            margin: 10mm auto;
+            background: var(--bg-white);
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;        /* ตัดส่วนเกิน */
+            box-sizing: border-box;
+        }
+        
+        /* ============================================
+           TYPOGRAPHY - มาตรฐานฟอนต์
+           ============================================ */
+        h1 { 
+            font-size: 20px; 
+            color: var(--moph-green);
+            border-left: 6px solid var(--moph-green); 
+            padding-left: 12px; 
+            margin: 15px 0 12px 0; 
+        }
+        
+        h2 { 
+            font-size: 17px; 
+            color: var(--moph-green);
+            border-bottom: 1px solid #ddd; 
+            padding-bottom: 4px; 
+            margin-top: 15px; 
+            margin-bottom: 10px; 
+        }
+        
+        h3 { 
+            font-size: 15px; 
+            color: var(--moph-green);
+            margin-top: 12px; 
+            margin-bottom: 8px; 
+        }
+        
+        p { 
+            margin-bottom: 6px; 
+            text-align: justify; 
+            line-height: 1.4; 
+            font-size: 13px;
+        }
+        
+        /* ============================================
+           BOX STYLES
+           ============================================ */
+        .summary-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--moph-green);
+            padding: 8px 10px;
+            margin: 8px 0;
+        }
+        
+        .info-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 8px 10px;
+            margin: 8px 0;
+        }
+        
+        .warning-box {
+            background-color: #fff3e0;
+            border-left: 4px solid #ff9800;
+            padding: 8px 10px;
+            margin: 8px 0;
+        }
+        
+        .model-box {
+            background-color: #f3e5f5;
+            border: 2px solid #9c27b0;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin: 8px 0;
+        }
+        
+        /* ============================================
+           TABLE STYLES
+           ============================================ */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 12px;
+        }
+        
+        th {
+            background-color: var(--moph-green);
+            color: white;
+            padding: 5px 6px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 12px;
+        }
+        
+        td {
+            padding: 5px 6px;
+            border: 1px solid #ddd;
+            vertical-align: top;
+            font-size: 12px;
+        }
+        
+        tr:nth-child(even) { 
+            background-color: #f9f9f9; 
+        }
+        
+        /* ============================================
+           LIST STYLES
+           ============================================ */
+        ul, ol {
+            margin: 6px 0;
+            padding-left: 18px;
+        }
+        
+        li {
+            margin-bottom: 4px;
+            line-height: 1.35;
+            font-size: 13px;
+        }
+        
+        /* ============================================
+           HEADER & FOOTER
+           ============================================ */
+        .header {
+            border-bottom: 3px solid var(--moph-green);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        
+        .header-title {
+            color: var(--moph-green);
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .header-date {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 8mm;
+            left: 20mm;
+            right: 20mm;
+            border-top: 1px solid #ddd;
+            padding-top: 5px;
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+        }
+        
+        /* ============================================
+           EXPORT BUTTONS
+           ============================================ */
+        .export-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--moph-green);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .export-btn:hover {
+            background-color: #004d2e;
+        }
+        
+        .export-btn-pdf {
+            position: fixed;
+            top: 20px;
+            right: 200px;
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 14px;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .export-btn-pdf:hover {
+            background-color: #b71c1c;
+        }
+        
+        .page-export-btn {
+            position: absolute;
+            top: 10mm;
+            right: 20mm;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 12px;
+            z-index: 100;
+        }
+        
+        .page-export-btn-pdf {
+            position: absolute;
+            top: 10mm;
+            right: 55mm;
+            background-color: #d32f2f;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 12px;
+            z-index: 100;
+        }
+        
+        /* Hide buttons when printing */
+        @media print {
+            body { background: none; }
+            .page {
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            .export-btn, .export-btn-pdf, .page-export-btn, .page-export-btn-pdf { 
+                display: none !important; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         EXPORT ALL BUTTONS (Fixed Position)
+         ============================================ -->
+    <button class="export-btn" onclick="exportAllPages()">📷 Export ทุกหน้าเป็น PNG</button>
+    <button class="export-btn-pdf" onclick="exportAllPagesPDF()">📄 Export ทุกหน้าเป็น PDF</button>
+
+    <!-- ============================================
+         PAGE 1: หน้าตัวอย่าง
+         ============================================ -->
+    <div class="page" id="page1">
+        <!-- Page Export Buttons -->
+        <button class="page-export-btn" onclick="exportPage('page1', '01_Page_1')">📷 PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page1', '01_Page_1')">📄 PDF</button>
+        
+        <!-- Header -->
+        <div class="header">
+            <p class="header-title">📋 ชื่อรายงาน</p>
+            <p class="header-date">วันที่ 6 เมษายน 2569</p>
+        </div>
+        
+        <!-- Content -->
+        <h1>หัวข้อหลัก (H1 - 20px)</h1>
+        
+        <div class="summary-box">
+            <p><b>Summary Box:</b> ใช้สำหรับข้อสรุปสำคัญ เนื้อหาในนี้จะมีพื้นหลังสีเขียวอ่อนและขอบซ้ายสีเขียวเข้ม</p>
+        </div>
+        
+        <h2>หัวข้อรอง (H2 - 17px)</h2>
+        <p>ข้อความทั่วไป (13px) - การถ่ายโอนภารกิจโรงพยาบาลส่งเสริมสุขภาพตำบล (รพ.สต.) ไปสู่องค์การบริหารส่วนจังหวัด (อบจ.) เป็นหนึ่งในยุทธศาสตร์หลักของการกระจายอำนาจด้านสาธารณสุข</p>
+        
+        <h3>หัวข้อย่อย (H3 - 15px)</h3>
+        
+        <div class="info-box">
+            <p><b>Info Box:</b> ใช้สำหรับข้อมูลเพิ่มเติม มีพื้นหลังสีฟ้าอ่อนและขอบซ้ายสีฟ้า</p>
+        </div>
+        
+        <div class="warning-box">
+            <p><b>Warning Box:</b> ใช้สำหรับเตือนหรือปัญหาที่ต้องระวัง มีพื้นหลังสีส้มอ่อน</p>
+        </div>
+        
+        <h2>ตารางตัวอย่าง</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>หัวตาราง 1</th>
+                    <th>หัวตาราง 2</th>
+                    <th>หัวตาราง 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>ข้อมูลแถว 1</td>
+                    <td>ข้อมูลแถว 1</td>
+                    <td>ข้อมูลแถว 1</td>
+                </tr>
+                <tr>
+                    <td>ข้อมูลแถว 2</td>
+                    <td>ข้อมูลแถว 2</td>
+                    <td>ข้อมูลแถว 2</td>
+                </tr>
+                <tr>
+                    <td>ข้อมูลแถว 3</td>
+                    <td>ข้อมูลแถว 3</td>
+                    <td>ข้อมูลแถว 3</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>รายการ</h2>
+        <ul>
+            <li>รายการที่ 1 - ข้อความอธิบาย</li>
+            <li>รายการที่ 2 - ข้อความอธิบาย</li>
+            <li>รายการที่ 3 - ข้อความอธิบาย</li>
+        </ul>
+        
+        <!-- Footer -->
+        <div class="footer">รายงานตัวอย่าง | หน้า 1/2</div>
+    </div>
+
+    <!-- ============================================
+         PAGE 2: หน้าตัวอย่างที่ 2
+         ============================================ -->
+    <div class="page" id="page2">
+        <button class="page-export-btn" onclick="exportPage('page2', '02_Page_2')">📷 PNG</button>
+        <button class="page-export-btn-pdf" onclick="exportPagePDF('page2', '02_Page_2')">📄 PDF</button>
+        
+        <div class="header">
+            <p class="header-title">📋 ชื่อรายงาน (ต่อ)</p>
+            <p class="header-date">วันที่ 6 เมษายน 2569</p>
+        </div>
+        
+        <h1>หัวข้อหน้าที่ 2</h1>
+        
+        <div class="model-box">
+            <h3 style="margin-top:0">🎯 Model Box</h3>
+            <p>ใช้สำหรับแสดงโมเดลหรือกรณีศึกษาพิเศษ มีกรอบสีม่วงและพื้นหลังสีม่วงอ่อน</p>
+        </div>
+        
+        <h2>ตารางเปรียบเทียบ</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:20%">รายการ</th>
+                    <th style="width:40%">รายละเอียด</th>
+                    <th style="width:40%">หมายเหตุ</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>รายการ A</td>
+                    <td>รายละเอียดของรายการ A</td>
+                    <td>หมายเหตุเพิ่มเติม</td>
+                </tr>
+                <tr>
+                    <td>รายการ B</td>
+                    <td>รายละเอียดของรายการ B</td>
+                    <td>หมายเหตุเพิ่มเติม</td>
+                </tr>
+                <tr>
+                    <td>รายการ C</td>
+                    <td>รายละเอียดของรายการ C</td>
+                    <td>หมายเหตุเพิ่มเติม</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h2>ข้อสรุป</h2>
+        <div class="summary-box">
+            <p>ข้อสรุปสำคัญของรายงาน...</p>
+        </div>
+        
+        <div class="footer">รายงานตัวอย่าง | หน้า 2/2</div>
+    </div>
+
+    <!-- ============================================
+         JAVASCRIPT EXPORT FUNCTIONS
+         ============================================ -->
+    <script>
+        // Show loading indicator
+        function showLoading(message) {
+            const loader = document.createElement('div');
+            loader.id = 'pdf-loader';
+            loader.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.7); display: flex; flex-direction: column;
+                justify-content: center; align-items: center; z-index: 9999;
+                color: white; font-size: 18px; font-family: 'Sarabun', sans-serif;
+            `;
+            loader.innerHTML = `
+                <div>${message}</div>
+                <div style="margin-top: 20px; width: 40px; height: 40px; 
+                    border: 4px solid #fff; border-top-color: #006B3E; 
+                    border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            `;
+            document.body.appendChild(loader);
+        }
+        
+        function hideLoading() {
+            const loader = document.getElementById('pdf-loader');
+            if (loader) loader.remove();
+        }
+        
+        // Export single page as PNG
+        async function exportPage(pageId, fileName) {
+            const page = document.getElementById(pageId);
+            const btns = page.querySelectorAll('.page-export-btn, .page-export-btn-pdf');
+            
+            btns.forEach(btn => btn.style.visibility = 'hidden');
+            page.scrollIntoView({ behavior: 'instant', block: 'start' });
+            await new Promise(r => setTimeout(r, 300));
+            
+            try {
+                const canvas = await html2canvas(page, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: 794,      // 210mm @ 96 DPI
+                    height: 1123     // 297mm @ 96 DPI
+                });
+                
+                const link = document.createElement('a');
+                link.download = fileName + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                alert('Export ล้มเหลว: ' + err.message);
+            } finally {
+                btns.forEach(btn => btn.style.visibility = 'visible');
+            }
+        }
+        
+        // Export all pages as PNG
+        async function exportAllPages() {
+            const pages = document.querySelectorAll('.page');
+            if (!confirm(`Export ${pages.length} หน้าเป็น PNG?`)) return;
+            
+            showLoading('กำลังสร้าง PNG...');
+            
+            for (let i = 0; i < pages.length; i++) {
+                const loaderText = document.querySelector('#pdf-loader div');
+                if (loaderText) loaderText.textContent = `กำลังสร้าง PNG หน้า ${i+1}/${pages.length}...`;
+                
+                await exportPage(pages[i].id, `Page_${i+1}`);
+                await new Promise(r => setTimeout(r, 500));
+            }
+            
+            hideLoading();
+            alert('Export ครบทุกหน้าแล้ว');
+        }
+        
+        // Export single page as PDF
+        async function exportPagePDF(pageId, fileName) {
+            const page = document.getElementById(pageId);
+            const btns = page.querySelectorAll('.page-export-btn, .page-export-btn-pdf');
+            
+            btns.forEach(btn => btn.style.visibility = 'hidden');
+            showLoading('กำลังสร้าง PDF...');
+            
+            await document.fonts.ready;
+            await new Promise(r => setTimeout(r, 500));
+            
+            try {
+                const canvas = await html2canvas(page, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: 794,
+                    height: 1123
+                });
+                
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pdf = new window.jspdf.jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                pdf.save(fileName + '.pdf');
+            } catch (err) {
+                alert('PDF Export ล้มเหลว: ' + err.message);
+            } finally {
+                hideLoading();
+                btns.forEach(btn => btn.style.visibility = 'visible');
+            }
+        }
+        
+        // Export all pages as single PDF
+        async function exportAllPagesPDF() {
+            const pages = document.querySelectorAll('.page');
+            if (!confirm(`Export ${pages.length} หน้าเป็น PDF ไฟล์เดียว?`)) return;
+            
+            const allBtns = document.querySelectorAll('.page-export-btn, .page-export-btn-pdf, .export-btn, .export-btn-pdf');
+            allBtns.forEach(btn => btn.style.visibility = 'hidden');
+            
+            showLoading('กำลังสร้าง PDF...');
+            
+            const pdf = new window.jspdf.jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+            
+            for (let i = 0; i < pages.length; i++) {
+                const loaderText = document.querySelector('#pdf-loader div');
+                if (loaderText) loaderText.textContent = `กำลังสร้าง PDF หน้า ${i+1}/${pages.length}...`;
+                
+                pages[i].scrollIntoView({ behavior: 'instant', block: 'start' });
+                await new Promise(r => setTimeout(r, 300));
+                
+                try {
+                    const canvas = await html2canvas(pages[i], {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true,
+                        backgroundColor: '#ffffff',
+                        width: 794,
+                        height: 1123
+                    });
+                    
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    if (i > 0) pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                } catch (err) {
+                    console.error('Error page', i+1, err);
+                }
+                
+                await new Promise(r => setTimeout(r, 200));
+            }
+            
+            hideLoading();
+            pdf.save('Report_All_Pages.pdf');
+            allBtns.forEach(btn => btn.style.visibility = 'visible');
+            alert('Export PDF ครบทุกหน้าแล้ว');
+        }
+    </script>
+
+</body>
+</html>
