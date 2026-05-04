@@ -1,4 +1,16 @@
-const API_BASE = "http://127.0.0.1:8080/api";
+function resolveApiBase() {
+    const sameOrigin = `${window.location.origin}/api`;
+    const host = (window.location.hostname || "").toLowerCase();
+    if (host && host !== "127.0.0.1" && host !== "localhost") {
+        return sameOrigin;
+    }
+    if (window.location.port === "8765" || window.location.port === "8000" || window.location.port === "8080") {
+        return sameOrigin;
+    }
+    return "http://127.0.0.1:8765/api";
+}
+
+const API_BASE = resolveApiBase();
 
 document.addEventListener("DOMContentLoaded", () => {
     fetchOverview();
@@ -176,11 +188,11 @@ async function openDrilldown(data) {
     tbody.innerHTML = "<tr><td colspan='2'>กำลังโหลดข้อมูลแพทย์เฉพาะทาง...</td></tr>";
     
     try {
-        const res = await fetch(`${API_BASE}/specialties/${r.facility_id}`);
-        const data = await res.json();
+        const res = await fetch(`${API_BASE}/specialties/${data.facility_id}`);
+        const specialtyData = await res.json();
         tbody.innerHTML = "";
-        if (data.specialties && data.specialties.length > 0) {
-            data.specialties.sort((a,b)=>b.fte_val - a.fte_val).forEach(s => {
+        if (specialtyData.specialties && specialtyData.specialties.length > 0) {
+            specialtyData.specialties.sort((a,b)=>b.fte_val - a.fte_val).forEach(s => {
                 const tr = document.createElement("tr");
                 tr.innerHTML = `<td>${s.position_specialist_name}</td><td><strong>${Number(s.fte_val).toFixed(2)}</strong></td>`;
                 tbody.appendChild(tr);
