@@ -22,7 +22,7 @@
 |---|---|---|---|---|
 | DH0101 | STEMI mortality | low is good | `< 12%` | Interventional cardio + CCU/Cath nurse |
 | DN0101 | Stroke mortality | low is good | `< 15%` | Neurologist + Stroke nurse |
-| DN0142 | Timely rtPA | high is good | `> 5%` | Neuro + ER fast-track team |
+| DN0142D | Ischemic Stroke Death with rtPA | low is good | `< 1%` | Neuro + ER team |
 | CI0101 | Sepsis mortality | low is good | `< 20%` | ID/Internal med + ICU nurse |
 | CM0101 | Maternal mortality | low is good | `< 70/100k` | OB + Labor nurse |
 | CM0203 | Neonatal mortality | low is good | `< 10/1000` | Neonatologist + NICU nurse |

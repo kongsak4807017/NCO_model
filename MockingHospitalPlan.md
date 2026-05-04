@@ -31,7 +31,7 @@
 
 ### 1.4 Outcome (ผลลัพธ์)
 - Performance A-H (ขั้นต่ำที่ต้องใช้: A01, A04, A09, B01, C02, D01, F10)
-- Service Plan เฉพาะโรคที่โยงสาขาเฉพาะทาง (เช่น DH0101, DN0101, DN0142, CI0101, CM0101, CM0203)
+- Service Plan เฉพาะโรคที่โยงสาขาเฉพาะทาง (เช่น DH0101, DN0101, DN0142D, CI0101, CM0101, CM0203)
 
 ### 1.5 Workload (บังคับถ้าจะคำนวณ “จำนวนที่ต้องเพิ่ม”)
 - OPD visits/วัน
@@ -83,17 +83,17 @@
 ### 3.1 Outcome A-H (ใช้ยืนยันระดับระบบ)
 - **A01** Crude Death Rate (`ต่ำ=ดี`, threshold `3.5%`)
 - **A04** AMI Mortality (`ต่ำ=ดี`, threshold `8%`)
-- **A09** Septicemia Mortality (`ต่ำ=ดี`, threshold `20%`)
+- **A09** Septicemia Mortality (`ต่ำ=ดี`, threshold `26%`)
 - **B01** Maternal Mortality (`ต่ำ=ดี`, threshold `70/100k`)
 - **C02** CMI (`สูง=ดี`, threshold `1.5`)
 - **D01** Bed Occupancy (`ช่วงเหมาะสม 80-85%`)
 - **F10** Referral leakage to tertiary (`ต่ำ=ดี`, threshold `15%`)
 
 ### 3.2 Service Plan (ใช้ชี้เป้าสาขาเฉพาะทาง)
-- **DH0101** STEMI mortality (`<12%`) -> Interventional cardio + CCU/Cath nurse
-- **DN0101** Stroke mortality (`<15%`) -> Neurologist + Stroke nurse
-- **DN0142** rtPA timely (`>5%`) -> Neuro + ER team
-- **CI0101** Sepsis mortality (`<20%`) -> ID/Internal med + ICU nurse
+- **DH0101** STEMI mortality (`<7.5%`) -> Interventional cardio + CCU/Cath nurse
+- **DN0101** Stroke mortality (`<7%`) -> Neurologist + Stroke nurse
+- **DN0142D** Ischemic Stroke Death with rtPA (`<1`%) -> Neuro + ER team 
+- **CI0101** Sepsis mortality (`<26%`) -> ID/Internal med + ICU nurse
 - **CM0101** Maternal mortality (`<70/100k`) -> OB + labor nurse
 - **CM0203** Neonatal mortality (`<10/1000`) -> Neonatologist + NICU nurse
 

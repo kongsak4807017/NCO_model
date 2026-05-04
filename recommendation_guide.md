@@ -338,7 +338,7 @@ graph LR
 | **STEMI Mortality สูง** | DH0101, DH0102, DH0205 | อายุรแพทย์หัวใจ (Interventional Cardiologist) | พยาบาล CCU / Cath Lab |
 | **STEMI ไม่ได้ PPCI** | DH0110 | อายุรแพทย์หัวใจ + ศัลยแพทย์หัวใจ | พยาบาล Cath Lab |
 | **Stroke Mortality สูง** | DN0101, DN0140, DN0150 | อายุรแพทย์ประสาท (Neurologist) | พยาบาล Stroke Unit |
-| **Ischemic Stroke ไม่ได้ rtPA** | DN0142 | อายุรแพทย์ประสาท + ER Physician | พยาบาล ER / Stroke Fast Track |
+| **Ischemic Stroke Death with rtPA สูง** | DN0142D | อายุรแพทย์ประสาท + ER Physician | พยาบาล ER / Stroke Fast Track |
 | **Hemorrhagic Stroke ผ่าตัดช้า** | DN0132 | ศัลยแพทย์ประสาท (Neurosurgeon) | พยาบาลห้องผ่าตัด (OR Nurse) |
 | **Craniotomy Mortality สูง** | DN0303 | ศัลยแพทย์ประสาท + วิสัญญีแพทย์ | พยาบาล Neuro ICU |
 | **Sepsis Mortality สูง** | CI0101, CI0102 | อายุรแพทย์โรคติดเชื้อ (ID Physician) | พยาบาล ICU |
@@ -396,7 +396,7 @@ graph LR
 | ลำดับ | สาขา | แพทย์ที่ต้องเพิ่ม | พยาบาลที่ต้องเพิ่ม | เหตุผล |
 |:---:|:---|:---|:---|:---|
 | 1 | หัวใจ | อายุรแพทย์หัวใจ Interventional ≥ 1 | พยาบาล CCU ≥ 5 | ดู DH0101 ว่าเกินเกณฑ์? |
-| 2 | ประสาท | อายุรแพทย์ประสาท ≥ 1 | พยาบาล Stroke Unit ≥ 3 | ดู DN0101, DN0142 |
+| 2 | ประสาท | อายุรแพทย์ประสาท ≥ 1 | พยาบาล Stroke Unit ≥ 3 | ดู DN0101, DN0142D |
 | 3 | ทั่วไป | ศัลยแพทย์ทั่วไป ≥ 2 | พยาบาลห้องผ่าตัด ≥ 5 | รพท. ระดับ A ต้องผ่าตัดได้ 24 ชม. |
 | 4 | ฟื้นฟู | แพทย์เวชศาสตร์ฟื้นฟู ≥ 1 | นักกายภาพ ≥ 5 | RH0101 - Stroke PT |
 | 5 | จิตเวช | จิตแพทย์ ≥ 1 | พยาบาลจิตเวช ≥ 2 | PS0001 - ภาคเหนือฆ่าตัวตายสูง |
