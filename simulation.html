@@ -21,6 +21,7 @@
     </div>
     <div class="header-right">
       <span class="badge" id="dataStatus">Loading data...</span>
+      <span class="badge badge-muted" id="mockStatus">Mock inactive</span>
     </div>
   </header>
 
@@ -36,6 +37,7 @@
       <span class="step-number">0</span>
       <div><h2>เลือกโรงพยาบาล</h2><p>Select a hospital to begin NCO analysis</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide0"></div>
     <div class="hospital-grid" id="hospitalGrid"></div>
   </section>
 
@@ -45,6 +47,7 @@
       <span class="step-number">1</span>
       <div><h2>ตรวจสอบคุณภาพข้อมูล</h2><p>Data Quality Check (G01-G04)</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide1"></div>
     <div class="alert-box" id="dqAlert"></div>
     <div class="metrics-grid" id="dqMetrics"></div>
     <div class="step-verdict" id="dqVerdict"></div>
@@ -56,6 +59,7 @@
       <span class="step-number">2</span>
       <div><h2>วิเคราะห์ภาระสุขภาพ (NEED)</h2><p>Health Need Index</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide2"></div>
     <div class="two-col">
       <div class="card" id="popCard"></div>
       <div class="card">
@@ -108,8 +112,10 @@
       <span class="step-number">3</span>
       <div><h2>วิเคราะห์กำลังคน (CAPACITY)</h2><p>Workforce Capacity Index</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide3"></div>
     <div class="metrics-grid" id="wfMetrics"></div>
     <div class="card" id="wciCard"></div>
+    <div class="card" id="serviceMatrixCard"></div>
   </section>
 
   <!-- Step 4: Gap -->
@@ -118,6 +124,7 @@
       <span class="step-number">4</span>
       <div><h2>วิเคราะห์ GAP</h2><p>ภาระ vs กำลังคน</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide4"></div>
     <div class="gap-display" id="gapDisplay"></div>
     <div class="decision-matrix" id="decisionMatrix"></div>
   </section>
@@ -128,6 +135,7 @@
       <span class="step-number">5</span>
       <div><h2>ตรวจย้อนกลับ Performance A-H</h2><p>Outcome Validation</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide5"></div>
     <div class="metrics-grid perf-grid" id="perfMetrics"></div>
     <div class="step-verdict" id="perfVerdict"></div>
   </section>
@@ -138,6 +146,7 @@
       <span class="step-number">6</span>
       <div><h2>เจาะลึก Service Plan</h2><p>Specialty Targeting</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide6"></div>
     <div class="sp-issues" id="spIssues"></div>
   </section>
 
@@ -147,7 +156,9 @@
       <span class="step-number">7</span>
       <div><h2>สรุปข้อเสนอเชิงนโยบาย</h2><p>Policy Recommendations</p></div>
     </div>
+    <div class="mock-guide-slot" id="mockGuide7"></div>
     <div class="recommendations" id="recommendations"></div>
+    <div class="card" id="analysisRunHistoryCard"></div>
     <div class="actions-bar">
       <button onclick="window.print()" class="btn btn-print">พิมพ์รายงาน</button>
       <button onclick="goToStep(0)" class="btn btn-restart">เริ่มใหม่</button>
@@ -206,6 +217,16 @@ Score = (Σ Weight_i * Norm_Factor_i) / Total_Weight * 100
       <p style="font-size:13px;color:var(--text2);margin-bottom:15px">ข้อมูลอ้างอิง: การสูญเสียปีสุขภาวะของประชากรไทย (Disability-Adjusted Life Year) จำแนกตามเพศ และช่วงอายุ 10 อันดับแรก จาก 175 รายโรคเฉพาะ</p>
       <div class="daly-tabs" id="dalyTabs"></div>
       <div class="daly-table-container" id="dalyTableContainer"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="dictionaryModal" onclick="if(event.target===this) closeDictionaryModal()">
+    <div class="modal-content" style="max-width:760px">
+      <div class="modal-header">
+        <h2 id="dictionaryModalTitle">Data Dictionary</h2>
+        <button class="close-btn" onclick="closeDictionaryModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="dictionaryModalBody"></div>
     </div>
   </div>
 

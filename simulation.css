@@ -181,6 +181,15 @@ body {
   padding-top:0;
   border-top:none;
 }
+#mockProfilePanelHost {
+  /* Ensure the mock loader panel never visually touches the last hospital card. */
+  margin-top: 16px;
+  padding-top: 16px;
+}
+#mockProfilePanelHost:empty {
+  display: none;
+  margin-top: 0;
+}
 .mock-panel-title {
   display:flex;
   align-items:center;
