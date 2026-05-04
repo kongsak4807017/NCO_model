@@ -6,6 +6,7 @@
 *.py
 *.csv
 !data_inputV1.csv
+!templates/hr_forecast_template.csv
 !API/*.py
 !API/etl/*.py
 !scripts/*.py
@@ -36,6 +37,7 @@ __pycache__/
 
 # Debug artifacts / screenshots (keep computed JSONs explicit if needed)
 output/*.png
+output/hr_forecast_results.json
 output_step*.png
 debug_*.json
 _tmp_*
