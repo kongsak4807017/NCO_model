@@ -34,6 +34,171 @@
 
 ---
 
+# วิธีคำนวณและตรวจสอบย้อนกลับ (Supervisor Traceability)
+
+ส่วนนี้อธิบายว่า “แต่ละตัวเลขในรายงาน” มาจากไหน คำนวณอย่างไร และ supervisor ตรวจซ้ำได้อย่างไร (reproducible)
+
+## A) ประชากรรายจังหวัด (Population)
+
+**ที่มา:** `health_metrics_analysis_report.md` (ตาราง HDC ปี 2569)  
+**วิธีดึง:** สคริปต์อ่านตาราง Markdown แล้ว parse แถวรูปแบบ
+
+`| **<จังหวัด>** | <ชาย> | <หญิง> | **<รวม>** |`
+
+**ตัวเลขที่ใช้ในตารางรายงาน:**
+- `population` ใน `output/hr_blueprint_provincial_baseline_region1.json`
+
+## B) จำนวน “กำลังคน” (filled headcount) ใน 3 วิชาชีพหลัก
+
+**ที่มา:** `hr_blueprint.db`  
+**นิยามที่ใช้ในงานนี้:** นับจำนวน assignment ที่ active และผูกกับ position ที่ status = filled โดย group ตามจังหวัดของหน่วยบริการ
+
+**วิชาชีพที่นับ (position_name_th):**
+- แพทย์ = `นายแพทย์`
+- พยาบาลวิชาชีพ = `พยาบาลวิชาชีพ`
+- เภสัชกร = `เภสัชกร`
+
+**SQL logic (สรุป):**
+```sql
+select
+  ou.province_code,
+  p.position_name_th,
+  count(*) as n
+from assignment a
+join position p on p.position_id = a.position_id
+join organizational_unit ou on ou.unit_id = a.unit_id
+where a.status = 'active'
+  and p.position_status = 'filled'
+  and p.position_name_th in ('นายแพทย์','พยาบาลวิชาชีพ','เภสัชกร')
+group by ou.province_code, p.position_name_th;
+```
+
+**ตัวเลขที่ใช้ในตารางรายงาน:**
+- `doctor`, `nurse`, `pharmacist` ใน JSON output
+
+## C) อัตราต่อ 10,000 ประชากร (per 10k)
+
+**สูตร:**
+- `rate_per10k = headcount / population * 10,000`
+
+**ตัวเลขที่ใช้ในตารางรายงาน:**
+- `doctor_per10k`, `nurse_per10k`, `pharmacist_per10k`
+
+## D) Vacancy (ตำแหน่งว่าง)
+
+**ที่มา:** `hr_blueprint.db` ตาราง `position` + `organizational_unit`  
+**นิยาม:** นับตำแหน่งที่ `position_status='vacant'` แล้ว group ตามจังหวัดของ unit นั้น
+
+**SQL logic (vacant ทั้งหมด):**
+```sql
+select
+  ou.province_code,
+  count(*) as vacant_all
+from position p
+join organizational_unit ou on ou.unit_id = p.unit_id
+where p.position_status = 'vacant'
+group by ou.province_code;
+```
+
+**SQL logic (vacant เฉพาะ 3 วิชาชีพหลัก):**
+```sql
+select
+  ou.province_code,
+  p.position_name_th,
+  count(*) as vacant_n
+from position p
+join organizational_unit ou on ou.unit_id = p.unit_id
+where p.position_status = 'vacant'
+  and p.position_name_th in ('นายแพทย์','พยาบาลวิชาชีพ','เภสัชกร')
+group by ou.province_code, p.position_name_th;
+```
+
+**ตัวเลขที่ใช้ในรายงาน:**
+- `vacant_all`, `vacant_doctor`, `vacant_nurse`, `vacant_pharmacist`
+
+## E) Retirement Risk ภายใน 5 ปี (retire_5y)
+
+**ที่มา:** `hr_blueprint.db` ตาราง `personnel` + join `assignment` + join `organizational_unit`  
+**นิยาม:** บุคลากรที่มี `retirement_date` และ `retirement_date <= 4 พฤษภาคม 2574` และเป็น active
+
+**SQL logic (รวมทุกตำแหน่ง):**
+```sql
+select
+  ou.province_code,
+  count(*) as retire_5y_all
+from personnel per
+join assignment a on a.personnel_id = per.personnel_id
+join organizational_unit ou on ou.unit_id = a.unit_id
+where per.retirement_date is not null
+  and date(per.retirement_date) <= date('2031-05-04')
+  and per.is_active = 1
+  and a.status = 'active'
+group by ou.province_code;
+```
+
+**SQL logic (แยก 3 วิชาชีพหลัก):**
+```sql
+select
+  ou.province_code,
+  p.position_name_th,
+  count(*) as retire_5y_n
+from personnel per
+join assignment a on a.personnel_id = per.personnel_id
+join position p on p.position_id = a.position_id
+join organizational_unit ou on ou.unit_id = a.unit_id
+where per.retirement_date is not null
+  and date(per.retirement_date) <= date('2031-05-04')
+  and per.is_active = 1
+  and a.status = 'active'
+  and p.position_status = 'filled'
+  and p.position_name_th in ('นายแพทย์','พยาบาลวิชาชีพ','เภสัชกร')
+group by ou.province_code, p.position_name_th;
+```
+
+**ตัวเลขที่ใช้ในรายงาน:**
+- `retire_5y_all`, `retire_5y_doctor`, `retire_5y_nurse`, `retire_5y_pharmacist`
+
+## F) Benchmark ภายในเขต: Median และ P75
+
+**ที่มา:** คำนวณจากค่า per10k ของ “ทั้ง 8 จังหวัด” ในเขตสุขภาพที่ 1  
+**Median:** ใช้ median ปกติของชุดข้อมูล 8 ค่า  
+**P75:** ใช้วิธี nearest-rank (ชุดเล็ก N=8):
+- เรียงค่าจากน้อยไปมาก แล้วเลือกตำแหน่ง `ceil(0.75*N)`
+
+**ตัวเลข benchmark อยู่ใน:**
+- `benchmarks_per10k` ใน JSON output
+
+## G) Target / GAP (floor: median, stretch: P75)
+
+นิยาม GAP ในรายงานนี้เป็น “จำนวน headcount เพิ่ม (ถ้าติดลบถือว่า 0 ในตารางสรุป)” เพื่อให้จังหวัด “ขึ้นถึง benchmark ต่อ 10k” ตามประชากรของจังหวัดนั้น
+
+**สูตร target headcount:**
+- `target = ceil(benchmark_rate_per10k * population / 10,000)`
+
+**สูตร GAP:**
+- `gap = target - current_headcount`
+
+**ตัวเลขที่ใช้ในรายงาน:**
+- `*_target_median`, `*_gap_median`
+- `*_target_p75`, `*_gap_p75`
+
+## H) วิธี supervisor ตรวจซ้ำ (Reproducibility Checklist)
+
+1. ตรวจ population ตั้งต้น: เปิด `health_metrics_analysis_report.md` แล้วดูตาราง HDC ปี 2569 (8 จังหวัด)
+2. รันสคริปต์คำนวณใหม่:
+   - `python scripts/generate_region1_provincial_hr_baseline.py`
+3. เปิดผลลัพธ์:
+   - `output/hr_blueprint_provincial_baseline_region1.json`
+4. ตรวจว่าใน JSON:
+   - `rows` มี 8 แถว (8 จังหวัด)
+   - `population` ตรงกับ HDC table
+   - ผลรวม `doctor/nurse/pharmacist` รวมทั้งเขตตรงกับสรุปใน Executive Summary
+5. หากต้องการตรวจเชิงลึก ให้ run SQL ตัวอย่างในหัวข้อ B–E กับ `hr_blueprint.db`
+
+---
+
+---
+
 # ผลการศึกษา “ตามบทบาทและหน้าที่” ของคณะกรรมการ HR Blueprint (6 ข้อ)
 
 ## 1) วิเคราะห์สถานการณ์กำลังคนและความต้องการบริการด้านสุขภาพเชิงพื้นที่ (ภาพรายจังหวัด)
@@ -193,4 +358,3 @@
 | แม่ฮ่องสอน | 304 | 173 | 2 | 45 | 0 |
 
 ไฟล์อ้างอิงผลคำนวณ: `output/hr_blueprint_provincial_baseline_region1.json`
-
