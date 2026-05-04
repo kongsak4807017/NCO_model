@@ -6,6 +6,9 @@
 *.py
 *.csv
 !data_inputV1.csv
+!API/*.py
+!API/etl/*.py
+!scripts/*.py
 
 # Exclude temporary files
 /tmp/
@@ -16,3 +19,23 @@ _agents/
 _agent/
 node_modules/
 .DS_Store
+
+# Python cache / local artifacts
+__pycache__/
+*.pyc
+
+# OMX runtime state (local only)
+.omx/
+
+# Debug artifacts / screenshots (keep computed JSONs explicit if needed)
+output/*.png
+output_step*.png
+debug_*.json
+_tmp_*
+tmp_*.json
+pp_*_summary.json
+pp_shortlist_extract_*.json
+progression*.md
+deploy/
+API/data/
+API/**/__pycache__/
