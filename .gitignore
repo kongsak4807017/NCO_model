@@ -10,6 +10,13 @@
 !API/etl/*.py
 !scripts/*.py
 
+# API one-off extraction utilities (keep out of release/PR by default)
+API/discover_api_patterns.py
+API/extract_general_api.py
+API/extract_pp_hdc.py
+API/get_cats_api.py
+API/scan_all_api_endpoints*.py
+
 # Exclude temporary files
 /tmp/
 .gemini/
@@ -39,3 +46,5 @@ progression*.md
 deploy/
 API/data/
 API/**/__pycache__/
+output/playwright/
+API/debug_hdc_view_state.py

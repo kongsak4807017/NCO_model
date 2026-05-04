@@ -44,10 +44,10 @@ if errorlevel 1 (
 )
 
 echo [INFO] Checking Python packages...
-python -c "import fastapi, uvicorn, pandas, pydantic, playwright" >nul 2>&1
+python -c "import fastapi, uvicorn, pandas, pydantic, playwright, requests" >nul 2>&1
 if errorlevel 1 (
   echo [INFO] Installing required packages for local simulator...
-  python -m pip install fastapi uvicorn pandas pydantic playwright
+  python -m pip install fastapi uvicorn pandas pydantic playwright requests
   if errorlevel 1 (
     echo [ERROR] Package installation failed.
     exit /b 1
