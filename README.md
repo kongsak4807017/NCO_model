@@ -11,6 +11,9 @@
 *   `simulation.html`: หน้าหลักของหน้าจอจำลอง (7-Step Wizard)
 *   `simulation.js`: เอนจิ้นคำนวณและประมวลผลข้อมูล
 *   `simulation.css`: การตกแต่งหน้าจอ Premium Dark Theme
+*   `Simulator_HR_blueprint.html`: ระบบจำลอง HR Blueprint รายจังหวัด/อำเภอ/รพ. พร้อม projection 5 ปี และ export Excel/report.txt
+*   `Simulator_HR_blueprint.js`: เอนจิ้นคำนวณ Need/Supply/GAP/Suggested Add ของ HR Blueprint simulator
+*   `Simulator_HR_blueprint.css`: การตกแต่งหน้าจอ HR Blueprint simulator
 *   `data_inputV1.csv`: **(สำคัญที่สุด)** ฐานข้อมูลหลักที่รวมข้อมูลประชากร (HDC), ผลงาน (CMI) และบุคลากร
 
 ### 2. ไฟล์การนำเสนอ (Pitch Deck)
@@ -25,12 +28,18 @@
 ---
 
 ## 🚀 วิธีการใช้งาน
-1. **Local:** สามารถเปิดไฟล์ `pitch_deck.html` หรือ `simulation.html` ได้โดยตรงผ่านบราวเซอร์
+1. **Local:** สามารถเปิดไฟล์ `index.html`, `simulation.html` หรือ `Simulator_HR_blueprint.html` ได้โดยตรงผ่านบราวเซอร์
 2. **GitHub Pages:**
    *   Upload ไฟล์ทั้งหมดขึ้น Repository
    *   ไปที่ **Settings > Pages**
    *   เลือก Branch เป็น `main` และกด **Save**
    *   ระบบจะสร้าง URL ให้เข้าใช้งานผ่านเว็บได้ทันที
+
+### Direct Links เมื่อเปิด GitHub Pages
+
+*   Pitch deck: `https://kongsak4807017.github.io/NCO_model/`
+*   NCO Simulation: `https://kongsak4807017.github.io/NCO_model/simulation.html`
+*   HR Blueprint Simulator: `https://kongsak4807017.github.io/NCO_model/Simulator_HR_blueprint.html`
 
 ## 🛠 เทคโนโลยีที่ใช้
 - **PapaParse:** สำหรับประมวลผลไฟล์ CSV ขนาดใหญ่ในบราวเซอร์
