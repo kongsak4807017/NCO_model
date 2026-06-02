@@ -38,6 +38,72 @@ End
 
 ---
 
+## 2.1) Step Linkage and Operating Flow
+
+ทุกขั้นตอนเชื่อมกันผ่าน `scenario_state` ชุดเดียว ไม่ใช่หน้าจอแยกกันทำแบบขาดตอน ข้อมูลที่ผู้ใช้กรอกหรือระบบคำนวณในแต่ละหน้า จะถูกส่งต่อเป็น input ของหน้าถัดไป และถูกเก็บไว้เพื่อ supervisor review/export ตอนท้าย
+
+```text
+scenario_state =
+  scenario_header
+  selected_scope
+  baseline_snapshot
+  selected_professions
+  need_assumptions_by_year
+  supply_movements_by_year
+  policy_rules
+  projection_results
+  recommendations
+  supervisor_trace
+```
+
+| Step | ผู้ใช้ทำอะไร | ระบบประมวลผลอะไร | Output ที่ส่งต่อ |
+|---|---|---|---|
+| 0 Scenario | สร้าง/เลือก scenario และช่วงปี | สร้าง `scenario_id`, กำหนด status = Draft | `scenario_header` |
+| 1 Scope | เลือกจังหวัด/อำเภอ/รพ./เครือข่าย | ตรวจรหัสพื้นที่และหา unit ในฐานข้อมูล | `selected_scope` |
+| 2 Baseline | ตรวจ baseline และยืนยันว่าจะใช้ข้อมูลชุดนี้ | โหลด population, workforce, vacancy, retire_5y, confidence | `baseline_snapshot` |
+| 3 Profession | เลือกวิชาชีพและ target mode | map วิชาชีพกับ dictionary/benchmark | `selected_professions`, `target_policy` |
+| 4 Need | ปรับ population/burden/workload รายปี | สร้าง payload รายปีสำหรับ NCO need engine | `need_assumptions_by_year` |
+| 5 Supply | ใส่คนเข้า/ออก/เกษียณ/ย้าย รายปี | คำนวณ projected headcount/FTE ต่อเนื่อง 5 ปี | `supply_movements_by_year`, `projected_supply` |
+| 6 Policy | เลือก staffing/risk/feasibility rules | ตั้ง risk threshold และ intervention option | `policy_rules` |
+| 7 Run | กด run projection | เรียก NCO need engine, รวมกับ projected supply, คำนวณ gap | `projection_results` |
+| 8 Results | ดูผล Need/Supply/GAP รายปี | สรุป gap, risk, suggested add, net outflow | `projection_summary` |
+| 9 Recommendation | เลือก/ทบทวนข้อเสนอ | แปลง gap/risk เป็น intervention portfolio | `recommendations` |
+| 10 Compare | เปรียบเทียบ scenario | ranking ตาม gap reduction, risk, feasibility | `scenario_comparison` |
+| 11 Supervisor | ตรวจแหล่งข้อมูล สูตร และ assumption | สร้าง audit trail และ approval status | `supervisor_trace` |
+| 12 Export | เลือกรูปแบบรายงาน | สร้าง report/CSV/JSON จาก state ทั้งหมด | `export_package` |
+| 13 Settings | ปรับ dictionary/benchmark/risk rules | อัปเดต config สำหรับ scenario ถัดไป | `system_config` |
+
+## 2.2) Data Handoff Diagram
+
+```text
+Scenario
+  -> Scope
+  -> Baseline Snapshot
+  -> Profession + Target Policy
+  -> Need Assumptions by Year
+  -> Supply Movements by Year
+  -> Policy Rules
+  -> Projection Engine
+  -> Results
+  -> Recommendations
+  -> Supervisor Trace
+  -> Export Package
+```
+
+## 2.3) Validation Gates
+
+| Gate | ตรวจอะไร | ถ้าไม่ผ่าน |
+|---|---|---|
+| Scope Gate | เลือกพื้นที่ครบและ match ฐานข้อมูล | ห้ามไป Baseline |
+| Baseline Gate | มี population + workforce baseline | ให้ user override หรือ mark provisional |
+| Profession Gate | เลือกอย่างน้อย 1 วิชาชีพ | ห้ามไป Need |
+| Need Gate | มีค่า need parameters ครบทุกปี | ห้าม Run |
+| Supply Gate | มี movement table ครบทุกปี/วิชาชีพ | ห้าม Run |
+| Run Gate | need + supply + rules พร้อม | run projection ได้ |
+| Supervisor Gate | source/formula/assumption ครบ | approve/export ได้ |
+
+---
+
 ## 3) Information Architecture
 
 เมนูหลักด้านซ้าย:
