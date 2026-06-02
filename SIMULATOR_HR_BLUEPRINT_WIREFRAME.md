@@ -401,7 +401,7 @@ projected_fte(year) = projected_headcount(year) * fte_factor
 
 ## Purpose
 
-เพิ่มข้อจำกัดเชิงนโยบายที่ส่งผลต่อคำตอบ เช่น budget cap, minimum staffing, retention package
+เพิ่มข้อจำกัดเชิงนโยบายที่ส่งผลต่อคำตอบ เช่น minimum staffing, vacancy risk, retirement risk และ intervention option โดยยังไม่รวมตัวแปรด้านงบประมาณในระยะนี้
 
 ## Wireframe
 
@@ -409,8 +409,9 @@ projected_fte(year) = projected_headcount(year) * fte_factor
 +--------------------------------------------------------------------------------+
 | Step 6: Constraint & Policy Rules                                               |
 +--------------------------------------------------------------------------------+
-| Budget Constraint                                                               |
-| [ ] ไม่จำกัดงบ   [x] จำกัดงบต่อปี: [20,000,000] บาท                            |
+| Policy Scope                                                                    |
+| [x] ยังไม่รวมตัวแปรด้านงบประมาณใน phase นี้                                   |
+| [x] ใช้เฉพาะ staffing / risk / feasibility rules                                |
 |                                                                                |
 | Staffing Rules                                                                  |
 | [x] ห้ามต่ำกว่า service minimum                                                |
@@ -432,7 +433,6 @@ projected_fte(year) = projected_headcount(year) * fte_factor
 
 | Field | Type | Required | Source |
 |---|---|---:|---|
-| budget_cap_by_year | number | no | user |
 | minimum_staffing_rule | toggle | no | policy |
 | vacancy_risk_threshold | number | no | policy |
 | retirement_risk_threshold | number | no | policy |
@@ -508,8 +508,8 @@ projected_fte(year) = projected_headcount(year) * fte_factor
 +--------------------------------------------------------------------------------+
 | Summary Cards                                                                   |
 | +-------------+ +-------------+ +-------------+ +-------------+                |
-| | Total Gap   | | High Risk   | | Replacement | | Budget Need |                |
-| | 86 FTE      | | 3 Prof      | | 42 คน       | | 18.4M       |                |
+| | Total Gap   | | High Risk   | | Replacement | | Net Outflow |                |
+| | 86 FTE      | | 3 Prof      | | 42 คน       | | 18 คน       |                |
 | +-------------+ +-------------+ +-------------+ +-------------+                |
 |                                                                                |
 | Results Table                                                                   |
@@ -581,7 +581,7 @@ projected_fte(year) = projected_headcount(year) * fte_factor
 | gap_fte <= 0 แต่ outcome แย่ | process redesign |
 | retirement_out สูง | replacement pipeline |
 | vacancy สูง | recruitment bottleneck + incentive |
-| budget cap ต่ำ | rotation/telehealth/skill mix |
+| feasibility ต่ำ | rotation/telehealth/skill mix |
 
 ---
 
@@ -603,7 +603,7 @@ projected_fte(year) = projected_headcount(year) * fte_factor
 | | Metric            | Base       | Retention  | Recruit    | Best           |   |
 | +-------------------+------------+------------+------------+----------------+   |
 | | Total Gap 5Y      | 214 FTE    | 166 FTE    | 88 FTE     | Recruit        |   |
-| | Budget            | 0          | 8M         | 25M        | Retention      |   |
+| | Recruit Volume    | 0          | 24 คน      | 72 คน      | Retention      |   |
 | | High Risk Years   | 5          | 4          | 2          | Recruit        |   |
 | | Feasibility       | High       | Medium     | Low        | Base           |   |
 | +-------------------+------------+------------+------------+----------------+   |
@@ -893,4 +893,3 @@ projected_fte(year) = projected_headcount(year) * fte_factor
 | MEDIUM | ทำ report export แบบ A4 HTML |
 | MEDIUM | เพิ่ม district-level archetype rules |
 | LOW | เพิ่ม budget optimization เมื่อข้อมูล cost พร้อม |
-
