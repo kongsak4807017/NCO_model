@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulator HR Blueprint</title>
+  <link rel="stylesheet" href="Simulator_HR_blueprint.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-block">
+        <div class="brand-mark">HR</div>
+        <div>
+          <h1>HR Blueprint</h1>
+          <p>5-Year Projection Simulator</p>
+        </div>
+      </div>
+      <nav class="step-nav" aria-label="Workflow">
+        <button class="step-link active" data-section="scenario">1. Scenario</button>
+        <button class="step-link" data-section="scope">2. Scope</button>
+        <button class="step-link" data-section="baseline">3. Baseline</button>
+        <button class="step-link" data-section="profession">4. Profession</button>
+        <button class="step-link" data-section="need">5. Need</button>
+        <button class="step-link" data-section="supply">6. Supply</button>
+        <button class="step-link" data-section="results">7. Results</button>
+        <button class="step-link" data-section="trace">8. Trace</button>
+      </nav>
+      <div class="sidebar-note">
+        <strong>Scope</strong>
+        <span id="sideScope">ยังไม่เลือกพื้นที่</span>
+      </div>
+      <div class="sidebar-note">
+        <strong>Status</strong>
+        <span id="sideStatus">Draft</span>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Simulator_HR_blueprint.html</p>
+          <h2>ระบบจำลองอัตรากำลังรายพื้นที่</h2>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn secondary" id="btnLoadBaseline">โหลด Baseline</button>
+          <button class="btn primary" id="btnRun">คำนวณ Projection</button>
+        </div>
+      </header>
+
+      <section class="panel" id="scenario">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">1</span>
+            <h3>Scenario Workspace</h3>
+          </div>
+          <p>กำหนดชื่อ scenario และช่วงเวลาพยากรณ์ 5 ปี</p>
+        </div>
+        <div class="grid cols-3">
+          <label class="field">
+            <span>ชื่อ Scenario</span>
+            <input id="scenarioName" type="text" value="HR Blueprint 5Y Projection">
+          </label>
+          <label class="field">
+            <span>ปีเริ่มต้น (พ.ศ.)</span>
+            <input id="startYear" type="number" min="2500" max="2600" value="2569">
+          </label>
+          <label class="field">
+            <span>จำนวนปี</span>
+            <input id="yearCount" type="number" min="1" max="10" value="5">
+          </label>
+        </div>
+      </section>
+
+      <section class="panel" id="scope">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">2</span>
+            <h3>Scope Selector</h3>
+          </div>
+          <p>เลือกจังหวัด อำเภอ และโรงพยาบาล/หน่วยบริการ</p>
+        </div>
+        <div class="grid cols-4">
+          <label class="field">
+            <span>จังหวัด</span>
+            <select id="provinceSelect"></select>
+          </label>
+          <label class="field">
+            <span>อำเภอ</span>
+            <input id="amphurName" type="text" placeholder="เช่น เมืองเชียงใหม่">
+          </label>
+          <label class="field">
+            <span>โรงพยาบาล/หน่วยบริการ</span>
+            <input id="unitName" type="text" placeholder="เช่น นครพิงค์">
+          </label>
+          <label class="field">
+            <span>ระดับการคำนวณ</span>
+            <select id="scopeMode">
+              <option value="province">จังหวัด</option>
+              <option value="district">อำเภอ</option>
+              <option value="hospital" selected>โรงพยาบาล</option>
+              <option value="network">เครือข่ายบริการ</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel" id="baseline">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">3</span>
+            <h3>Baseline Data Check</h3>
+          </div>
+          <p>ระบบตั้งต้นจาก province baseline และเปิดให้แก้ตัวเลขก่อนคำนวณ</p>
+        </div>
+        <div class="summary-grid">
+          <div class="metric">
+            <span>Population</span>
+            <strong id="metricPopulation">-</strong>
+          </div>
+          <div class="metric">
+            <span>Vacancy</span>
+            <strong id="metricVacancy">-</strong>
+          </div>
+          <div class="metric">
+            <span>Retire <= 5Y</span>
+            <strong id="metricRetire">-</strong>
+          </div>
+          <div class="metric">
+            <span>Confidence</span>
+            <strong id="metricConfidence">B</strong>
+          </div>
+        </div>
+        <div class="grid cols-4 compact-grid">
+          <label class="field">
+            <span>ประชากรตั้งต้น</span>
+            <input id="populationBase" type="number" min="0">
+          </label>
+          <label class="field">
+            <span>Vacancy ทั้งหมด</span>
+            <input id="vacancyAll" type="number" min="0">
+          </label>
+          <label class="field">
+            <span>เกษียณ <=5 ปี ทั้งหมด</span>
+            <input id="retireAll" type="number" min="0">
+          </label>
+          <label class="field">
+            <span>Confidence</span>
+            <select id="confidenceLevel">
+              <option value="A">A: verified</option>
+              <option value="B" selected>B: usable</option>
+              <option value="C">C: provisional</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel" id="profession">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">4</span>
+            <h3>Profession Selector</h3>
+          </div>
+          <p>เลือกวิชาชีพและ target rate ต่อ 10,000 ประชากร</p>
+        </div>
+        <div class="tool-row">
+          <label class="field inline">
+            <span>Target Mode</span>
+            <select id="targetMode">
+              <option value="median" selected>Region Median</option>
+              <option value="p75">Region P75</option>
+              <option value="custom">Custom Target</option>
+            </select>
+          </label>
+          <button class="btn secondary" id="btnSelectCore">เลือก 3 วิชาชีพหลัก</button>
+          <button class="btn ghost" id="btnClearProfessions">ล้างการเลือก</button>
+        </div>
+        <div class="profession-grid" id="professionGrid"></div>
+      </section>
+
+      <section class="panel" id="need">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">5</span>
+            <h3>Need Parameters</h3>
+          </div>
+          <p>ปรับ population, burden และ workload รายปี</p>
+        </div>
+        <div class="table-shell">
+          <table class="data-table" id="needTable">
+            <thead>
+              <tr>
+                <th>ปี</th>
+                <th>Population</th>
+                <th>Elderly %</th>
+                <th>Chronic %</th>
+                <th>Mental /100k</th>
+                <th>Workload Index</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="supply">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">6</span>
+            <h3>Supply Projection</h3>
+          </div>
+          <p>ใส่จำนวนคนเข้า/ออกในแต่ละปี ระบบจะคำนวณ supply ต่อเนื่อง 5 ปี</p>
+        </div>
+        <div class="tool-row">
+          <label class="field inline">
+            <span>แสดงวิชาชีพ</span>
+            <select id="supplyProfessionFilter"></select>
+          </label>
+          <button class="btn secondary" id="btnAutoRetire">กระจายเกษียณจาก baseline</button>
+        </div>
+        <div class="table-shell tall">
+          <table class="data-table" id="supplyTable">
+            <thead>
+              <tr>
+                <th>วิชาชีพ</th>
+                <th>ปี</th>
+                <th>Current</th>
+                <th>Recruit</th>
+                <th>Transfer In</th>
+                <th>Return In</th>
+                <th>Retire</th>
+                <th>Resign</th>
+                <th>Transfer Out</th>
+                <th>Study Leave</th>
+                <th>FTE Factor</th>
+                <th>Projected</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="results">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">7</span>
+            <h3>Projection Results</h3>
+          </div>
+          <p>ผล Need / Supply / GAP / Suggested Add รายปี</p>
+        </div>
+        <div class="summary-grid">
+          <div class="metric danger">
+            <span>Total Positive GAP</span>
+            <strong id="summaryGap">0 FTE</strong>
+          </div>
+          <div class="metric">
+            <span>High Risk Rows</span>
+            <strong id="summaryRisk">0</strong>
+          </div>
+          <div class="metric">
+            <span>Replacement Out</span>
+            <strong id="summaryReplacement">0 คน</strong>
+          </div>
+          <div class="metric">
+            <span>Net Outflow</span>
+            <strong id="summaryNetOutflow">0 คน</strong>
+          </div>
+        </div>
+        <div class="table-shell tall">
+          <table class="data-table" id="resultTable">
+            <thead>
+              <tr>
+                <th>ปี</th>
+                <th>วิชาชีพ</th>
+                <th>Need FTE</th>
+                <th>Supply FTE</th>
+                <th>GAP FTE</th>
+                <th>Suggested Add</th>
+                <th>Reallocate</th>
+                <th>Risk</th>
+                <th>Recommendation</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="trace">
+        <div class="panel-header">
+          <div>
+            <span class="section-num">8</span>
+            <h3>Supervisor Trace & Export</h3>
+          </div>
+          <p>แสดงสูตร แหล่งข้อมูล และส่งออกผลลัพธ์</p>
+        </div>
+        <div class="trace-layout">
+          <div class="trace-box">
+            <h4>Formula</h4>
+            <pre id="formulaText"></pre>
+          </div>
+          <div class="trace-box">
+            <h4>Source / Assumption</h4>
+            <pre id="sourceText"></pre>
+          </div>
+        </div>
+        <div class="export-actions">
+          <button class="btn primary" id="btnExportExcel">ส่งออก Excel (.xls)</button>
+          <button class="btn secondary" id="btnExportReport">ส่งออก report.txt</button>
+          <button class="btn ghost" id="btnExportJson">ส่งออก JSON</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="Simulator_HR_blueprint.js"></script>
+</body>
+</html>
