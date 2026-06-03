@@ -13,7 +13,7 @@
         <div class="brand-mark">HR</div>
         <div>
           <h1>HR Blueprint</h1>
-          <p>5-Year Projection Simulator</p>
+          <p>WISN 5-Year Simulator</p>
         </div>
       </div>
       <nav class="step-nav" aria-label="Workflow">
@@ -40,7 +40,7 @@
       <header class="topbar">
         <div>
           <p class="eyebrow">Simulator_HR_blueprint.html</p>
-          <h2>ระบบจำลองอัตรากำลังรายพื้นที่</h2>
+          <h2>ระบบจำลองอัตรากำลังแบบ WISN รายพื้นที่</h2>
         </div>
         <div class="topbar-actions">
           <button class="btn secondary" id="btnLoadBaseline">โหลด Baseline</button>
@@ -133,7 +133,7 @@
         </div>
         <div class="grid cols-4 compact-grid">
           <label class="field">
-            <span>ประชากรตั้งต้น</span>
+            <span>ประชากรรับผิดชอบ/พื้นที่บริการ</span>
             <input id="populationBase" type="number" min="0">
           </label>
           <label class="field">
@@ -161,45 +161,115 @@
             <span class="section-num">4</span>
             <h3>Profession Selector</h3>
           </div>
-          <p>เลือกวิชาชีพและ target rate ต่อ 10,000 ประชากร</p>
+          <p>เลือกวิชาชีพ กำลังคนจริง และมาตรฐาน WISN ที่ใช้แปลง workload เป็น demand minutes</p>
         </div>
         <div class="tool-row">
           <label class="field inline">
-            <span>Target Mode</span>
+            <span>WISN Standard Mode</span>
             <select id="targetMode">
-              <option value="median" selected>Region Median</option>
-              <option value="p75">Region P75</option>
-              <option value="custom">Custom Target</option>
+              <option value="wisn-default" selected>WISN default</option>
+              <option value="high-complexity">High complexity +10%</option>
+              <option value="custom">Custom standards</option>
             </select>
           </label>
           <button class="btn secondary" id="btnSelectCore">เลือก 3 วิชาชีพหลัก</button>
           <button class="btn ghost" id="btnClearProfessions">ล้างการเลือก</button>
         </div>
         <div class="profession-grid" id="professionGrid"></div>
+        <div class="subsection-head">
+          <div>
+            <h4>Activity Standards (minutes per case)</h4>
+            <p>แก้เวลามาตรฐานต่อกิจกรรมได้รายวิชาชีพ ถ้ามี time-motion หรือ consensus ของโรงพยาบาลให้แทนค่าตรงนี้</p>
+          </div>
+        </div>
+        <div class="table-shell">
+          <table class="data-table standard-table" id="standardTable">
+            <thead>
+              <tr>
+                <th>วิชาชีพ</th>
+                <th>OPD</th>
+                <th>IPD Admit</th>
+                <th>ER</th>
+                <th>OR/Procedure</th>
+                <th>Delivery</th>
+                <th>Chronic</th>
+                <th>Mental</th>
+                <th>Outreach/PP</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </section>
 
       <section class="panel" id="need">
         <div class="panel-header">
           <div>
             <span class="section-num">5</span>
-            <h3>Need Parameters</h3>
+            <h3>WISN Workload Statistics</h3>
           </div>
-          <p>ปรับ population, burden และ workload รายปี</p>
+          <p>ใส่ปริมาณบริการจริงรายปีของอำเภอ/รพ. เพื่อแปลงเป็น demand minutes ตาม WISN</p>
         </div>
         <div class="table-shell">
           <table class="data-table" id="needTable">
             <thead>
               <tr>
                 <th>ปี</th>
-                <th>Population</th>
-                <th>Elderly %</th>
-                <th>Chronic %</th>
-                <th>Mental /100k</th>
-                <th>Workload Index</th>
+                <th>Service Population</th>
+                <th>OPD Visits</th>
+                <th>IPD Admits</th>
+                <th>ER Visits</th>
+                <th>OR/Procedure</th>
+                <th>Delivery</th>
+                <th>Chronic Visits</th>
+                <th>Mental Visits</th>
+                <th>Outreach/PP</th>
+                <th>Complexity</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
+        </div>
+        <div class="subsection-head">
+          <div>
+            <h4>Target Need Forecast</h4>
+            <p>คาดการณ์กลุ่มเป้าหมายที่ควรได้รับบริการในพื้นที่ เพื่อไม่ให้ under-service ถูกตีความว่า workload ต่ำ</p>
+          </div>
+        </div>
+        <div class="table-shell tall">
+          <table class="data-table target-table" id="targetNeedTable">
+            <thead>
+              <tr>
+                <th>ปี</th>
+                <th>Health Need Group</th>
+                <th>Target Population / Cases</th>
+                <th>Actual Served</th>
+                <th>Target Coverage %</th>
+                <th>Service Freq / Year</th>
+                <th>Need Complexity</th>
+                <th>Placement</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="explain-grid">
+          <div class="explain-card">
+            <strong>1. พื้นที่บริการ</strong>
+            <span>ใช้ประชากรรับผิดชอบของอำเภอ/รพ. เป็นฐานตั้งต้น ไม่ใช่ประชากรจังหวัดเสมอไป</span>
+          </div>
+          <div class="explain-card">
+            <strong>2. Workload จริง</strong>
+            <span>ใช้จำนวนบริการรายปี OPD, IPD, ER, OR, delivery, chronic, mental และ outreach</span>
+          </div>
+          <div class="explain-card">
+            <strong>3. Target need</strong>
+            <span>คาดการณ์กลุ่มเป้าหมายที่ควรได้รับบริการ เช่น trauma, elderly specialist, CKD, LTC</span>
+          </div>
+          <div class="explain-card">
+            <strong>4. Capacity จริง</strong>
+            <span>ใช้ time standard, AWT, CAS, IAS และ supply เข้า/ออก เพื่อเทียบ Planning FTE กับ Supply FTE</span>
+          </div>
         </div>
       </section>
 
@@ -247,7 +317,7 @@
             <span class="section-num">7</span>
             <h3>Projection Results</h3>
           </div>
-          <p>ผล Need / Supply / GAP / Suggested Add รายปี</p>
+          <p>ผล Required FTE / Supply / GAP / WISN ratio / pressure รายปี</p>
         </div>
         <div class="summary-grid">
           <div class="metric danger">
@@ -259,12 +329,12 @@
             <strong id="summaryRisk">0</strong>
           </div>
           <div class="metric">
-            <span>Replacement Out</span>
+            <span>Coverage Gap</span>
             <strong id="summaryReplacement">0 คน</strong>
           </div>
           <div class="metric">
-            <span>Net Outflow</span>
-            <strong id="summaryNetOutflow">0 คน</strong>
+            <span>Workload Gap</span>
+            <strong id="summaryNetOutflow">0 visits</strong>
           </div>
         </div>
         <div class="table-shell tall">
@@ -273,9 +343,16 @@
               <tr>
                 <th>ปี</th>
                 <th>วิชาชีพ</th>
-                <th>Need FTE</th>
+                <th>Actual FTE</th>
+                <th>Target FTE</th>
+                <th>Planning FTE</th>
                 <th>Supply FTE</th>
-                <th>GAP FTE</th>
+                <th>HR GAP</th>
+                <th>WISN Ratio</th>
+                <th>Pressure</th>
+                <th>Trend</th>
+                <th>Coverage Gap</th>
+                <th>Workload Gap</th>
                 <th>Suggested Add</th>
                 <th>Reallocate</th>
                 <th>Risk</th>

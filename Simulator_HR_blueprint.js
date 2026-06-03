@@ -16,14 +16,188 @@ const FALLBACK_BASELINE = {
   ],
 };
 
+const ACTIVITY_DEFS = [
+  { code: "opdVisits", label: "OPD", seedRate: (population, index) => population * (2.2 + index * 0.03) },
+  { code: "ipdAdmissions", label: "IPD Admit", seedRate: (population, index) => population * (0.075 + index * 0.001) },
+  { code: "erVisits", label: "ER", seedRate: (population, index) => population * (0.16 + index * 0.002) },
+  { code: "procedures", label: "OR/Procedure", seedRate: (population, index) => population * (0.018 + index * 0.0005) },
+  { code: "deliveries", label: "Delivery", seedRate: (population, index) => population * Math.max(0.003, 0.008 - index * 0.0002) },
+  { code: "chronicVisits", label: "Chronic", seedRate: (population, index) => population * (0.12 + index * 0.004) * 3 },
+  { code: "mentalVisits", label: "Mental", seedRate: (population, index) => population * (0.0035 + index * 0.00008) * 3 },
+  { code: "outreachVisits", label: "Outreach/PP", seedRate: (population, index) => population * (0.16 + index * 0.003) },
+];
+
+const TARGET_NEED_DEFS = [
+  {
+    code: "elderly_specialist",
+    label: "สูงอายุซับซ้อน/พบแพทย์เฉพาะทาง",
+    ratePct: 8,
+    actualRatePct: 3.5,
+    coveragePct: 70,
+    frequency: 2,
+    complexity: 1.25,
+    placement: "รพศ./รพท./รพช.ใหญ่",
+    activityMix: { opdVisits: 1, ipdAdmissions: 0.05, chronicVisits: 0.8, outreachVisits: 0.2 },
+  },
+  {
+    code: "ncd_complication",
+    label: "NCD ควบคุมไม่ได้/เสี่ยงภาวะแทรกซ้อน",
+    ratePct: 12,
+    actualRatePct: 7,
+    coveragePct: 80,
+    frequency: 3,
+    complexity: 1.15,
+    placement: "รพท./รพช.ใหญ่/รพช.",
+    activityMix: { opdVisits: 0.8, chronicVisits: 1, mentalVisits: 0.05, outreachVisits: 0.25 },
+  },
+  {
+    code: "ckd_dialysis",
+    label: "CKD ระยะ 3-5/ฟอกไต/ไตเสื่อมเร็ว",
+    ratePct: 1.8,
+    actualRatePct: 1,
+    coveragePct: 85,
+    frequency: 6,
+    complexity: 1.35,
+    placement: "รพศ./รพท./รพช.ใหญ่",
+    activityMix: { opdVisits: 0.6, ipdAdmissions: 0.08, procedures: 0.35, chronicVisits: 1 },
+  },
+  {
+    code: "road_trauma",
+    label: "อุบัติเหตุทางถนน/trauma",
+    ratePct: 1.8,
+    actualRatePct: 1.2,
+    coveragePct: 90,
+    frequency: 1,
+    complexity: 1.35,
+    placement: "รพศ./รพท./รพช.ใหญ่",
+    activityMix: { erVisits: 1, ipdAdmissions: 0.16, procedures: 0.08, opdVisits: 0.25 },
+  },
+  {
+    code: "mental_smi",
+    label: "จิตเวชรุนแรง/SMI/สารเสพติด",
+    ratePct: 1.2,
+    actualRatePct: 0.65,
+    coveragePct: 75,
+    frequency: 4,
+    complexity: 1.3,
+    placement: "รพศ./รพท./รพช.ใหญ่ + community",
+    activityMix: { mentalVisits: 1, erVisits: 0.08, opdVisits: 0.2, outreachVisits: 0.35 },
+  },
+  {
+    code: "rehab_imc",
+    label: "IMC/rehab หลัง stroke-fracture-post op",
+    ratePct: 1.5,
+    actualRatePct: 0.7,
+    coveragePct: 70,
+    frequency: 8,
+    complexity: 1.2,
+    placement: "รพท./รพช.ใหญ่/รพช.",
+    activityMix: { opdVisits: 0.35, ipdAdmissions: 0.05, procedures: 0.4, outreachVisits: 0.5 },
+  },
+  {
+    code: "ltc_home",
+    label: "LTC/frailty/home care/palliative",
+    ratePct: 3,
+    actualRatePct: 1.2,
+    coveragePct: 75,
+    frequency: 6,
+    complexity: 1.25,
+    placement: "รพช.ใหญ่/รพช./ปฐมภูมิ",
+    activityMix: { opdVisits: 0.2, chronicVisits: 0.4, mentalVisits: 0.05, outreachVisits: 1 },
+  },
+  {
+    code: "maternal_high_risk",
+    label: "ครรภ์เสี่ยง/มารดาเด็ก",
+    ratePct: 0.8,
+    actualRatePct: 0.55,
+    coveragePct: 95,
+    frequency: 5,
+    complexity: 1.15,
+    placement: "รพศ./รพท./รพช.ใหญ่",
+    activityMix: { opdVisits: 0.4, deliveries: 0.2, ipdAdmissions: 0.06, outreachVisits: 0.25 },
+  },
+];
+
+const DEFAULT_AWT_MINUTES = 90720; // 210 days x 7.2 hours x 60 minutes, aligned with WISN manual examples.
+
 const PROFESSION_DEFS = [
-  { code: "doctor", label: "แพทย์", sourceKey: "doctor", targetKey: "doctor_per10k", defaultTarget: 6.38 },
-  { code: "nurse", label: "พยาบาลวิชาชีพ", sourceKey: "nurse", targetKey: "nurse_per10k", defaultTarget: 28.16 },
-  { code: "pharmacist", label: "เภสัชกร", sourceKey: "pharmacist", targetKey: "pharmacist_per10k", defaultTarget: 2.89 },
-  { code: "dentist", label: "ทันตแพทย์", sourceKey: null, targetKey: null, defaultTarget: 1.20 },
-  { code: "physio", label: "นักกายภาพบำบัด", sourceKey: null, targetKey: null, defaultTarget: 1.00 },
-  { code: "psychologist", label: "นักจิตวิทยา", sourceKey: null, targetKey: null, defaultTarget: 0.40 },
-  { code: "public_health", label: "นักวิชาการสาธารณสุข", sourceKey: null, targetKey: null, defaultTarget: 4.00 },
+  {
+    code: "doctor",
+    label: "แพทย์",
+    sourceKey: "doctor",
+    wisn: {
+      awtMinutes: DEFAULT_AWT_MINUTES,
+      casPct: 14,
+      iasHours: 40,
+      activityMinutes: { opdVisits: 8, ipdAdmissions: 18, erVisits: 15, procedures: 45, deliveries: 60, chronicVisits: 5, mentalVisits: 12, outreachVisits: 4 },
+    },
+  },
+  {
+    code: "nurse",
+    label: "พยาบาลวิชาชีพ",
+    sourceKey: "nurse",
+    wisn: {
+      awtMinutes: DEFAULT_AWT_MINUTES,
+      casPct: 18,
+      iasHours: 32,
+      activityMinutes: { opdVisits: 10, ipdAdmissions: 60, erVisits: 22, procedures: 35, deliveries: 120, chronicVisits: 12, mentalVisits: 15, outreachVisits: 25 },
+    },
+  },
+  {
+    code: "pharmacist",
+    label: "เภสัชกร",
+    sourceKey: "pharmacist",
+    wisn: {
+      awtMinutes: DEFAULT_AWT_MINUTES,
+      casPct: 12,
+      iasHours: 24,
+      activityMinutes: { opdVisits: 4, ipdAdmissions: 6, erVisits: 2, procedures: 0, deliveries: 0, chronicVisits: 8, mentalVisits: 4, outreachVisits: 1 },
+    },
+  },
+  {
+    code: "dentist",
+    label: "ทันตแพทย์",
+    sourceKey: null,
+    wisn: {
+      awtMinutes: DEFAULT_AWT_MINUTES,
+      casPct: 12,
+      iasHours: 20,
+      activityMinutes: { opdVisits: 0, ipdAdmissions: 0, erVisits: 2, procedures: 45, deliveries: 0, chronicVisits: 0, mentalVisits: 0, outreachVisits: 8 },
+    },
+  },
+  {
+    code: "physio",
+    label: "นักกายภาพบำบัด",
+    sourceKey: null,
+    wisn: {
+      awtMinutes: DEFAULT_AWT_MINUTES,
+      casPct: 12,
+      iasHours: 20,
+      activityMinutes: { opdVisits: 0, ipdAdmissions: 25, erVisits: 0, procedures: 20, deliveries: 0, chronicVisits: 10, mentalVisits: 0, outreachVisits: 15 },
+    },
+  },
+  {
+    code: "psychologist",
+    label: "นักจิตวิทยา",
+    sourceKey: null,
+    wisn: {
+      awtMinutes: DEFAULT_AWT_MINUTES,
+      casPct: 15,
+      iasHours: 24,
+      activityMinutes: { opdVisits: 0, ipdAdmissions: 0, erVisits: 5, procedures: 0, deliveries: 0, chronicVisits: 2, mentalVisits: 45, outreachVisits: 10 },
+    },
+  },
+  {
+    code: "public_health",
+    label: "นักวิชาการสาธารณสุข",
+    sourceKey: null,
+    wisn: {
+      awtMinutes: DEFAULT_AWT_MINUTES,
+      casPct: 18,
+      iasHours: 30,
+      activityMinutes: { opdVisits: 1, ipdAdmissions: 0, erVisits: 0, procedures: 0, deliveries: 0, chronicVisits: 6, mentalVisits: 6, outreachVisits: 25 },
+    },
+  },
 ];
 
 const state = {
@@ -32,6 +206,8 @@ const state = {
   selectedProfessions: new Set(["doctor", "nurse", "pharmacist"]),
   professionConfig: {},
   needRows: [],
+  targetNeedRows: [],
+  targetSummary: { byYear: {}, totalCoverageGap: 0, totalWorkloadGap: 0 },
   movements: {},
   results: [],
 };
@@ -45,9 +221,22 @@ function n(value, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
 function fmt(value, digits = 0) {
   const num = Number(value);
   if (!Number.isFinite(num)) return "-";
+  return num.toLocaleString("th-TH", {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  });
+}
+
+function fmtRatio(value, digits = 2) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return "∞";
   return num.toLocaleString("th-TH", {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
@@ -64,12 +253,20 @@ function getProfession(code) {
   return PROFESSION_DEFS.find((item) => item.code === code);
 }
 
-function getBenchmarkRate(prof, mode) {
-  if (!prof.targetKey) return prof.defaultTarget;
-  const bench = state.baseline.benchmarks_per10k?.[prof.targetKey] || {};
-  if (mode === "p75") return Number(bench.p75 || prof.defaultTarget);
-  if (mode === "median") return Number(bench.median || prof.defaultTarget);
-  return prof.defaultTarget;
+function getDefaultWisn(prof, standardFactor = 1) {
+  const defaults = prof.wisn || {};
+  const activityMinutes = Object.fromEntries(
+    ACTIVITY_DEFS.map((activity) => [
+      activity.code,
+      Number((n(defaults.activityMinutes?.[activity.code], 0) * standardFactor).toFixed(2)),
+    ]),
+  );
+  return {
+    awtMinutes: n(defaults.awtMinutes, DEFAULT_AWT_MINUTES),
+    casPct: n(defaults.casPct, 12),
+    iasHours: n(defaults.iasHours, 0),
+    activityMinutes,
+  };
 }
 
 async function loadBaseline() {
@@ -105,23 +302,27 @@ function applyProvinceBaseline() {
   $("retireAll").value = Math.round(state.provinceRow.retire_5y_all || 0);
   syncProfessionConfigFromProvince();
   initNeedRows(true);
+  initTargetNeedRows(true);
   initMovementDefaults(false);
   renderAll();
 }
 
 function syncProfessionConfigFromProvince() {
-  const mode = $("targetMode").value || "median";
   for (const prof of PROFESSION_DEFS) {
-    const current = prof.sourceKey ? n(state.provinceRow?.[prof.sourceKey], 0) : n(state.professionConfig[prof.code]?.current, 0);
-    const retire = prof.sourceKey ? n(state.provinceRow?.[`retire_5y_${prof.sourceKey}`], 0) : n(state.professionConfig[prof.code]?.retire5y, 0);
-    const vacant = prof.sourceKey ? n(state.provinceRow?.[`vacant_${prof.sourceKey}`], 0) : n(state.professionConfig[prof.code]?.vacant, 0);
     const existing = state.professionConfig[prof.code] || {};
+    const defaults = getDefaultWisn(prof);
+    const current = prof.sourceKey ? n(state.provinceRow?.[prof.sourceKey], 0) : n(existing.current, 0);
+    const retire = prof.sourceKey ? n(state.provinceRow?.[`retire_5y_${prof.sourceKey}`], 0) : n(existing.retire5y, 0);
+    const vacant = prof.sourceKey ? n(state.provinceRow?.[`vacant_${prof.sourceKey}`], 0) : n(existing.vacant, 0);
     state.professionConfig[prof.code] = {
       current,
       retire5y: retire,
       vacant,
-      targetRate: mode === "custom" ? n(existing.targetRate, prof.defaultTarget) : getBenchmarkRate(prof, mode),
       fteFactor: n(existing.fteFactor, 1),
+      awtMinutes: n(existing.awtMinutes, defaults.awtMinutes),
+      casPct: n(existing.casPct, defaults.casPct),
+      iasHours: n(existing.iasHours, defaults.iasHours),
+      activityMinutes: { ...defaults.activityMinutes, ...(existing.activityMinutes || {}) },
     };
   }
 }
@@ -129,14 +330,48 @@ function syncProfessionConfigFromProvince() {
 function initNeedRows(force = false) {
   if (!force && state.needRows.length === years().length) return;
   const basePop = n($("populationBase").value, state.provinceRow?.population || 0);
-  state.needRows = years().map((year, index) => ({
-    year,
-    population: Math.round(basePop * Math.pow(1.005, index)),
-    elderlyPct: 20 + index * 0.5,
-    chronicPct: 12 + index * 0.2,
-    mentalRate: 350 + index * 5,
-    workloadIndex: Number((1 + index * 0.03).toFixed(2)),
-  }));
+  state.needRows = years().map((year, index) => {
+    const population = Math.round(basePop * Math.pow(1.005, index));
+    return {
+      year,
+      population,
+      opdVisits: Math.round(ACTIVITY_DEFS.find((item) => item.code === "opdVisits").seedRate(population, index)),
+      ipdAdmissions: Math.round(ACTIVITY_DEFS.find((item) => item.code === "ipdAdmissions").seedRate(population, index)),
+      erVisits: Math.round(ACTIVITY_DEFS.find((item) => item.code === "erVisits").seedRate(population, index)),
+      procedures: Math.round(ACTIVITY_DEFS.find((item) => item.code === "procedures").seedRate(population, index)),
+      deliveries: Math.round(ACTIVITY_DEFS.find((item) => item.code === "deliveries").seedRate(population, index)),
+      chronicVisits: Math.round(ACTIVITY_DEFS.find((item) => item.code === "chronicVisits").seedRate(population, index)),
+      mentalVisits: Math.round(ACTIVITY_DEFS.find((item) => item.code === "mentalVisits").seedRate(population, index)),
+      outreachVisits: Math.round(ACTIVITY_DEFS.find((item) => item.code === "outreachVisits").seedRate(population, index)),
+      complexityIndex: Number((1 + index * 0.02).toFixed(2)),
+    };
+  });
+}
+
+function initTargetNeedRows(force = false) {
+  const expectedRows = years().length * TARGET_NEED_DEFS.length;
+  if (!force && state.targetNeedRows.length === expectedRows) return;
+  state.targetNeedRows = [];
+  for (const needRow of state.needRows) {
+    const index = years().indexOf(needRow.year);
+    const population = n(needRow.population, 0);
+    for (const def of TARGET_NEED_DEFS) {
+      const growthFactor = 1 + (Math.max(0, index) * 0.025);
+      const targetPopulation = Math.round(population * (def.ratePct / 100) * growthFactor);
+      const actualServed = Math.round(population * (def.actualRatePct / 100) * (1 + Math.max(0, index) * 0.01));
+      state.targetNeedRows.push({
+        year: needRow.year,
+        groupCode: def.code,
+        groupLabel: def.label,
+        targetPopulation,
+        actualServed,
+        coveragePct: def.coveragePct,
+        frequency: def.frequency,
+        complexityIndex: Number((def.complexity + Math.max(0, index) * 0.01).toFixed(2)),
+        placement: def.placement,
+      });
+    }
+  }
 }
 
 function initMovementDefaults(reset = false) {
@@ -164,7 +399,9 @@ function renderAll() {
   updateSideInfo();
   renderBaselineCards();
   renderProfessions();
+  renderStandardTable();
   renderNeedTable();
+  renderTargetNeedTable();
   renderSupplyFilter();
   renderSupplyTable();
   renderTrace();
@@ -187,7 +424,7 @@ function renderBaselineCards() {
 function renderProfessions() {
   const grid = $("professionGrid");
   grid.innerHTML = PROFESSION_DEFS.map((prof) => {
-    const cfg = state.professionConfig[prof.code] || {};
+    const cfg = state.professionConfig[prof.code] || getDefaultWisn(prof);
     const selected = state.selectedProfessions.has(prof.code);
     return `
       <article class="profession-card ${selected ? "selected" : ""}" data-prof-card="${prof.code}">
@@ -200,12 +437,20 @@ function renderProfessions() {
         </div>
         <div class="mini-grid">
           <label class="field">
-            <span>Current</span>
+            <span>Current headcount</span>
             <input type="number" min="0" data-prof-current="${prof.code}" value="${Math.round(n(cfg.current, 0))}">
           </label>
           <label class="field">
-            <span>Target /10k</span>
-            <input type="number" min="0" step="0.01" data-prof-target="${prof.code}" value="${n(cfg.targetRate, prof.defaultTarget).toFixed(2)}">
+            <span>AWT min/year</span>
+            <input type="number" min="1" step="60" data-prof-awt="${prof.code}" value="${Math.round(n(cfg.awtMinutes, DEFAULT_AWT_MINUTES))}">
+          </label>
+          <label class="field">
+            <span>CAS support %</span>
+            <input type="number" min="0" max="80" step="0.1" data-prof-cas="${prof.code}" value="${n(cfg.casPct, 0).toFixed(1)}">
+          </label>
+          <label class="field">
+            <span>IAS hours/year</span>
+            <input type="number" min="0" step="1" data-prof-ias="${prof.code}" value="${n(cfg.iasHours, 0).toFixed(1)}">
           </label>
           <label class="field">
             <span>Vacancy</span>
@@ -221,16 +466,56 @@ function renderProfessions() {
   }).join("");
 }
 
+function renderStandardTable() {
+  const body = $("standardTable").querySelector("tbody");
+  const selected = Array.from(state.selectedProfessions);
+  body.innerHTML = selected.map((code) => {
+    const prof = getProfession(code);
+    const cfg = state.professionConfig[code] || getDefaultWisn(prof);
+    return `
+      <tr>
+        <td><strong>${prof.label}</strong></td>
+        ${ACTIVITY_DEFS.map((activity) => `
+          <td>
+            <input type="number" min="0" step="0.1" data-standard="${code}:${activity.code}" value="${n(cfg.activityMinutes?.[activity.code], 0).toFixed(1)}">
+          </td>
+        `).join("")}
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="9">ยังไม่ได้เลือกวิชาชีพ</td></tr>`;
+}
+
 function renderNeedTable() {
   const body = $("needTable").querySelector("tbody");
   body.innerHTML = state.needRows.map((row, index) => `
     <tr>
       <td>${row.year}</td>
       <td><input type="number" min="0" data-need="${index}:population" value="${Math.round(row.population)}"></td>
-      <td><input type="number" min="0" step="0.1" data-need="${index}:elderlyPct" value="${row.elderlyPct.toFixed(1)}"></td>
-      <td><input type="number" min="0" step="0.1" data-need="${index}:chronicPct" value="${row.chronicPct.toFixed(1)}"></td>
-      <td><input type="number" min="0" step="1" data-need="${index}:mentalRate" value="${Math.round(row.mentalRate)}"></td>
-      <td><input type="number" min="0" step="0.01" data-need="${index}:workloadIndex" value="${row.workloadIndex.toFixed(2)}"></td>
+      <td><input type="number" min="0" data-need="${index}:opdVisits" value="${Math.round(row.opdVisits)}"></td>
+      <td><input type="number" min="0" data-need="${index}:ipdAdmissions" value="${Math.round(row.ipdAdmissions)}"></td>
+      <td><input type="number" min="0" data-need="${index}:erVisits" value="${Math.round(row.erVisits)}"></td>
+      <td><input type="number" min="0" data-need="${index}:procedures" value="${Math.round(row.procedures)}"></td>
+      <td><input type="number" min="0" data-need="${index}:deliveries" value="${Math.round(row.deliveries)}"></td>
+      <td><input type="number" min="0" data-need="${index}:chronicVisits" value="${Math.round(row.chronicVisits)}"></td>
+      <td><input type="number" min="0" data-need="${index}:mentalVisits" value="${Math.round(row.mentalVisits)}"></td>
+      <td><input type="number" min="0" data-need="${index}:outreachVisits" value="${Math.round(row.outreachVisits)}"></td>
+      <td><input type="number" min="0.1" step="0.01" data-need="${index}:complexityIndex" value="${n(row.complexityIndex, 1).toFixed(2)}"></td>
+    </tr>
+  `).join("");
+}
+
+function renderTargetNeedTable() {
+  const body = $("targetNeedTable").querySelector("tbody");
+  body.innerHTML = state.targetNeedRows.map((row, index) => `
+    <tr>
+      <td>${row.year}</td>
+      <td><strong>${row.groupLabel}</strong></td>
+      <td><input type="number" min="0" data-target="${index}:targetPopulation" value="${Math.round(row.targetPopulation)}"></td>
+      <td><input type="number" min="0" data-target="${index}:actualServed" value="${Math.round(row.actualServed)}"></td>
+      <td><input type="number" min="0" max="100" step="0.1" data-target="${index}:coveragePct" value="${n(row.coveragePct, 0).toFixed(1)}"></td>
+      <td><input type="number" min="0" step="0.1" data-target="${index}:frequency" value="${n(row.frequency, 0).toFixed(1)}"></td>
+      <td><input type="number" min="0.1" step="0.01" data-target="${index}:complexityIndex" value="${n(row.complexityIndex, 1).toFixed(2)}"></td>
+      <td><input type="text" data-target="${index}:placement" value="${escapeHtml(row.placement || "")}"></td>
     </tr>
   `).join("");
 }
@@ -295,39 +580,177 @@ function calculateSupplyTimeline(code) {
   });
 }
 
-function burdenMultiplier(row) {
-  const elderly = (n(row.elderlyPct, 20) - 20) * 0.01;
-  const chronic = (n(row.chronicPct, 12) - 12) * 0.015;
-  const mental = ((n(row.mentalRate, 350) - 350) / 1000) * 0.08;
-  const workload = (n(row.workloadIndex, 1) - 1) * 0.5;
-  return Math.max(0.75, 1 + elderly + chronic + mental + workload);
+function getTargetNeedDef(code) {
+  return TARGET_NEED_DEFS.find((item) => item.code === code);
+}
+
+function getTargetRowsByYear(year) {
+  return state.targetNeedRows.filter((row) => Number(row.year) === Number(year));
+}
+
+function createEmptyActivityRow(year, population = 0) {
+  return {
+    year,
+    population,
+    complexityIndex: 1,
+    ...Object.fromEntries(ACTIVITY_DEFS.map((activity) => [activity.code, 0])),
+  };
+}
+
+function buildComplexityAdjustedActualRow(row) {
+  const adjusted = createEmptyActivityRow(row.year, row.population);
+  const complexityIndex = Math.max(0.1, n(row.complexityIndex, 1));
+  for (const activity of ACTIVITY_DEFS) {
+    adjusted[activity.code] = n(row[activity.code], 0) * complexityIndex;
+  }
+  return adjusted;
+}
+
+function buildTargetActivityModel(year, population = 0) {
+  const targetActivityRow = createEmptyActivityRow(year, population);
+  const groups = [];
+
+  for (const row of getTargetRowsByYear(year)) {
+    const def = getTargetNeedDef(row.groupCode);
+    if (!def) continue;
+    const targetCases = n(row.targetPopulation, 0) * (n(row.coveragePct, 0) / 100);
+    const actualServed = n(row.actualServed, 0);
+    const frequency = n(row.frequency, 0);
+    const complexity = Math.max(0.1, n(row.complexityIndex, 1));
+    const targetServiceVolume = targetCases * frequency;
+    const actualServiceEquivalent = actualServed * frequency;
+    const coverageGap = Math.max(0, targetCases - actualServed);
+    const workloadGap = Math.max(0, targetServiceVolume - actualServiceEquivalent);
+    const activityVolumes = {};
+
+    for (const activity of ACTIVITY_DEFS) {
+      const mix = n(def.activityMix?.[activity.code], 0);
+      const adjustedVolume = targetServiceVolume * mix * complexity;
+      activityVolumes[activity.code] = adjustedVolume;
+      targetActivityRow[activity.code] += adjustedVolume;
+    }
+
+    groups.push({
+      year,
+      groupCode: row.groupCode,
+      groupLabel: row.groupLabel,
+      placement: row.placement,
+      targetPopulation: n(row.targetPopulation, 0),
+      targetCases,
+      actualServed,
+      coveragePct: n(row.coveragePct, 0),
+      frequency,
+      complexityIndex: complexity,
+      targetServiceVolume,
+      actualServiceEquivalent,
+      coverageGap,
+      workloadGap,
+      activityVolumes,
+    });
+  }
+
+  return {
+    row: targetActivityRow,
+    groups,
+    coverageGap: groups.reduce((sum, item) => sum + item.coverageGap, 0),
+    workloadGap: groups.reduce((sum, item) => sum + item.workloadGap, 0),
+    targetServiceVolume: groups.reduce((sum, item) => sum + item.targetServiceVolume, 0),
+    actualServiceEquivalent: groups.reduce((sum, item) => sum + item.actualServiceEquivalent, 0),
+  };
+}
+
+function buildPlanningActivityRow(actualRow, targetRow) {
+  const planningRow = createEmptyActivityRow(actualRow.year, actualRow.population);
+  const actualAdjustedRow = buildComplexityAdjustedActualRow(actualRow);
+  for (const activity of ACTIVITY_DEFS) {
+    planningRow[activity.code] = Math.max(n(actualAdjustedRow[activity.code], 0), n(targetRow[activity.code], 0));
+  }
+  return planningRow;
+}
+
+function summarizeTargetNeedByYear() {
+  const byYear = {};
+  for (const needRow of state.needRows) {
+    byYear[needRow.year] = buildTargetActivityModel(needRow.year, n(needRow.population, 0));
+  }
+  return {
+    byYear,
+    totalCoverageGap: Object.values(byYear).reduce((sum, item) => sum + item.coverageGap, 0),
+    totalWorkloadGap: Object.values(byYear).reduce((sum, item) => sum + item.workloadGap, 0),
+  };
+}
+
+function calculateWisnNeed(row, code) {
+  const prof = getProfession(code);
+  const cfg = state.professionConfig[code] || getDefaultWisn(prof);
+  const awtMinutes = Math.max(1, n(cfg.awtMinutes, DEFAULT_AWT_MINUTES));
+  const casPct = clamp(n(cfg.casPct, 0), 0, 80);
+  const caf = 1 / (1 - (casPct / 100));
+  const iaf = (n(cfg.iasHours, 0) * 60) / awtMinutes;
+  const complexityIndex = Math.max(0.1, n(row.complexityIndex, 1));
+  const activityLines = ACTIVITY_DEFS.map((activity) => {
+    const volume = n(row[activity.code], 0);
+    const standardMinutes = n(cfg.activityMinutes?.[activity.code], 0);
+    const minutes = volume * standardMinutes * complexityIndex;
+    return {
+      code: activity.code,
+      label: activity.label,
+      volume,
+      standardMinutes,
+      minutes,
+    };
+  });
+  const demandMinutes = activityLines.reduce((sum, item) => sum + item.minutes, 0);
+  const serviceFte = demandMinutes / awtMinutes;
+  const needFte = (serviceFte * caf) + iaf;
+  return {
+    awtMinutes,
+    casPct,
+    caf,
+    iaf,
+    complexityIndex,
+    activityLines,
+    demandMinutes,
+    serviceFte,
+    needFte,
+  };
 }
 
 function runProjection() {
   syncInputsFromDom();
   const selected = Array.from(state.selectedProfessions);
   const results = [];
+  const baseNeedByProfession = {};
+  state.targetSummary = summarizeTargetNeedByYear();
+
   for (const code of selected) {
     const prof = getProfession(code);
-    const cfg = state.professionConfig[code];
     const supply = calculateSupplyTimeline(code);
     for (const needRow of state.needRows) {
       const supplyRow = supply.find((item) => item.year === needRow.year);
-      const multiplier = burdenMultiplier(needRow);
-      const needFte = n(cfg.targetRate, prof.defaultTarget) * n(needRow.population, 0) / 10000 * multiplier;
+      const targetModel = state.targetSummary.byYear[needRow.year] || buildTargetActivityModel(needRow.year, n(needRow.population, 0));
+      const actualWisn = calculateWisnNeed(needRow, code);
+      const targetWisn = calculateWisnNeed(targetModel.row, code);
+      const planningRow = buildPlanningActivityRow(needRow, targetModel.row);
+      const planningWisn = calculateWisnNeed(planningRow, code);
+      if (!baseNeedByProfession[code]) baseNeedByProfession[code] = Math.max(planningWisn.needFte, 0.0001);
       const supplyFte = n(supplyRow?.supplyFte, 0);
-      const gapFte = needFte - supplyFte;
+      const gapFte = planningWisn.needFte - supplyFte;
       const suggestedAdd = Math.ceil(Math.max(0, gapFte));
       const reallocate = Math.max(0, -gapFte);
-      const risk = riskLevel(gapFte, needFte);
+      const wisnRatio = planningWisn.needFte > 0 ? supplyFte / planningWisn.needFte : null;
+      const pressureIndex = supplyFte > 0 ? planningWisn.needFte / supplyFte : (planningWisn.needFte > 0 ? Infinity : 0);
+      const trendIndex = planningWisn.needFte / baseNeedByProfession[code];
+      const professionWorkloadGap = Math.max(0, planningWisn.demandMinutes - actualWisn.demandMinutes);
+      const risk = riskLevel({ gapFte, needFte: planningWisn.needFte, wisnRatio, pressureIndex });
       results.push({
         year: needRow.year,
         professionCode: code,
         professionLabel: prof.label,
-        targetRate: n(cfg.targetRate, prof.defaultTarget),
         population: n(needRow.population, 0),
-        burdenMultiplier: multiplier,
-        needFte,
+        actualNeedFte: actualWisn.needFte,
+        targetNeedFte: targetWisn.needFte,
+        needFte: planningWisn.needFte,
         supplyFte,
         gapFte,
         suggestedAdd,
@@ -335,7 +758,24 @@ function runProjection() {
         risk,
         outflow: n(supplyRow?.outflow, 0),
         netChange: n(supplyRow?.net, 0),
-        recommendation: recommendationText({ gapFte, needFte, risk, supplyRow, code }),
+        wisnRatio,
+        pressureIndex,
+        trendIndex,
+        coverageGap: targetModel.coverageGap,
+        workloadGap: targetModel.workloadGap,
+        professionWorkloadGap,
+        demandMinutes: planningWisn.demandMinutes,
+        actualDemandMinutes: actualWisn.demandMinutes,
+        targetDemandMinutes: targetWisn.demandMinutes,
+        serviceFte: planningWisn.serviceFte,
+        awtMinutes: planningWisn.awtMinutes,
+        casPct: planningWisn.casPct,
+        caf: planningWisn.caf,
+        iaf: planningWisn.iaf,
+        complexityIndex: planningWisn.complexityIndex,
+        activityLines: planningWisn.activityLines,
+        targetGroups: targetModel.groups,
+        recommendation: recommendationText({ gapFte, risk, supplyRow, code, wisnRatio, pressureIndex, coverageGap: targetModel.coverageGap, professionWorkloadGap }),
       });
     }
   }
@@ -345,22 +785,23 @@ function runProjection() {
   $("sideStatus").textContent = "Calculated";
 }
 
-function riskLevel(gapFte, needFte) {
-  if (gapFte <= 0) return "green";
-  const ratio = needFte > 0 ? gapFte / needFte : 0;
-  if (gapFte >= 10 || ratio >= 0.2) return "red";
-  return "yellow";
+function riskLevel({ gapFte, needFte, wisnRatio, pressureIndex }) {
+  if (gapFte <= 0 && n(wisnRatio, 1) >= 1) return "green";
+  if (!Number.isFinite(pressureIndex) || n(wisnRatio, 0) < 0.85 || gapFte >= 10 || (needFte > 0 && gapFte / needFte >= 0.2)) return "red";
+  if (n(wisnRatio, 0) < 1 || gapFte > 0) return "yellow";
+  return "green";
 }
 
-function recommendationText({ gapFte, risk, supplyRow, code }) {
+function recommendationText({ gapFte, risk, supplyRow, code, wisnRatio, pressureIndex, coverageGap, professionWorkloadGap }) {
   const cfg = state.professionConfig[code] || {};
   const retireShare = n(cfg.current, 0) > 0 ? n(cfg.retire5y, 0) / n(cfg.current, 0) : 0;
-  if (risk === "green" && gapFte < -3) return "กำลังคนเกิน need: พิจารณา hub support / rotation";
-  if (risk === "green") return "เพียงพอ: ติดตามรายปี";
-  if (retireShare >= 0.1) return "ขาด + เกษียณสูง: ทำ replacement pipeline และ retention";
-  if (n(supplyRow?.net, 0) < 0) return "ขาด + supply ลด: เพิ่มรับเข้า/ลด outflow";
-  if (risk === "red") return "ขาดมาก: เพิ่มคนหรือจัด rotation จาก hub";
-  return "ขาดปานกลาง: เพิ่มคนตาม gap หรือปรับ productivity";
+  if (risk === "green" && gapFte < -3) return "กำลังคนเกิน WISN need: พิจารณา hub support / rotation";
+  if (risk === "green") return "สมดุลตาม WISN: ติดตาม workload และ AWT รายปี";
+  if (n(coverageGap, 0) > 1000 && n(professionWorkloadGap, 0) > 0) return "ขาดตาม target need: เพิ่ม coverage ให้กลุ่มเป้าหมายและเติมกำลังคนตาม workload ที่ควรเกิด";
+  if (retireShare >= 0.1) return "ขาดตาม WISN + เกษียณสูง: ทำ replacement pipeline และ retention";
+  if (n(supplyRow?.net, 0) < 0) return "ขาดตาม WISN + supply ลด: เพิ่มรับเข้า/ลด outflow";
+  if (risk === "red") return `แรงกดดันสูง: WISN ratio ${fmtRatio(wisnRatio)} / pressure ${fmtRatio(pressureIndex)} ควรเพิ่มคน จัดเวร หรือ redistribute`;
+  return "ขาดปานกลาง: เพิ่มคนตาม GAP หรือปรับ productivity/activity standard ที่ตรวจสอบแล้ว";
 }
 
 function renderResults() {
@@ -369,44 +810,71 @@ function renderResults() {
     <tr>
       <td>${row.year}</td>
       <td>${row.professionLabel}</td>
+      <td>${fmt(row.actualNeedFte, 1)}</td>
+      <td>${fmt(row.targetNeedFte, 1)}</td>
       <td>${fmt(row.needFte, 1)}</td>
       <td>${fmt(row.supplyFte, 1)}</td>
       <td>${fmt(row.gapFte, 1)}</td>
+      <td>${fmtRatio(row.wisnRatio)}</td>
+      <td>${fmtRatio(row.pressureIndex)}</td>
+      <td>${fmtRatio(row.trendIndex)}</td>
+      <td>${fmt(row.coverageGap, 0)}</td>
+      <td>${fmt(row.workloadGap, 0)}</td>
       <td>${row.suggestedAdd > 0 ? `+${fmt(row.suggestedAdd, 0)}` : "0"}</td>
       <td>${fmt(row.reallocate, 1)}</td>
       <td><span class="risk ${row.risk}">${row.risk}</span></td>
       <td>${row.recommendation}</td>
     </tr>
-  `).join("") || `<tr><td colspan="9">กดคำนวณ Projection เพื่อดูผลลัพธ์</td></tr>`;
+  `).join("") || `<tr><td colspan="16">กดคำนวณ Projection เพื่อดูผลลัพธ์</td></tr>`;
 
   const totalGap = state.results.reduce((sum, row) => sum + Math.max(0, row.gapFte), 0);
   const highRisk = state.results.filter((row) => row.risk === "red").length;
-  const replacement = Array.from(state.selectedProfessions).reduce((sum, code) => sum + n(state.professionConfig[code]?.retire5y, 0), 0);
-  const netOutflow = state.results.reduce((sum, row) => sum + Math.max(0, -row.netChange), 0);
   $("summaryGap").textContent = `${fmt(totalGap, 1)} FTE`;
   $("summaryRisk").textContent = fmt(highRisk, 0);
-  $("summaryReplacement").textContent = `${fmt(replacement, 0)} คน`;
-  $("summaryNetOutflow").textContent = `${fmt(netOutflow, 0)} คน`;
+  $("summaryReplacement").textContent = `${fmt(state.targetSummary.totalCoverageGap, 0)} คน`;
+  $("summaryNetOutflow").textContent = `${fmt(state.targetSummary.totalWorkloadGap, 0)} visits`;
 }
 
 function renderTrace() {
   $("formulaText").textContent = [
-    "Need FTE = Target rate per 10,000 * Population / 10,000 * Burden multiplier",
-    "Burden multiplier = 1 + elderly factor + chronic factor + mental factor + workload factor",
-    "Net change = recruit + transfer in + return in - retire - resign - transfer out - study leave",
-    "Projected headcount = previous projected headcount + net change",
-    "Supply FTE = projected headcount * FTE factor",
-    "GAP FTE = Need FTE - Supply FTE",
+    "WISN core formula",
+    "Actual workload = workload volume that the hospital actually delivered",
+    "Target need = target population/cases x target coverage x service frequency",
+    "Target activity volume = target need x service frequency x activity mix x need complexity",
+    "Planning activity volume = max(actual activity volume, target activity volume)",
+    "AWT = available working time minutes per worker per year",
+    "Demand minutes = Σ(planning activity volume x activity standard minutes)",
+    "A = staff for health service activities = Demand minutes / AWT",
+    "CAF = 1 / (1 - CAS support % / 100)",
+    "IAF = IAS hours per year x 60 / AWT",
+    "Required FTE = (A x CAF) + IAF",
+    "Projected supply FTE = projected headcount x FTE factor",
+    "GAP FTE = Required FTE - Projected supply FTE",
+    "WISN ratio = Projected supply FTE / Required FTE",
+    "Pressure index = Required FTE / Projected supply FTE",
+    "Workload trend index = Required FTE in year / Required FTE in base year",
+    "Coverage gap = target cases - actual served",
+    "Workload gap = target service volume - actual service equivalent",
     "Suggested Add = ceil(max(GAP FTE, 0))",
   ].join("\n");
 
   const province = state.provinceRow?.province || "-";
+  const firstRow = state.results[0];
+  const demandNote = firstRow
+    ? `First result demand minutes: ${fmt(firstRow.demandMinutes, 0)} | AWT: ${fmt(firstRow.awtMinutes, 0)} | CAF: ${fmtRatio(firstRow.caf)} | IAF: ${fmtRatio(firstRow.iaf)}`
+    : "First result demand minutes: calculate projection to populate";
   $("sourceText").textContent = [
     `Scenario: ${$("scenarioName").value}`,
-    `Scope: ${province} / ${$("amphurName").value || "-"} / ${$("unitName").value || "-"}`,
-    "Population source: output/hr_blueprint_provincial_baseline_region1.json or embedded Region 1 fallback",
-    "Workforce source: province baseline for doctor/nurse/pharmacist; user-editable for other professions",
+    `Scope: ${province} / ${$("amphurName").value || "-"} / ${$("unitName").value || "-"} / ${$("scopeMode").value}`,
+    "WISN reference: WHO Workload Indicators of Staffing Need user manual 2nd ed. (9789240070066) and software manual 2nd ed. (9789240107687)",
+    "Population: output/hr_blueprint_provincial_baseline_region1.json or user-edited HDC catchment/service population for the selected district/hospital",
+    "Workload statistics: OPD, IPD, ER, OR/procedure, delivery, chronic, mental, outreach annual volumes. Defaults are generated from service-use assumptions and should be replaced by HIS/HDC service statistics.",
+    "Target need forecast: editable target population/cases, actual served, target coverage, service frequency, complexity, and placement for elderly specialist, NCD, CKD, trauma, SMI, rehab, LTC, and high-risk maternal-child groups.",
+    "Activity standards: editable minutes per case by profession; use local time-motion, expert consensus, or official service standard where available.",
+    "AWT/CAS/IAS: editable by profession. AWT default uses 210 days x 7.2 hours x 60 minutes from WISN example logic.",
+    "Supply: current headcount from province baseline for doctor/nurse/pharmacist; editable movements by year for local district/hospital reality.",
     `Confidence: ${$("confidenceLevel").value}`,
+    demandNote,
     "Budget constraint: not included in current MVP",
   ].join("\n");
 }
@@ -417,9 +885,17 @@ function syncInputsFromDom() {
     const code = input.dataset.profCurrent;
     state.professionConfig[code].current = n(input.value, 0);
   }
-  for (const input of document.querySelectorAll("[data-prof-target]")) {
-    const code = input.dataset.profTarget;
-    state.professionConfig[code].targetRate = n(input.value, getProfession(code)?.defaultTarget || 0);
+  for (const input of document.querySelectorAll("[data-prof-awt]")) {
+    const code = input.dataset.profAwt;
+    state.professionConfig[code].awtMinutes = n(input.value, DEFAULT_AWT_MINUTES);
+  }
+  for (const input of document.querySelectorAll("[data-prof-cas]")) {
+    const code = input.dataset.profCas;
+    state.professionConfig[code].casPct = n(input.value, 0);
+  }
+  for (const input of document.querySelectorAll("[data-prof-ias]")) {
+    const code = input.dataset.profIas;
+    state.professionConfig[code].iasHours = n(input.value, 0);
   }
   for (const input of document.querySelectorAll("[data-prof-vacant]")) {
     const code = input.dataset.profVacant;
@@ -429,9 +905,20 @@ function syncInputsFromDom() {
     const code = input.dataset.profRetire;
     state.professionConfig[code].retire5y = n(input.value, 0);
   }
+  for (const input of document.querySelectorAll("[data-standard]")) {
+    const [code, activityCode] = input.dataset.standard.split(":");
+    state.professionConfig[code] ||= {};
+    state.professionConfig[code].activityMinutes ||= {};
+    state.professionConfig[code].activityMinutes[activityCode] = n(input.value, 0);
+  }
   for (const input of document.querySelectorAll("[data-need]")) {
     const [index, field] = input.dataset.need.split(":");
     if (state.needRows[index]) state.needRows[index][field] = n(input.value, 0);
+  }
+  for (const input of document.querySelectorAll("[data-target]")) {
+    const [index, field] = input.dataset.target.split(":");
+    if (!state.targetNeedRows[index]) continue;
+    state.targetNeedRows[index][field] = field === "placement" ? input.value : n(input.value, 0);
   }
   for (const input of document.querySelectorAll("[data-move]")) {
     const [code, year, field] = input.dataset.move.split(":");
@@ -448,6 +935,7 @@ function handleProfessionChange(event) {
     if (toggle.checked) state.selectedProfessions.add(code);
     else state.selectedProfessions.delete(code);
     renderProfessions();
+    renderStandardTable();
     renderSupplyFilter();
     renderSupplyTable();
     return;
@@ -458,19 +946,30 @@ function handleProfessionChange(event) {
   const code = card.dataset.profCard;
   state.professionConfig[code] ||= {};
   if (event.target.matches("[data-prof-current]")) state.professionConfig[code].current = n(event.target.value);
-  if (event.target.matches("[data-prof-target]")) state.professionConfig[code].targetRate = n(event.target.value);
+  if (event.target.matches("[data-prof-awt]")) state.professionConfig[code].awtMinutes = n(event.target.value, DEFAULT_AWT_MINUTES);
+  if (event.target.matches("[data-prof-cas]")) state.professionConfig[code].casPct = n(event.target.value);
+  if (event.target.matches("[data-prof-ias]")) state.professionConfig[code].iasHours = n(event.target.value);
   if (event.target.matches("[data-prof-vacant]")) state.professionConfig[code].vacant = n(event.target.value);
   if (event.target.matches("[data-prof-retire]")) state.professionConfig[code].retire5y = n(event.target.value);
 }
 
 function applyTargetMode() {
   const mode = $("targetMode").value;
-  if (mode !== "custom") {
-    for (const prof of PROFESSION_DEFS) {
-      state.professionConfig[prof.code].targetRate = getBenchmarkRate(prof, mode);
-    }
+  if (mode === "custom") return;
+  const standardFactor = mode === "high-complexity" ? 1.1 : 1;
+  for (const prof of PROFESSION_DEFS) {
+    const cfg = state.professionConfig[prof.code] || {};
+    const defaults = getDefaultWisn(prof, standardFactor);
+    state.professionConfig[prof.code] = {
+      ...cfg,
+      awtMinutes: defaults.awtMinutes,
+      casPct: defaults.casPct,
+      iasHours: defaults.iasHours,
+      activityMinutes: defaults.activityMinutes,
+    };
   }
   renderProfessions();
+  renderStandardTable();
 }
 
 function autoRetire() {
@@ -497,25 +996,37 @@ function downloadBlob(content, filename, type) {
   URL.revokeObjectURL(url);
 }
 
-function exportExcel() {
-  if (!state.results.length) runProjection();
-  const resultRows = state.results.map((row) => `
+function resultTableRowsHtml() {
+  return state.results.map((row) => `
     <tr>
       <td>${row.year}</td><td>${escapeHtml(row.professionLabel)}</td>
+      <td>${row.actualNeedFte.toFixed(2)}</td><td>${row.targetNeedFte.toFixed(2)}</td>
       <td>${row.needFte.toFixed(2)}</td><td>${row.supplyFte.toFixed(2)}</td>
-      <td>${row.gapFte.toFixed(2)}</td><td>${row.suggestedAdd}</td>
-      <td>${row.reallocate.toFixed(2)}</td><td>${row.risk}</td><td>${escapeHtml(row.recommendation)}</td>
+      <td>${row.gapFte.toFixed(2)}</td><td>${fmtRatio(row.wisnRatio)}</td>
+      <td>${fmtRatio(row.pressureIndex)}</td><td>${fmtRatio(row.trendIndex)}</td>
+      <td>${row.coverageGap.toFixed(0)}</td><td>${row.workloadGap.toFixed(0)}</td>
+      <td>${row.suggestedAdd}</td><td>${row.reallocate.toFixed(2)}</td>
+      <td>${row.risk}</td><td>${escapeHtml(row.recommendation)}</td>
     </tr>
   `).join("");
+}
+
+function exportExcel() {
+  if (!state.results.length) runProjection();
   const html = `\ufeff<html><head><meta charset="UTF-8"></head><body>
-    <h1>HR Blueprint Projection</h1>
+    <h1>HR Blueprint WISN Projection</h1>
     <p>${escapeHtml($("scenarioName").value)} | ${escapeHtml(state.provinceRow?.province || "")}</p>
+    <h2>Results</h2>
     <table border="1">
-      <thead><tr><th>Year</th><th>Profession</th><th>Need FTE</th><th>Supply FTE</th><th>GAP FTE</th><th>Suggested Add</th><th>Reallocate</th><th>Risk</th><th>Recommendation</th></tr></thead>
-      <tbody>${resultRows}</tbody>
+      <thead><tr><th>Year</th><th>Profession</th><th>Actual FTE</th><th>Target FTE</th><th>Planning FTE</th><th>Supply FTE</th><th>HR GAP</th><th>WISN Ratio</th><th>Pressure</th><th>Trend</th><th>Coverage Gap</th><th>Workload Gap</th><th>Suggested Add</th><th>Reallocate</th><th>Risk</th><th>Recommendation</th></tr></thead>
+      <tbody>${resultTableRowsHtml()}</tbody>
     </table>
+    <h2>Formula</h2>
+    <pre>${escapeHtml($("formulaText").textContent)}</pre>
+    <h2>Source / Assumption</h2>
+    <pre>${escapeHtml($("sourceText").textContent)}</pre>
   </body></html>`;
-  downloadBlob(html, "HR_Blueprint_Projection.xls", "application/vnd.ms-excel;charset=utf-8");
+  downloadBlob(html, "HR_Blueprint_WISN_Projection.xls", "application/vnd.ms-excel;charset=utf-8");
 }
 
 function exportReport() {
@@ -540,19 +1051,25 @@ function exportJson() {
       retire_5y_all: n($("retireAll").value),
       confidence: $("confidenceLevel").value,
     },
-    professions: Object.fromEntries(Array.from(state.selectedProfessions).map((code) => [code, state.professionConfig[code]])),
-    need_rows: state.needRows,
+    wisn_inputs: {
+      activity_definitions: ACTIVITY_DEFS.map(({ code, label }) => ({ code, label })),
+      need_rows: state.needRows,
+      target_need_definitions: TARGET_NEED_DEFS.map(({ code, label, placement, activityMix }) => ({ code, label, placement, activityMix })),
+      target_need_rows: state.targetNeedRows,
+      standards_by_profession: Object.fromEntries(Array.from(state.selectedProfessions).map((code) => [code, state.professionConfig[code]])),
+    },
+    target_summary: state.targetSummary,
     movements: state.movements,
     results: state.results,
   };
-  downloadBlob(JSON.stringify(payload, null, 2), "HR_Blueprint_Projection.json", "application/json;charset=utf-8");
+  downloadBlob(JSON.stringify(payload, null, 2), "HR_Blueprint_WISN_Projection.json", "application/json;charset=utf-8");
 }
 
 function buildReportText() {
   const lines = [
-    "HR Blueprint Projection Report",
+    "HR Blueprint WISN Projection Report",
     `Scenario: ${$("scenarioName").value}`,
-    `Scope: ${state.provinceRow?.province || "-"} / ${$("amphurName").value || "-"} / ${$("unitName").value || "-"}`,
+    `Scope: ${state.provinceRow?.province || "-"} / ${$("amphurName").value || "-"} / ${$("unitName").value || "-"} / ${$("scopeMode").value}`,
     `Year range: ${years().join(", ")}`,
     `Confidence: ${$("confidenceLevel").value}`,
     "",
@@ -563,10 +1080,10 @@ function buildReportText() {
     `Net outflow: ${$("summaryNetOutflow").textContent}`,
     "",
     "Results",
-    "Year | Profession | Need FTE | Supply FTE | GAP FTE | Suggested Add | Risk | Recommendation",
+    "Year | Profession | Actual FTE | Target FTE | Planning FTE | Supply FTE | HR GAP | WISN Ratio | Pressure | Trend | Coverage Gap | Workload Gap | Suggested Add | Risk | Recommendation",
   ];
   for (const row of state.results) {
-    lines.push(`${row.year} | ${row.professionLabel} | ${row.needFte.toFixed(1)} | ${row.supplyFte.toFixed(1)} | ${row.gapFte.toFixed(1)} | ${row.suggestedAdd} | ${row.risk} | ${row.recommendation}`);
+    lines.push(`${row.year} | ${row.professionLabel} | ${row.actualNeedFte.toFixed(1)} | ${row.targetNeedFte.toFixed(1)} | ${row.needFte.toFixed(1)} | ${row.supplyFte.toFixed(1)} | ${row.gapFte.toFixed(1)} | ${fmtRatio(row.wisnRatio)} | ${fmtRatio(row.pressureIndex)} | ${fmtRatio(row.trendIndex)} | ${row.coverageGap.toFixed(0)} | ${row.workloadGap.toFixed(0)} | ${row.suggestedAdd} | ${row.risk} | ${row.recommendation}`);
   }
   lines.push("", "Formula", $("formulaText").textContent, "", "Source / Assumption", $("sourceText").textContent);
   return lines.join("\n");
@@ -588,12 +1105,14 @@ function bindEvents() {
   $("btnSelectCore").addEventListener("click", () => {
     state.selectedProfessions = new Set(["doctor", "nurse", "pharmacist"]);
     renderProfessions();
+    renderStandardTable();
     renderSupplyFilter();
     renderSupplyTable();
   });
   $("btnClearProfessions").addEventListener("click", () => {
     state.selectedProfessions.clear();
     renderProfessions();
+    renderStandardTable();
     renderSupplyFilter();
     renderSupplyTable();
   });
@@ -603,10 +1122,21 @@ function bindEvents() {
   $("btnExportJson").addEventListener("click", exportJson);
   $("professionGrid").addEventListener("input", handleProfessionChange);
   $("professionGrid").addEventListener("change", handleProfessionChange);
+  $("standardTable").addEventListener("input", (event) => {
+    if (!event.target.matches("[data-standard]")) return;
+    const [code, activityCode] = event.target.dataset.standard.split(":");
+    state.professionConfig[code].activityMinutes[activityCode] = n(event.target.value, 0);
+  });
   $("needTable").addEventListener("input", (event) => {
     if (!event.target.matches("[data-need]")) return;
     const [index, field] = event.target.dataset.need.split(":");
     state.needRows[index][field] = n(event.target.value, 0);
+  });
+  $("targetNeedTable").addEventListener("input", (event) => {
+    if (!event.target.matches("[data-target]")) return;
+    const [index, field] = event.target.dataset.target.split(":");
+    if (!state.targetNeedRows[index]) return;
+    state.targetNeedRows[index][field] = field === "placement" ? event.target.value : n(event.target.value, 0);
   });
   $("supplyTable").addEventListener("change", (event) => {
     if (!event.target.matches("[data-move]")) return;
@@ -626,8 +1156,10 @@ function bindEvents() {
     $(id).addEventListener("change", () => {
       syncInputsFromDom();
       initNeedRows(true);
+      initTargetNeedRows(true);
       initMovementDefaults(true);
       renderNeedTable();
+      renderTargetNeedTable();
       renderSupplyFilter();
       renderSupplyTable();
       renderBaselineCards();

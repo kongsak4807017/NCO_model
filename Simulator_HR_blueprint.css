@@ -24,6 +24,7 @@ body {
   color: var(--ink);
   font-family: "Noto Sans Thai", "Segoe UI", Tahoma, sans-serif;
   font-size: 14px;
+  overflow-x: hidden;
 }
 
 button,
@@ -126,6 +127,7 @@ select {
   padding: 24px;
   max-width: 1500px;
   width: 100%;
+  min-width: 0;
 }
 
 .topbar {
@@ -203,6 +205,7 @@ select {
   padding: 18px;
   margin-bottom: 18px;
   scroll-margin-top: 92px;
+  min-width: 0;
 }
 
 .panel-header {
@@ -321,11 +324,59 @@ select:focus {
   color: var(--red);
 }
 
+.explain-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.explain-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #fbfdfc;
+}
+
+.explain-card strong,
+.explain-card span {
+  display: block;
+}
+
+.explain-card strong {
+  color: var(--primary-dark);
+}
+
+.explain-card span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .profession-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 12px;
   margin-top: 14px;
+}
+
+.subsection-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0 10px;
+}
+
+.subsection-head h4 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.subsection-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .profession-card {
@@ -377,9 +428,25 @@ select:focus {
 
 .data-table {
   width: 100%;
-  min-width: 900px;
+  min-width: 1100px;
   border-collapse: collapse;
   background: #fff;
+}
+
+.standard-table {
+  min-width: 980px;
+}
+
+.target-table {
+  min-width: 1260px;
+}
+
+.target-table td:nth-child(2) {
+  min-width: 240px;
+}
+
+.target-table td:nth-child(8) input {
+  min-width: 190px;
 }
 
 .data-table th,
@@ -480,6 +547,7 @@ pre {
   .cols-3,
   .cols-4,
   .summary-grid,
+  .explain-grid,
   .trace-layout {
     grid-template-columns: 1fr 1fr;
   }
@@ -500,6 +568,7 @@ pre {
   .cols-3,
   .cols-4,
   .summary-grid,
+  .explain-grid,
   .trace-layout {
     grid-template-columns: 1fr;
   }
