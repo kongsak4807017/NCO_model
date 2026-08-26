@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulator HR Blueprint</title>
   <link rel="stylesheet" href="Simulator_HR_blueprint.css">
+  <link rel="stylesheet" href="Simulator_HR_blueprint_help.css">
 </head>
 <body>
   <div class="app-shell">
@@ -50,347 +51,117 @@
 
       <section class="panel" id="scenario">
         <div class="panel-header">
-          <div>
-            <span class="section-num">1</span>
-            <h3>Scenario Workspace</h3>
-          </div>
+          <div><span class="section-num">1</span><h3>Scenario Workspace</h3></div>
           <p>กำหนดชื่อ scenario และช่วงเวลาพยากรณ์ 5 ปี</p>
         </div>
         <div class="grid cols-3">
-          <label class="field">
-            <span>ชื่อ Scenario</span>
-            <input id="scenarioName" type="text" value="HR Blueprint 5Y Projection">
-          </label>
-          <label class="field">
-            <span>ปีเริ่มต้น (พ.ศ.)</span>
-            <input id="startYear" type="number" min="2500" max="2600" value="2569">
-          </label>
-          <label class="field">
-            <span>จำนวนปี</span>
-            <input id="yearCount" type="number" min="1" max="10" value="5">
-          </label>
+          <label class="field"><span>ชื่อ Scenario</span><input id="scenarioName" type="text" value="HR Blueprint 5Y Projection"></label>
+          <label class="field"><span>ปีเริ่มต้น (พ.ศ.)</span><input id="startYear" type="number" min="2500" max="2600" value="2569"></label>
+          <label class="field"><span>จำนวนปี</span><input id="yearCount" type="number" min="1" max="10" value="5"></label>
         </div>
       </section>
 
       <section class="panel" id="scope">
         <div class="panel-header">
-          <div>
-            <span class="section-num">2</span>
-            <h3>Scope Selector</h3>
-          </div>
+          <div><span class="section-num">2</span><h3>Scope Selector</h3></div>
           <p>เลือกจังหวัด อำเภอ และโรงพยาบาล/หน่วยบริการ</p>
         </div>
         <div class="grid cols-4">
-          <label class="field">
-            <span>จังหวัด</span>
-            <select id="provinceSelect"></select>
-          </label>
-          <label class="field">
-            <span>อำเภอ</span>
-            <input id="amphurName" type="text" placeholder="เช่น เมืองเชียงใหม่">
-          </label>
-          <label class="field">
-            <span>โรงพยาบาล/หน่วยบริการ</span>
-            <input id="unitName" type="text" placeholder="เช่น นครพิงค์">
-          </label>
-          <label class="field">
-            <span>ระดับการคำนวณ</span>
-            <select id="scopeMode">
-              <option value="province">จังหวัด</option>
-              <option value="district">อำเภอ</option>
-              <option value="hospital" selected>โรงพยาบาล</option>
-              <option value="network">เครือข่ายบริการ</option>
-            </select>
-          </label>
+          <label class="field"><span>จังหวัด</span><select id="provinceSelect"></select></label>
+          <label class="field"><span>อำเภอ</span><input id="amphurName" type="text" placeholder="เช่น เมืองเชียงใหม่"></label>
+          <label class="field"><span>โรงพยาบาล/หน่วยบริการ</span><input id="unitName" type="text" placeholder="เช่น นครพิงค์"></label>
+          <label class="field"><span>ระดับการคำนวณ</span><select id="scopeMode"><option value="province">จังหวัด</option><option value="district">อำเภอ</option><option value="hospital" selected>โรงพยาบาล</option><option value="network">เครือข่ายบริการ</option></select></label>
         </div>
       </section>
 
       <section class="panel" id="baseline">
         <div class="panel-header">
-          <div>
-            <span class="section-num">3</span>
-            <h3>Baseline Data Check</h3>
-          </div>
+          <div><span class="section-num">3</span><h3>Baseline Data Check</h3></div>
           <p>ระบบตั้งต้นจาก province baseline และเปิดให้แก้ตัวเลขก่อนคำนวณ</p>
         </div>
         <div class="summary-grid">
-          <div class="metric">
-            <span>Population</span>
-            <strong id="metricPopulation">-</strong>
-          </div>
-          <div class="metric">
-            <span>Vacancy</span>
-            <strong id="metricVacancy">-</strong>
-          </div>
-          <div class="metric">
-            <span>Retire <= 5Y</span>
-            <strong id="metricRetire">-</strong>
-          </div>
-          <div class="metric">
-            <span>Confidence</span>
-            <strong id="metricConfidence">B</strong>
-          </div>
+          <div class="metric"><span>Population</span><strong id="metricPopulation">-</strong></div>
+          <div class="metric"><span>Vacancy</span><strong id="metricVacancy">-</strong></div>
+          <div class="metric"><span>Retire &lt;= 5Y</span><strong id="metricRetire">-</strong></div>
+          <div class="metric"><span>Confidence</span><strong id="metricConfidence">B</strong></div>
         </div>
         <div class="grid cols-4 compact-grid">
-          <label class="field">
-            <span>ประชากรรับผิดชอบ/พื้นที่บริการ</span>
-            <input id="populationBase" type="number" min="0">
-          </label>
-          <label class="field">
-            <span>Vacancy ทั้งหมด</span>
-            <input id="vacancyAll" type="number" min="0">
-          </label>
-          <label class="field">
-            <span>เกษียณ <=5 ปี ทั้งหมด</span>
-            <input id="retireAll" type="number" min="0">
-          </label>
-          <label class="field">
-            <span>Confidence</span>
-            <select id="confidenceLevel">
-              <option value="A">A: verified</option>
-              <option value="B" selected>B: usable</option>
-              <option value="C">C: provisional</option>
-            </select>
-          </label>
+          <label class="field"><span>ประชากรรับผิดชอบ/พื้นที่บริการ</span><input id="populationBase" type="number" min="0"></label>
+          <label class="field"><span>Vacancy ทั้งหมด</span><input id="vacancyAll" type="number" min="0"></label>
+          <label class="field"><span>เกษียณ &lt;=5 ปี ทั้งหมด</span><input id="retireAll" type="number" min="0"></label>
+          <label class="field"><span>Confidence</span><select id="confidenceLevel"><option value="A">A: verified</option><option value="B" selected>B: usable</option><option value="C">C: provisional</option></select></label>
         </div>
       </section>
 
       <section class="panel" id="profession">
         <div class="panel-header">
-          <div>
-            <span class="section-num">4</span>
-            <h3>Profession Selector</h3>
-          </div>
+          <div><span class="section-num">4</span><h3>Profession Selector</h3></div>
           <p>เลือกวิชาชีพ กำลังคนจริง และมาตรฐาน WISN ที่ใช้แปลง workload เป็น demand minutes</p>
         </div>
         <div class="tool-row">
-          <label class="field inline">
-            <span>WISN Standard Mode</span>
-            <select id="targetMode">
-              <option value="wisn-default" selected>WISN default</option>
-              <option value="high-complexity">High complexity +10%</option>
-              <option value="custom">Custom standards</option>
-            </select>
-          </label>
+          <label class="field inline"><span>WISN Standard Mode</span><select id="targetMode"><option value="wisn-default" selected>WISN default</option><option value="high-complexity">High complexity +10%</option><option value="custom">Custom standards</option></select></label>
           <button class="btn secondary" id="btnSelectCore">เลือก 3 วิชาชีพหลัก</button>
           <button class="btn ghost" id="btnClearProfessions">ล้างการเลือก</button>
         </div>
         <div class="profession-grid" id="professionGrid"></div>
-        <div class="subsection-head">
-          <div>
-            <h4>Activity Standards (minutes per case)</h4>
-            <p>แก้เวลามาตรฐานต่อกิจกรรมได้รายวิชาชีพ ถ้ามี time-motion หรือ consensus ของโรงพยาบาลให้แทนค่าตรงนี้</p>
-          </div>
-        </div>
-        <div class="table-shell">
-          <table class="data-table standard-table" id="standardTable">
-            <thead>
-              <tr>
-                <th>วิชาชีพ</th>
-                <th>OPD</th>
-                <th>IPD Admit</th>
-                <th>ER</th>
-                <th>OR/Procedure</th>
-                <th>Delivery</th>
-                <th>Chronic</th>
-                <th>Mental</th>
-                <th>Outreach/PP</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="subsection-head"><div><h4>Activity Standards (minutes per case)</h4><p>แก้เวลามาตรฐานต่อกิจกรรมได้รายวิชาชีพ ถ้ามี time-motion หรือ consensus ของโรงพยาบาลให้แทนค่าตรงนี้</p></div></div>
+        <div class="table-shell"><table class="data-table standard-table" id="standardTable"><thead><tr><th>วิชาชีพ</th><th>OPD</th><th>IPD Admit</th><th>ER</th><th>OR/Procedure</th><th>Delivery</th><th>Chronic</th><th>Mental</th><th>Outreach/PP</th></tr></thead><tbody></tbody></table></div>
       </section>
 
       <section class="panel" id="need">
         <div class="panel-header">
-          <div>
-            <span class="section-num">5</span>
-            <h3>WISN Workload Statistics</h3>
-          </div>
+          <div><span class="section-num">5</span><h3>WISN Workload Statistics</h3></div>
           <p>ใส่ปริมาณบริการจริงรายปีของอำเภอ/รพ. เพื่อแปลงเป็น demand minutes ตาม WISN</p>
         </div>
-        <div class="table-shell">
-          <table class="data-table" id="needTable">
-            <thead>
-              <tr>
-                <th>ปี</th>
-                <th>Service Population</th>
-                <th>OPD Visits</th>
-                <th>IPD Admits</th>
-                <th>ER Visits</th>
-                <th>OR/Procedure</th>
-                <th>Delivery</th>
-                <th>Chronic Visits</th>
-                <th>Mental Visits</th>
-                <th>Outreach/PP</th>
-                <th>Complexity</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="subsection-head">
-          <div>
-            <h4>Target Need Forecast</h4>
-            <p>คาดการณ์กลุ่มเป้าหมายที่ควรได้รับบริการในพื้นที่ เพื่อไม่ให้ under-service ถูกตีความว่า workload ต่ำ</p>
-          </div>
-        </div>
-        <div class="table-shell tall">
-          <table class="data-table target-table" id="targetNeedTable">
-            <thead>
-              <tr>
-                <th>ปี</th>
-                <th>Health Need Group</th>
-                <th>Target Population / Cases</th>
-                <th>Actual Served</th>
-                <th>Target Coverage %</th>
-                <th>Service Freq / Year</th>
-                <th>Need Complexity</th>
-                <th>Placement</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="table-shell"><table class="data-table" id="needTable"><thead><tr><th>ปี</th><th>Service Population</th><th>OPD Visits</th><th>IPD Admits</th><th>ER Visits</th><th>OR/Procedure</th><th>Delivery</th><th>Chronic Visits</th><th>Mental Visits</th><th>Outreach/PP</th><th>Complexity</th></tr></thead><tbody></tbody></table></div>
+        <div class="subsection-head"><div><h4>Target Need Forecast</h4><p>คาดการณ์กลุ่มเป้าหมายที่ควรได้รับบริการในพื้นที่ เพื่อไม่ให้ under-service ถูกตีความว่า workload ต่ำ</p></div></div>
+        <div class="table-shell tall"><table class="data-table target-table" id="targetNeedTable"><thead><tr><th>ปี</th><th>Health Need Group</th><th>Target Population / Cases</th><th>Actual Served</th><th>Target Coverage %</th><th>Service Freq / Year</th><th>Need Complexity</th><th>Placement</th></tr></thead><tbody></tbody></table></div>
         <div class="explain-grid">
-          <div class="explain-card">
-            <strong>1. พื้นที่บริการ</strong>
-            <span>ใช้ประชากรรับผิดชอบของอำเภอ/รพ. เป็นฐานตั้งต้น ไม่ใช่ประชากรจังหวัดเสมอไป</span>
-          </div>
-          <div class="explain-card">
-            <strong>2. Workload จริง</strong>
-            <span>ใช้จำนวนบริการรายปี OPD, IPD, ER, OR, delivery, chronic, mental และ outreach</span>
-          </div>
-          <div class="explain-card">
-            <strong>3. Target need</strong>
-            <span>คาดการณ์กลุ่มเป้าหมายที่ควรได้รับบริการ เช่น trauma, elderly specialist, CKD, LTC</span>
-          </div>
-          <div class="explain-card">
-            <strong>4. Capacity จริง</strong>
-            <span>ใช้ time standard, AWT, CAS, IAS และ supply เข้า/ออก เพื่อเทียบ Planning FTE กับ Supply FTE</span>
-          </div>
+          <div class="explain-card"><strong>1. พื้นที่บริการ</strong><span>ใช้ประชากรรับผิดชอบของอำเภอ/รพ. เป็นฐานตั้งต้น ไม่ใช่ประชากรจังหวัดเสมอไป</span></div>
+          <div class="explain-card"><strong>2. Workload จริง</strong><span>ใช้จำนวนบริการรายปี OPD, IPD, ER, OR, delivery, chronic, mental และ outreach</span></div>
+          <div class="explain-card"><strong>3. Target need</strong><span>คาดการณ์กลุ่มเป้าหมายที่ควรได้รับบริการ เช่น trauma, elderly specialist, CKD, LTC</span></div>
+          <div class="explain-card"><strong>4. Capacity จริง</strong><span>ใช้ time standard, AWT, CAS, IAS และ supply เข้า/ออก เพื่อเทียบ Planning FTE กับ Supply FTE</span></div>
         </div>
       </section>
 
       <section class="panel" id="supply">
         <div class="panel-header">
-          <div>
-            <span class="section-num">6</span>
-            <h3>Supply Projection</h3>
-          </div>
+          <div><span class="section-num">6</span><h3>Supply Projection</h3></div>
           <p>ใส่จำนวนคนเข้า/ออกในแต่ละปี ระบบจะคำนวณ supply ต่อเนื่อง 5 ปี</p>
         </div>
-        <div class="tool-row">
-          <label class="field inline">
-            <span>แสดงวิชาชีพ</span>
-            <select id="supplyProfessionFilter"></select>
-          </label>
-          <button class="btn secondary" id="btnAutoRetire">กระจายเกษียณจาก baseline</button>
-        </div>
-        <div class="table-shell tall">
-          <table class="data-table" id="supplyTable">
-            <thead>
-              <tr>
-                <th>วิชาชีพ</th>
-                <th>ปี</th>
-                <th>Current</th>
-                <th>Recruit</th>
-                <th>Transfer In</th>
-                <th>Return In</th>
-                <th>Retire</th>
-                <th>Resign</th>
-                <th>Transfer Out</th>
-                <th>Study Leave</th>
-                <th>FTE Factor</th>
-                <th>Projected</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="tool-row"><label class="field inline"><span>แสดงวิชาชีพ</span><select id="supplyProfessionFilter"></select></label><button class="btn secondary" id="btnAutoRetire">กระจายเกษียณจาก baseline</button></div>
+        <div class="table-shell tall"><table class="data-table" id="supplyTable"><thead><tr><th>วิชาชีพ</th><th>ปี</th><th>Current</th><th>Recruit</th><th>Transfer In</th><th>Return In</th><th>Retire</th><th>Resign</th><th>Transfer Out</th><th>Study Leave</th><th>FTE Factor</th><th>Projected</th></tr></thead><tbody></tbody></table></div>
       </section>
 
       <section class="panel" id="results">
         <div class="panel-header">
-          <div>
-            <span class="section-num">7</span>
-            <h3>Projection Results</h3>
-          </div>
+          <div><span class="section-num">7</span><h3>Projection Results</h3></div>
           <p>ผล Required FTE / Supply / GAP / WISN ratio / pressure รายปี</p>
         </div>
         <div class="summary-grid">
-          <div class="metric danger">
-            <span>Total Positive GAP</span>
-            <strong id="summaryGap">0 FTE</strong>
-          </div>
-          <div class="metric">
-            <span>High Risk Rows</span>
-            <strong id="summaryRisk">0</strong>
-          </div>
-          <div class="metric">
-            <span>Coverage Gap</span>
-            <strong id="summaryReplacement">0 คน</strong>
-          </div>
-          <div class="metric">
-            <span>Workload Gap</span>
-            <strong id="summaryNetOutflow">0 visits</strong>
-          </div>
+          <div class="metric danger"><span>Total Positive GAP</span><strong id="summaryGap">0 FTE</strong></div>
+          <div class="metric"><span>High Risk Rows</span><strong id="summaryRisk">0</strong></div>
+          <div class="metric"><span>Coverage Gap</span><strong id="summaryReplacement">0 คน</strong></div>
+          <div class="metric"><span>Workload Gap</span><strong id="summaryNetOutflow">0 visits</strong></div>
         </div>
-        <div class="table-shell tall">
-          <table class="data-table" id="resultTable">
-            <thead>
-              <tr>
-                <th>ปี</th>
-                <th>วิชาชีพ</th>
-                <th>Actual FTE</th>
-                <th>Target FTE</th>
-                <th>Planning FTE</th>
-                <th>Supply FTE</th>
-                <th>HR GAP</th>
-                <th>WISN Ratio</th>
-                <th>Pressure</th>
-                <th>Trend</th>
-                <th>Coverage Gap</th>
-                <th>Workload Gap</th>
-                <th>Suggested Add</th>
-                <th>Reallocate</th>
-                <th>Risk</th>
-                <th>Recommendation</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+        <div class="table-shell tall"><table class="data-table" id="resultTable"><thead><tr><th>ปี</th><th>วิชาชีพ</th><th>Actual FTE</th><th>Target FTE</th><th>Planning FTE</th><th>Supply FTE</th><th>HR GAP</th><th>WISN Ratio</th><th>Pressure</th><th>Trend</th><th>Coverage Gap</th><th>Workload Gap</th><th>Suggested Add</th><th>Reallocate</th><th>Risk</th><th>Recommendation</th></tr></thead><tbody></tbody></table></div>
       </section>
 
       <section class="panel" id="trace">
         <div class="panel-header">
-          <div>
-            <span class="section-num">8</span>
-            <h3>Supervisor Trace & Export</h3>
-          </div>
+          <div><span class="section-num">8</span><h3>Supervisor Trace & Export</h3></div>
           <p>แสดงสูตร แหล่งข้อมูล และส่งออกผลลัพธ์</p>
         </div>
         <div class="trace-layout">
-          <div class="trace-box">
-            <h4>Formula</h4>
-            <pre id="formulaText"></pre>
-          </div>
-          <div class="trace-box">
-            <h4>Source / Assumption</h4>
-            <pre id="sourceText"></pre>
-          </div>
+          <div class="trace-box"><h4>Formula</h4><pre id="formulaText"></pre></div>
+          <div class="trace-box"><h4>Source / Assumption</h4><pre id="sourceText"></pre></div>
         </div>
-        <div class="export-actions">
-          <button class="btn primary" id="btnExportExcel">ส่งออก Excel (.xls)</button>
-          <button class="btn secondary" id="btnExportReport">ส่งออก report.txt</button>
-          <button class="btn ghost" id="btnExportJson">ส่งออก JSON</button>
-        </div>
+        <div class="export-actions"><button class="btn primary" id="btnExportExcel">ส่งออก Excel (.xls)</button><button class="btn secondary" id="btnExportReport">ส่งออก report.txt</button><button class="btn ghost" id="btnExportJson">ส่งออก JSON</button></div>
       </section>
     </main>
   </div>
 
   <script src="Simulator_HR_blueprint.js"></script>
+  <script src="Simulator_HR_blueprint_help.js"></script>
 </body>
 </html>
