@@ -64,20 +64,22 @@
       <section class="panel" id="scope">
         <div class="panel-header">
           <div><span class="section-num">2</span><h3>Scope Selector</h3></div>
-          <p>เลือกจังหวัด อำเภอ และโรงพยาบาล/หน่วยบริการ</p>
+          <p>เลือกจังหวัด → อำเภอจากฐานข้อมูล แล้วแก้ชื่อ/ตัวเลขพื้นที่จริงได้ตามการทวนสอบ</p>
         </div>
         <div class="grid cols-4">
           <label class="field"><span>จังหวัด</span><select id="provinceSelect"></select></label>
-          <label class="field"><span>อำเภอ</span><input id="amphurName" type="text" placeholder="เช่น เมืองเชียงใหม่"></label>
+          <label class="field"><span>อำเภอจากฐานข้อมูล</span><select id="amphurSelect"><option value="">— เลือกอำเภอ —</option></select></label>
+          <label class="field"><span>ชื่ออำเภอ / แก้ไขเอง</span><input id="amphurName" type="text" placeholder="เช่น เมืองเชียงใหม่"></label>
           <label class="field"><span>โรงพยาบาล/หน่วยบริการ</span><input id="unitName" type="text" placeholder="เช่น นครพิงค์"></label>
           <label class="field"><span>ระดับการคำนวณ</span><select id="scopeMode"><option value="province">จังหวัด</option><option value="district">อำเภอ</option><option value="hospital" selected>โรงพยาบาล</option><option value="network">เครือข่ายบริการ</option></select></label>
         </div>
+        <p id="districtDataStatus">ข้อมูลอำเภอ: กำลังโหลดฐานอ้างอิง…</p>
       </section>
 
       <section class="panel" id="baseline">
         <div class="panel-header">
           <div><span class="section-num">3</span><h3>Baseline Data Check</h3></div>
-          <p>Baseline ปัจจุบันใช้เติมเฉพาะปีอ้างอิงล่าสุด ส่วนปีก่อนหน้าต้องใช้ข้อมูลจริงของปีนั้น</p>
+          <p>Baseline ที่ระบบหาได้เป็นค่าเริ่มต้นเท่านั้น ผู้ใช้แก้ไขทับได้ทั้งหมดเพื่อใช้ข้อมูลจริงของพื้นที่ที่ทวนสอบแล้ว</p>
         </div>
         <div class="summary-grid">
           <div class="metric"><span>Population</span><strong id="metricPopulation">-</strong></div>
