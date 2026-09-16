@@ -18,11 +18,15 @@ import argparse
 import datetime as dt
 import json
 import sqlite3
+import sys
 from collections import defaultdict
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 REGION1_PROVINCES = {"50", "51", "52", "54", "55", "56", "57", "58"}
 PROFESSIONS = {
     "doctor": "นายแพทย์",
