@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../Simulator_HR_blueprint.html', import.meta.url), 'utf8');
 const historical = readFileSync(new URL('../Simulator_HR_blueprint_historical.js', import.meta.url), 'utf8');
+const districtStatus = readFileSync(new URL('../Simulator_HR_blueprint_district_status.js', import.meta.url), 'utf8');
 const generator = readFileSync(new URL('../scripts/generate_region1_district_hr_baseline.py', import.meta.url), 'utf8');
 
 function functionBody(source, name) {
@@ -34,10 +35,10 @@ test('province change rebuilds district selector and district selection applies 
 });
 
 test('district selector does not imply population data exists when public snapshot has directory only', () => {
-  const body = functionBody(historical, 'renderAmphurSelect');
-  assert.match(body, /populationSource\.available/);
-  assert.match(body, /ยังไม่มี population snapshot/);
-  assert.match(body, /กรอก\/ทวนสอบเอง/);
+  assert.match(html, /Simulator_HR_blueprint_district_status\.js/);
+  assert.match(districtStatus, /populationSource\.available/);
+  assert.match(districtStatus, /ยังไม่มี population snapshot/);
+  assert.match(districtStatus, /กรอก\/ทวนสอบเอง/);
 });
 
 test('district mode refuses to reuse province workforce as district workforce when HR snapshot is unavailable', () => {
