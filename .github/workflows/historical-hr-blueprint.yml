@@ -9,6 +9,7 @@ on:
       - 'Simulator_HR_blueprint_district_status.js'
       - 'Simulator_HR_blueprint_profile.js'
       - 'Simulator_HR_blueprint_profile.css'
+      - 'Simulator_HR_blueprint_excel_guide.js'
       - 'GOOGLE_SHEETS_PROFILE_GUIDE.md'
       - 'integrations/google_apps_script/Code.gs'
       - 'output/hr_blueprint_district_baseline_region1.json'
@@ -24,6 +25,7 @@ on:
       - 'Simulator_HR_blueprint_district_status.js'
       - 'Simulator_HR_blueprint_profile.js'
       - 'Simulator_HR_blueprint_profile.css'
+      - 'Simulator_HR_blueprint_excel_guide.js'
       - 'GOOGLE_SHEETS_PROFILE_GUIDE.md'
       - 'integrations/google_apps_script/Code.gs'
       - 'output/hr_blueprint_district_baseline_region1.json'
@@ -40,6 +42,7 @@ jobs:
         with:
           node-version: '20'
       - run: node --check Simulator_HR_blueprint_profile.js
+      - run: node --check Simulator_HR_blueprint_excel_guide.js
       - run: node --test tests/*.test.mjs
       - uses: actions/setup-python@v5
         with:
