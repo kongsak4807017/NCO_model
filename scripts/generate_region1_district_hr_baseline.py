@@ -1,15 +1,18 @@
 """Generate a static district baseline for the HR Blueprint GitHub Pages simulator.
 
-The output is intentionally factual-only:
-- District/population reference comes from the DOPA population source already used by
-  API/amphur_population_store.py.
-- District HR counts are aggregated from a local hr_blueprint.db only when that
-  database is present.
-- Missing HR data stays null and is marked hr_available=false. Nothing is inferred
-  from provincial totals.
+Factual-only policy:
+- District directory may be loaded independently so the UI can offer district choices.
+- Population is populated only from an observed population source for its documented year.
+- District HR is populated only from a local hr_blueprint.db snapshot.
+- Missing population/HR remains empty/null; province totals are never allocated to districts.
 
-Run locally after refreshing hr_blueprint.db to publish richer district HR data:
-    python scripts/generate_region1_district_hr_baseline.py
+Examples:
+  # Local verified enrichment (DOPA + local hr_blueprint.db when reachable)
+  python scripts/generate_region1_district_hr_baseline.py
+
+  # GitHub Pages directory-only baseline (no population inference)
+  python scripts/generate_region1_district_hr_baseline.py --skip-population \
+    --district-directory-url https://raw.githubusercontent.com/thailand-geography-data/thailand-geography-json/main/src/districts.json
 """
 
 from __future__ import annotations
@@ -19,7 +22,7 @@ import datetime as dt
 import json
 import sqlite3
 import sys
-from collections import defaultdict
+import urllib.request
 from pathlib import Path
 
 
@@ -27,7 +30,21 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-REGION1_PROVINCES = {"50", "51", "52", "54", "55", "56", "57", "58"}
+REGION1_PROVINCE_NAMES = {
+    "50": "เชียงใหม่",
+    "51": "ลำพูน",
+    "52": "ลำปาง",
+    "54": "แพร่",
+    "55": "น่าน",
+    "56": "พะเยา",
+    "57": "เชียงราย",
+    "58": "แม่ฮ่องสอน",
+}
+REGION1_PROVINCES = set(REGION1_PROVINCE_NAMES)
+DEFAULT_DISTRICT_DIRECTORY_URL = (
+    "https://raw.githubusercontent.com/thailand-geography-data/"
+    "thailand-geography-json/main/src/districts.json"
+)
 PROFESSIONS = {
     "doctor": "นายแพทย์",
     "nurse": "พยาบาลวิชาชีพ",
@@ -36,16 +53,24 @@ PROFESSIONS = {
 
 
 def _empty_hr_values() -> dict:
-    values = {
-        "hr_available": False,
-        "vacant_all": None,
-        "retire_5y_all": None,
-    }
+    values = {"hr_available": False, "vacant_all": None, "retire_5y_all": None}
     for key in PROFESSIONS:
         values[key] = None
         values[f"vacant_{key}"] = None
         values[f"retire_5y_{key}"] = None
     return values
+
+
+def _empty_district_row(province_code: str, amphur_code: str, province: str = "", amphur_name: str = "") -> dict:
+    return {
+        "province_code": str(province_code),
+        "province": province or REGION1_PROVINCE_NAMES.get(str(province_code), ""),
+        "amphur_code": str(amphur_code),
+        "amphur_name": amphur_name or "",
+        "population_by_year": {},
+        "population_detail_by_year": {},
+        **_empty_hr_values(),
+    }
 
 
 def _aggregate_hr(db_path: Path | None, snapshot_date: dt.date) -> dict[tuple[str, str], dict]:
@@ -55,10 +80,7 @@ def _aggregate_hr(db_path: Path | None, snapshot_date: dt.date) -> dict[tuple[st
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     required_tables = {"organizational_unit", "position", "assignment", "personnel"}
-    existing = {
-        row[0]
-        for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
-    }
+    existing = {row[0] for row in conn.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
     if not required_tables.issubset(existing):
         conn.close()
         return {}
@@ -75,11 +97,7 @@ def _aggregate_hr(db_path: Path | None, snapshot_date: dt.date) -> dict[tuple[st
         key = (str(row["province_code"]), str(row["amphur_code"]))
         if key[0] not in REGION1_PROVINCES:
             continue
-        rows_by_key[key] = {
-            **_empty_hr_values(),
-            "hr_available": True,
-            "amphur_name_hr": row["amphur_name"] or "",
-        }
+        rows_by_key[key] = {**_empty_hr_values(), "hr_available": True, "amphur_name_hr": row["amphur_name"] or ""}
         rows_by_key[key]["vacant_all"] = 0
         rows_by_key[key]["retire_5y_all"] = 0
         for code in PROFESSIONS:
@@ -197,12 +215,25 @@ def build_district_rows(
     population_rows: list[dict],
     db_path: Path | str | None,
     snapshot_date: dt.date | None = None,
+    district_rows: list[dict] | None = None,
 ) -> list[dict]:
     snapshot_date = snapshot_date or dt.date.today()
     db = Path(db_path) if db_path else None
     hr_by_key = _aggregate_hr(db, snapshot_date)
-
     grouped: dict[tuple[str, str], dict] = {}
+
+    for source in district_rows or []:
+        province_code = str(source.get("province_code") or "")
+        amphur_code = str(source.get("amphur_code") or "")
+        if province_code not in REGION1_PROVINCES or not amphur_code:
+            continue
+        grouped[(province_code, amphur_code)] = _empty_district_row(
+            province_code,
+            amphur_code,
+            source.get("province_name_th") or source.get("province") or "",
+            source.get("amphur_name_th") or source.get("amphur_name") or "",
+        )
+
     for source in population_rows:
         province_code = str(source.get("province_code") or "")
         amphur_code = str(source.get("amphur_code") or "")
@@ -211,21 +242,21 @@ def build_district_rows(
         key = (province_code, amphur_code)
         row = grouped.setdefault(
             key,
-            {
-                "province_code": province_code,
-                "province": source.get("province_name_th") or "",
-                "amphur_code": amphur_code,
-                "amphur_name": source.get("amphur_name_th") or "",
-                "population_by_year": {},
-                "population_detail_by_year": {},
-                **_empty_hr_values(),
-            },
+            _empty_district_row(
+                province_code,
+                amphur_code,
+                source.get("province_name_th") or "",
+                source.get("amphur_name_th") or "",
+            ),
         )
+        if source.get("province_name_th"):
+            row["province"] = source["province_name_th"]
+        if source.get("amphur_name_th"):
+            row["amphur_name"] = source["amphur_name_th"]
         year = source.get("reference_year_be")
         if year is not None:
             year_key = str(int(year))
-            population = source.get("total_population")
-            row["population_by_year"][year_key] = int(population or 0)
+            row["population_by_year"][year_key] = int(source.get("total_population") or 0)
             row["population_detail_by_year"][year_key] = {
                 "male_total": source.get("male_total"),
                 "female_total": source.get("female_total"),
@@ -233,28 +264,47 @@ def build_district_rows(
             }
 
     for key, hr in hr_by_key.items():
-        if key not in grouped:
-            grouped[key] = {
-                "province_code": key[0],
-                "province": "",
-                "amphur_code": key[1],
-                "amphur_name": hr.get("amphur_name_hr") or "",
-                "population_by_year": {},
-                "population_detail_by_year": {},
-                **_empty_hr_values(),
-            }
-        grouped[key].update({k: v for k, v in hr.items() if k != "amphur_name_hr"})
-        if not grouped[key].get("amphur_name"):
-            grouped[key]["amphur_name"] = hr.get("amphur_name_hr") or ""
+        row = grouped.setdefault(
+            key,
+            _empty_district_row(key[0], key[1], amphur_name=hr.get("amphur_name_hr") or ""),
+        )
+        row.update({k: v for k, v in hr.items() if k != "amphur_name_hr"})
+        if not row.get("amphur_name"):
+            row["amphur_name"] = hr.get("amphur_name_hr") or ""
 
-    return sorted(
-        grouped.values(),
-        key=lambda item: (item["province_code"], item["amphur_code"], item["amphur_name"]),
-    )
+    return sorted(grouped.values(), key=lambda item: (item["province_code"], item["amphur_code"], item["amphur_name"]))
+
+
+def load_district_directory_from_url(url: str) -> tuple[list[dict], dict]:
+    request = urllib.request.Request(url, headers={"User-Agent": "NCO-HR-Blueprint/1.0"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    if not isinstance(payload, list):
+        raise RuntimeError("District directory payload must be a JSON array")
+
+    rows = []
+    for item in payload:
+        province_code = str(item.get("provinceCode") or item.get("province_code") or "")
+        district_code = str(item.get("districtCode") or item.get("amphur_code") or "")
+        if province_code not in REGION1_PROVINCES or not district_code:
+            continue
+        rows.append(
+            {
+                "province_code": province_code,
+                "province_name_th": REGION1_PROVINCE_NAMES.get(province_code, ""),
+                "amphur_code": district_code,
+                "amphur_name_th": item.get("districtNameTh") or item.get("amphur_name_th") or "",
+            }
+        )
+    return rows, {
+        "available": bool(rows),
+        "source_url": url,
+        "source_type": "district_directory",
+        "note": "District codes/names only; this source is not used as population or workforce evidence.",
+    }
 
 
 def load_population_rows_from_dopa() -> tuple[list[dict], dict]:
-    # Import lazily so unit tests for aggregation do not require pandas/requests.
     from API.amphur_population_store import (
         DOPA_RESOURCE_PAGE,
         DOPA_RESOURCE_URL,
@@ -265,12 +315,11 @@ def load_population_rows_from_dopa() -> tuple[list[dict], dict]:
     records = _parse_html_xls_from_zip(_download_cached_zip())
     region_rows = [row for row in records if str(row.get("province_code")) in REGION1_PROVINCES]
     if not region_rows:
-        return [], {"source_url": DOPA_RESOURCE_URL, "source_page_url": DOPA_RESOURCE_PAGE}
-
-    # Use the latest factual month in the source file. Do not interpolate missing years.
+        return [], {"available": False, "source_url": DOPA_RESOURCE_URL, "source_page_url": DOPA_RESOURCE_PAGE}
     latest_yymm = max(int(row.get("reference_yymm") or 0) for row in region_rows)
     latest_rows = [row for row in region_rows if int(row.get("reference_yymm") or 0) == latest_yymm]
     return latest_rows, {
+        "available": bool(latest_rows),
         "source_url": DOPA_RESOURCE_URL,
         "source_page_url": DOPA_RESOURCE_PAGE,
         "reference_yymm": latest_yymm,
@@ -281,17 +330,32 @@ def load_population_rows_from_dopa() -> tuple[list[dict], dict]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--db", default=str(ROOT / "hr_blueprint.db"))
-    parser.add_argument(
-        "--output",
-        default=str(ROOT / "output" / "hr_blueprint_district_baseline_region1.json"),
-    )
+    parser.add_argument("--output", default=str(ROOT / "output" / "hr_blueprint_district_baseline_region1.json"))
+    parser.add_argument("--district-directory-url", default=DEFAULT_DISTRICT_DIRECTORY_URL)
+    parser.add_argument("--skip-population", action="store_true")
     args = parser.parse_args()
 
-    population_rows, population_source = load_population_rows_from_dopa()
+    district_rows, district_source = load_district_directory_from_url(args.district_directory_url)
+    if args.skip_population:
+        population_rows = []
+        population_source = {
+            "available": False,
+            "source": None,
+            "note": "Population download intentionally skipped. No district population values were inferred.",
+        }
+    else:
+        population_rows, population_source = load_population_rows_from_dopa()
+        population_source["note"] = "Actual DOPA district population snapshot; only the documented year is populated."
+
     db_path = Path(args.db)
     hr_db_path = db_path if db_path.exists() else None
     snapshot_date = dt.date.today()
-    rows = build_district_rows(population_rows, hr_db_path, snapshot_date=snapshot_date)
+    rows = build_district_rows(
+        population_rows,
+        hr_db_path,
+        snapshot_date=snapshot_date,
+        district_rows=district_rows,
+    )
 
     payload = {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -299,10 +363,8 @@ def main() -> int:
         "mode": "historical_actual",
         "rows": rows,
         "sources": {
-            "population": {
-                **population_source,
-                "note": "Actual DOPA district population snapshot; only the documented year is populated.",
-            },
+            "district_directory": district_source,
+            "population": population_source,
             "workforce": {
                 "available": bool(hr_db_path),
                 "source": "hr_blueprint.db" if hr_db_path else None,
