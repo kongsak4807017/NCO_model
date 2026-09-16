@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../Simulator_HR_blueprint.html', import.meta.url), 'utf8');
 const historical = readFileSync(new URL('../Simulator_HR_blueprint_historical.js', import.meta.url), 'utf8');
+const generator = readFileSync(new URL('../scripts/generate_region1_district_hr_baseline.py', import.meta.url), 'utf8');
 
 function functionBody(source, name) {
   const start = source.indexOf(`function ${name}(`);
@@ -54,4 +55,9 @@ test('district baseline can carry local HR counts when an exported database snap
   assert.match(body, /districtRow\.nurse/);
   assert.match(body, /districtRow\.pharmacist/);
   assert.match(body, /vacant_doctor/);
+});
+
+test('district generator can import repository API modules when run as a script', () => {
+  assert.match(generator, /import sys/);
+  assert.match(generator, /sys\.path\.insert\(0,\s*str\(ROOT\)\)/);
 });
