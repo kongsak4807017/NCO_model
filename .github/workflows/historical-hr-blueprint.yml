@@ -5,12 +5,14 @@ on:
     paths:
       - 'Simulator_HR_blueprint.html'
       - 'Simulator_HR_blueprint.js'
+      - 'Simulator_HR_blueprint_historical.js'
       - 'tests/historical_hr_blueprint.test.mjs'
       - '.github/workflows/historical-hr-blueprint.yml'
   pull_request:
     paths:
       - 'Simulator_HR_blueprint.html'
       - 'Simulator_HR_blueprint.js'
+      - 'Simulator_HR_blueprint_historical.js'
       - 'tests/historical_hr_blueprint.test.mjs'
 
 jobs:
