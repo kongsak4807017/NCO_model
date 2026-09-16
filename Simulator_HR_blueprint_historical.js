@@ -11,19 +11,180 @@ if (!document.getElementById("btnAutoRetire")) {
   document.body.appendChild(legacyAutoRetireButton);
 }
 
+state.districtBaseline = state.districtBaseline || { rows: [], sources: {} };
+state.districtRow = state.districtRow || null;
+
 function years() {
   const start = n($("startYear").value, 2569);
   const count = Math.max(1, Math.min(10, n($("yearCount").value, 5)));
   return Array.from({ length: count }, (_, i) => start - i);
 }
 
+async function loadDistrictBaseline() {
+  try {
+    const response = await fetch("output/hr_blueprint_district_baseline_region1.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`district baseline HTTP ${response.status}`);
+    const payload = await response.json();
+    state.districtBaseline = payload && Array.isArray(payload.rows)
+      ? payload
+      : { rows: [], sources: {} };
+  } catch (error) {
+    state.districtBaseline = { rows: [], sources: {}, error: String(error) };
+  }
+  return state.districtBaseline;
+}
+
+async function loadBaseline() {
+  try {
+    const response = await fetch("output/hr_blueprint_provincial_baseline_region1.json", { cache: "no-store" });
+    if (response.ok) state.baseline = await response.json();
+  } catch (error) {
+    state.baseline = FALLBACK_BASELINE;
+  }
+  await loadDistrictBaseline();
+  renderProvinceSelect();
+  applyProvinceBaseline();
+}
+
+function renderAmphurSelect() {
+  const select = $("amphurSelect");
+  if (!select) return;
+  const provinceCode = String($("provinceSelect").value || state.provinceRow?.province_code || "");
+  const rows = (state.districtBaseline.rows || [])
+    .filter((row) => String(row.province_code) === provinceCode)
+    .sort((a, b) => String(a.amphur_code).localeCompare(String(b.amphur_code), "th"));
+
+  select.innerHTML = `<option value="">— เลือกอำเภอ (${rows.length}) —</option>` + rows
+    .map((row) => `<option value="${escapeHtml(row.amphur_code)}">${escapeHtml(row.amphur_name || row.amphur_code)}</option>`)
+    .join("");
+  select.value = "";
+  state.districtRow = null;
+  $("amphurName").value = "";
+
+  const status = $("districtDataStatus");
+  if (!status) return;
+  if (!rows.length) {
+    status.textContent = "ข้อมูลอำเภอ: ยังไม่มี static district baseline ของจังหวัดนี้ — กรอกชื่ออำเภอและข้อมูลจริงเองได้";
+    return;
+  }
+  const populationSource = state.districtBaseline.sources?.population || {};
+  const refYear = populationSource.reference_year_be || "ไม่ระบุปี";
+  status.textContent = `ข้อมูลอำเภอ: พบ ${rows.length} อำเภอ | ประชากรอ้างอิงจริง พ.ศ. ${refYear} | เลือกแล้วแก้ไขค่าทวนสอบเองได้`;
+}
+
+function applyProvinceBaseline() {
+  const code = $("provinceSelect").value || state.baseline.rows?.[0]?.province_code;
+  state.provinceRow = (state.baseline.rows || []).find((row) => String(row.province_code) === String(code)) || state.baseline.rows?.[0];
+  if (!state.provinceRow) return;
+
+  $("populationBase").value = Math.round(state.provinceRow.population || 0);
+  $("vacancyAll").value = Math.round(state.provinceRow.vacant_all || 0);
+  $("retireAll").value = Math.round(state.provinceRow.retire_5y_all || 0);
+  syncProfessionConfigFromProvince();
+  renderAmphurSelect();
+  initNeedRows(true);
+  initTargetNeedRows(true);
+  initMovementDefaults(true);
+  renderAll();
+  $("districtDataStatus").textContent += " | ขณะนี้แสดง baseline ระดับจังหวัดจนกว่าจะเลือกอำเภอ";
+}
+
+function applyDistrictPopulationHistory(districtRow = state.districtRow) {
+  if (!districtRow) return;
+  const populationByYear = districtRow.population_by_year || {};
+  for (const row of state.needRows) {
+    const yearKey = String(row.year);
+    if (Object.prototype.hasOwnProperty.call(populationByYear, yearKey)) {
+      row.population = Math.max(0, n(populationByYear[yearKey], 0));
+    }
+  }
+}
+
+function applyDistrictBaseline() {
+  const select = $("amphurSelect");
+  const amphurCode = String(select?.value || "");
+  if (!amphurCode) {
+    applyProvinceBaseline();
+    return;
+  }
+
+  const provinceCode = String($("provinceSelect").value || "");
+  const districtRow = (state.districtBaseline.rows || []).find(
+    (row) => String(row.province_code) === provinceCode && String(row.amphur_code) === amphurCode,
+  );
+  if (!districtRow) return;
+
+  state.districtRow = districtRow;
+  $("amphurName").value = districtRow.amphur_name || "";
+  $("scopeMode").value = "district";
+
+  // Never carry province workforce into a district. Unknown district HR starts at 0
+  // and remains fully editable by the local user who verifies the real figures.
+  for (const prof of PROFESSION_DEFS) {
+    const cfg = state.professionConfig[prof.code] || getDefaultWisn(prof);
+    cfg.current = 0;
+    cfg.vacant = 0;
+    cfg.retire5y = 0;
+    state.professionConfig[prof.code] = cfg;
+  }
+  $("vacancyAll").value = 0;
+  $("retireAll").value = 0;
+
+  if (districtRow.hr_available) {
+    const districtCore = {
+      doctor: {
+        current: n(districtRow.doctor, 0),
+        vacant: n(districtRow.vacant_doctor, 0),
+        retire5y: n(districtRow.retire_5y_doctor, 0),
+      },
+      nurse: {
+        current: n(districtRow.nurse, 0),
+        vacant: n(districtRow.vacant_nurse, 0),
+        retire5y: n(districtRow.retire_5y_nurse, 0),
+      },
+      pharmacist: {
+        current: n(districtRow.pharmacist, 0),
+        vacant: n(districtRow.vacant_pharmacist, 0),
+        retire5y: n(districtRow.retire_5y_pharmacist, 0),
+      },
+    };
+    for (const [code, values] of Object.entries(districtCore)) {
+      Object.assign(state.professionConfig[code], values);
+    }
+    $("vacancyAll").value = Math.round(n(districtRow.vacant_all, 0));
+    $("retireAll").value = Math.round(n(districtRow.retire_5y_all, 0));
+  }
+
+  const latestYear = String(years()[0]);
+  const latestPopulation = Object.prototype.hasOwnProperty.call(districtRow.population_by_year || {}, latestYear)
+    ? n(districtRow.population_by_year[latestYear], 0)
+    : 0;
+  $("populationBase").value = Math.round(latestPopulation);
+
+  initNeedRows(true);
+  applyDistrictPopulationHistory(districtRow);
+  initTargetNeedRows(true);
+  initMovementDefaults(true);
+  $("confidenceLevel").value = districtRow.hr_available ? "B" : "C";
+  renderAll();
+
+  const populationYears = Object.keys(districtRow.population_by_year || {}).sort().reverse();
+  const populationLabel = populationYears.length ? `ประชากรจริง: ${populationYears.join(", ")}` : "ประชากร: ยังไม่มีข้อมูล";
+  const hrLabel = districtRow.hr_available
+    ? "HR: มี district snapshot จาก hr_blueprint.db"
+    : "HR: ยังไม่มี district snapshot ในไฟล์ public — ช่องกำลังคนตั้งต้นเป็น 0 และแก้ไขเองได้";
+  $("districtDataStatus").textContent = `อำเภอ ${districtRow.amphur_name || amphurCode} | ${populationLabel} | ${hrLabel}`;
+  updateSideInfo();
+  renderTrace();
+}
+
 function initNeedRows(force = false) {
   if (!force && state.needRows.length === years().length) return;
-  const basePop = n($("populationBase").value, state.provinceRow?.population || 0);
+  const basePop = n($("populationBase").value, 0);
   state.needRows = years().map((year, index) => ({
     year,
-    // Only the latest-year population is known from the current baseline.
-    // Prior years remain zero until real historical values are loaded or entered.
+    // Only a documented latest-year baseline may populate this row automatically.
+    // Other historical years stay zero until a real observation is loaded/entered.
     population: index === 0 ? Math.round(basePop) : 0,
     opdVisits: 0,
     ipdAdmissions: 0,
@@ -199,12 +360,17 @@ function renderTrace() {
   const demandNote = firstRow
     ? `First result demand minutes: ${fmt(firstRow.demandMinutes, 0)} | AWT: ${fmt(firstRow.awtMinutes, 0)} | CAF: ${fmtRatio(firstRow.caf)} | IAF: ${fmtRatio(firstRow.iaf)}`
     : "No historical calculation yet";
+  const districtSource = state.districtRow
+    ? `District baseline: ${state.districtRow.amphur_code || "-"} ${state.districtRow.amphur_name || "-"}; HR available=${Boolean(state.districtRow.hr_available)}`
+    : "District baseline: not selected";
   $("sourceText").textContent = [
     `Scenario: ${$("scenarioName").value}`,
     `Historical years: ${years().join(", ")}`,
     `Scope: ${province} / ${$("amphurName").value || "-"} / ${$("unitName").value || "-"} / ${$("scopeMode").value}`,
+    districtSource,
     "Historical-mode policy: no synthetic population, workload, retirement, target population, actual served, or annual headcount is generated for prior years.",
-    "Latest-year baseline may populate the latest-year population/headcount only. Prior years remain 0 until real data is loaded or entered.",
+    "District source values are starting references only. Every input remains editable so the area can replace them with verified local data.",
+    "Unknown district HR must not inherit province totals. It starts at 0 until a verified district snapshot is exported or entered.",
     "Workload statistics: use actual OPD, IPD, ER, OR/procedure, delivery, chronic, mental, and outreach annual volumes from HIS/HDC/verified source.",
     "Target need: use targets/cases and actual served documented for each historical year; default observed values are intentionally 0.",
     "Annual supply: enter actual headcount for each year. Recruit/transfer/retire/resign fields are retrospective movement records and do not back-calculate headcount.",
@@ -218,7 +384,7 @@ function exportExcel() {
   if (!state.results.length) runProjection();
   const html = `\ufeff<html><head><meta charset="UTF-8"></head><body>
     <h1>HR Blueprint WISN Historical Analysis</h1>
-    <p>${escapeHtml($("scenarioName").value)} | ${escapeHtml(state.provinceRow?.province || "")}</p>
+    <p>${escapeHtml($("scenarioName").value)} | ${escapeHtml(state.provinceRow?.province || "")} | ${escapeHtml($("amphurName").value || "")}</p>
     <h2>Results</h2>
     <table border="1">
       <thead><tr><th>Year</th><th>Profession</th><th>Actual FTE</th><th>Target FTE</th><th>Planning FTE</th><th>Supply FTE</th><th>HR GAP</th><th>WISN Ratio</th><th>Pressure</th><th>Trend</th><th>Coverage Gap</th><th>Workload Gap</th><th>Suggested Add</th><th>Reallocate</th><th>Risk</th><th>Recommendation</th></tr></thead>
@@ -240,9 +406,11 @@ function exportJson() {
       province: state.provinceRow?.province,
       province_code: state.provinceRow?.province_code,
       amphur: $("amphurName").value,
+      amphur_code: state.districtRow?.amphur_code || $("amphurSelect")?.value || null,
       unit: $("unitName").value,
       mode: $("scopeMode").value,
     },
+    district_reference: state.districtRow || null,
     baseline: {
       population_latest: n($("populationBase").value),
       vacancy_all: n($("vacancyAll").value),
@@ -270,6 +438,7 @@ function buildReportText() {
     `Confidence: ${$("confidenceLevel").value}`,
     "",
     "Policy: actual historical data only; no synthetic historical observations.",
+    `District data status: ${$("districtDataStatus")?.textContent || "-"}`,
     "",
     "Summary",
     `Total positive GAP: ${$("summaryGap").textContent}`,
@@ -286,3 +455,7 @@ function buildReportText() {
   lines.push("", "Formula", $("formulaText").textContent, "", "Source / Assumption", $("sourceText").textContent);
   return lines.join("\n");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  $("amphurSelect")?.addEventListener("change", applyDistrictBaseline);
+});
