@@ -6,7 +6,6 @@ on:
     paths:
       - '.github/workflows/generate-district-baseline.yml'
       - 'scripts/generate_region1_district_hr_baseline.py'
-      - 'API/amphur_population_store.py'
 
 permissions:
   contents: write
@@ -22,10 +21,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install population parser dependencies
-        run: pip install pandas requests lxml html5lib beautifulsoup4
-      - name: Generate factual district baseline
-        run: python scripts/generate_region1_district_hr_baseline.py
+      - name: Generate district directory baseline without inferred population
+        run: python scripts/generate_region1_district_hr_baseline.py --skip-population
       - name: Commit refreshed static baseline
         run: |
           git config user.name "github-actions[bot]"
