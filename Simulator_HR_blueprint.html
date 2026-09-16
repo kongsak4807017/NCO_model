@@ -6,6 +6,7 @@
   <title>Simulator HR Blueprint</title>
   <link rel="stylesheet" href="Simulator_HR_blueprint.css">
   <link rel="stylesheet" href="Simulator_HR_blueprint_help.css">
+  <link rel="stylesheet" href="Simulator_HR_blueprint_profile.css">
 </head>
 <body>
   <div class="app-shell">
@@ -19,6 +20,7 @@
       </div>
       <nav class="step-nav" aria-label="Workflow">
         <button class="step-link active" data-section="scenario">1. Scenario</button>
+        <button class="step-link" data-section="profile">Data Profile</button>
         <button class="step-link" data-section="scope">2. Scope</button>
         <button class="step-link" data-section="baseline">3. Baseline</button>
         <button class="step-link" data-section="profession">4. Profession</button>
@@ -59,6 +61,47 @@
           <label class="field"><span>ปีอ้างอิงล่าสุด (พ.ศ.)</span><input id="startYear" type="number" min="2500" max="2600" value="2569"></label>
           <label class="field"><span>จำนวนปี</span><input id="yearCount" type="number" min="5" max="5" value="5" readonly></label>
         </div>
+      </section>
+
+      <section class="panel profile-panel" id="profile">
+        <div class="panel-header">
+          <div><h3>Collaborative Data Profile</h3></div>
+          <p>ใช้ Profile เดียวรวบรวมข้อมูลจากหลายกลุ่มงาน: Google Sheets สำหรับแก้พร้อมกัน, Excel สำหรับส่งเวียน/ทำงาน offline และ Simulator สำหรับวิเคราะห์</p>
+        </div>
+        <div class="profile-id-row">
+          <label class="field profile-id-field"><span>Profile ID</span><input id="profileId" type="text" placeholder="HR1-57-5701-2569"></label>
+          <button class="btn ghost" id="btnProfileRefreshId" type="button">สร้าง ID จากพื้นที่ปัจจุบัน</button>
+        </div>
+        <div class="grid cols-3 compact-grid">
+          <label class="field"><span>เจ้าของ/ผู้ประสาน Profile</span><input id="profileOwner" type="text" placeholder="เช่น กลุ่มงานยุทธศาสตร์ สสจ."></label>
+          <label class="field"><span>Google Sheet URL</span><input id="profileSheetUrl" type="url" placeholder="https://docs.google.com/spreadsheets/d/..."></label>
+          <label class="field"><span>Apps Script JSON Endpoint</span><input id="profileEndpoint" type="url" placeholder="https://script.google.com/macros/s/.../exec"></label>
+        </div>
+        <div class="profile-actions">
+          <button class="btn secondary" id="btnProfileTemplate" type="button">Export Excel Template (.xlsx)</button>
+          <button class="btn secondary" id="btnProfileExport" type="button">Export Profile ปัจจุบัน (.xlsx)</button>
+          <button class="btn ghost" id="btnProfileImport" type="button">Import Excel</button>
+          <button class="btn ghost" id="btnProfileOpenSheet" type="button">เปิด Google Sheet</button>
+          <button class="btn primary" id="btnProfileSync" type="button">Sync จาก Google Sheets</button>
+          <input id="profileExcelInput" type="file" accept=".xlsx,.xls" hidden>
+        </div>
+        <p class="profile-status" id="profileSyncStatus">กำลังเตรียม Data Profile…</p>
+        <div class="profile-completeness" aria-label="Profile completeness">
+          <div class="profile-score-card overall"><span>Overall</span><strong id="profileCompletenessOverall">0%</strong></div>
+          <div class="profile-score-card"><span>Population</span><strong id="profileScorePopulation">0%</strong></div>
+          <div class="profile-score-card"><span>Workload</span><strong id="profileScoreWorkload">0%</strong></div>
+          <div class="profile-score-card"><span>Workforce</span><strong id="profileScoreWorkforce">0%</strong></div>
+          <div class="profile-score-card"><span>Target Need</span><strong id="profileScoreTargetNeed">0%</strong></div>
+          <div class="profile-score-card"><span>Provenance</span><strong id="profileScoreProvenance">0%</strong></div>
+        </div>
+        <div class="subsection-head"><div><h4>Data owner / source / verification</h4><p>แต่ละกลุ่มงานรับผิดชอบเฉพาะ section ของตนได้ และผู้ทวนสอบเปลี่ยนสถานะ Draft → Reviewed → Verified</p></div></div>
+        <div class="table-shell">
+          <table class="data-table profile-meta-table">
+            <thead><tr><th>Section</th><th>Owner</th><th>Source</th><th>Status</th><th>Updated at</th><th>Note</th></tr></thead>
+            <tbody id="profileMetadataBody"></tbody>
+          </table>
+        </div>
+        <p class="profile-hint"><strong>หลักข้อมูล:</strong> ช่องที่ไม่มีข้อมูลจริงให้เว้นว่าง ระบบไม่ interpolation / growth / back-cast และไม่เอายอดจังหวัดมาเฉลี่ยเป็นอำเภอ</p>
       </section>
 
       <section class="panel" id="scope">
@@ -166,6 +209,8 @@
   <script src="Simulator_HR_blueprint.js"></script>
   <script src="Simulator_HR_blueprint_historical.js"></script>
   <script src="Simulator_HR_blueprint_district_status.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <script src="Simulator_HR_blueprint_profile.js"></script>
   <script src="Simulator_HR_blueprint_help.js"></script>
 </body>
 </html>
