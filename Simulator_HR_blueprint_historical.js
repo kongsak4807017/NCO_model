@@ -1,6 +1,16 @@
 // Historical actual-data mode for Simulator_HR_blueprint.html
 // Policy: the 5-year window is retrospective. Do not fabricate historical observations.
 
+// Compatibility bridge: the legacy binder still looks up btnAutoRetire.
+// Keep that legacy control hidden so boot can bind safely while the visible UI disables auto-distribution.
+if (!document.getElementById("btnAutoRetire")) {
+  const legacyAutoRetireButton = document.createElement("button");
+  legacyAutoRetireButton.id = "btnAutoRetire";
+  legacyAutoRetireButton.type = "button";
+  legacyAutoRetireButton.hidden = true;
+  document.body.appendChild(legacyAutoRetireButton);
+}
+
 function years() {
   const start = n($("startYear").value, 2569);
   const count = Math.max(1, Math.min(10, n($("yearCount").value, 5)));
