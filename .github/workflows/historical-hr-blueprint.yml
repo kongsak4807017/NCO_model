@@ -6,14 +6,18 @@ on:
       - 'Simulator_HR_blueprint.html'
       - 'Simulator_HR_blueprint.js'
       - 'Simulator_HR_blueprint_historical.js'
-      - 'tests/historical_hr_blueprint.test.mjs'
+      - 'output/hr_blueprint_district_baseline_region1.json'
+      - 'scripts/generate_region1_district_hr_baseline.py'
+      - 'tests/*.test.mjs'
       - '.github/workflows/historical-hr-blueprint.yml'
   pull_request:
     paths:
       - 'Simulator_HR_blueprint.html'
       - 'Simulator_HR_blueprint.js'
       - 'Simulator_HR_blueprint_historical.js'
-      - 'tests/historical_hr_blueprint.test.mjs'
+      - 'output/hr_blueprint_district_baseline_region1.json'
+      - 'scripts/generate_region1_district_hr_baseline.py'
+      - 'tests/*.test.mjs'
 
 jobs:
   test:
@@ -23,4 +27,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node --test tests/historical_hr_blueprint.test.mjs
+      - run: node --test tests/*.test.mjs
