@@ -33,6 +33,13 @@ test('province change rebuilds district selector and district selection applies 
   assert.match(historical, /province_code/);
 });
 
+test('district selector does not imply population data exists when public snapshot has directory only', () => {
+  const body = functionBody(historical, 'renderAmphurSelect');
+  assert.match(body, /populationSource\.available/);
+  assert.match(body, /ยังไม่มี population snapshot/);
+  assert.match(body, /กรอก\/ทวนสอบเอง/);
+});
+
 test('district mode refuses to reuse province workforce as district workforce when HR snapshot is unavailable', () => {
   const body = functionBody(historical, 'applyDistrictBaseline');
   assert.match(body, /hr_available/);
