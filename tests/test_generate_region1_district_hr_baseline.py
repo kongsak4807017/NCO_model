@@ -20,6 +20,21 @@ POPULATION_ROWS = [
     }
 ]
 
+DISTRICT_ROWS = [
+    {
+        "province_code": "57",
+        "province_name_th": "เชียงราย",
+        "amphur_code": "5701",
+        "amphur_name_th": "เมืองเชียงราย",
+    },
+    {
+        "province_code": "57",
+        "province_name_th": "เชียงราย",
+        "amphur_code": "5702",
+        "amphur_name_th": "เวียงชัย",
+    },
+]
+
 
 class DistrictBaselineGeneratorTest(unittest.TestCase):
     def test_population_only_row_is_explicitly_marked_without_hr_snapshot(self):
@@ -30,6 +45,23 @@ class DistrictBaselineGeneratorTest(unittest.TestCase):
         self.assertEqual(row["population_by_year"], {"2567": 220})
         self.assertIsNone(row["doctor"])
         self.assertIsNone(row["vacant_all"])
+
+    def test_directory_only_fallback_keeps_unknown_population_and_hr_empty(self):
+        rows = build_district_rows([], db_path=None, district_rows=DISTRICT_ROWS)
+        self.assertEqual(len(rows), 2)
+        row = rows[1]
+        self.assertEqual(row["amphur_code"], "5702")
+        self.assertEqual(row["amphur_name"], "เวียงชัย")
+        self.assertEqual(row["population_by_year"], {})
+        self.assertFalse(row["hr_available"])
+        self.assertIsNone(row["doctor"])
+        self.assertIsNone(row["vacant_all"])
+
+    def test_population_observation_enriches_matching_directory_without_touching_other_districts(self):
+        rows = build_district_rows(POPULATION_ROWS, db_path=None, district_rows=DISTRICT_ROWS)
+        by_code = {row["amphur_code"]: row for row in rows}
+        self.assertEqual(by_code["5701"]["population_by_year"], {"2567": 220})
+        self.assertEqual(by_code["5702"]["population_by_year"], {})
 
     def test_local_hr_database_is_aggregated_by_district(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -71,8 +103,9 @@ class DistrictBaselineGeneratorTest(unittest.TestCase):
             conn.commit()
             conn.close()
 
-            rows = build_district_rows(POPULATION_ROWS, db_path=db_path)
-            row = rows[0]
+            rows = build_district_rows(POPULATION_ROWS, db_path=db_path, district_rows=DISTRICT_ROWS)
+            by_code = {row["amphur_code"]: row for row in rows}
+            row = by_code["5701"]
             self.assertTrue(row["hr_available"])
             self.assertEqual(row["doctor"], 1)
             self.assertEqual(row["nurse"], 0)
