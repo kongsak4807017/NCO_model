@@ -96,7 +96,9 @@ test('Google sync applies the same profile payload path used by Excel', () => {
 
 test('Apps Script exposes only workbook sheets as JSON snapshot', () => {
   assert.match(appsScript, /function doGet\s*\(/);
-  assert.match(appsScript, /ContentService\.createTextOutput/);
+  assert.match(appsScript, /ContentService/);
+  assert.match(appsScript, /\.createTextOutput\s*\(/);
+  assert.match(appsScript, /\.setMimeType\s*\(ContentService\.MimeType\.JSON\)/);
   assert.match(appsScript, /nco-hr-profile-v1/);
   for (const sheet of ['Profile', 'Section_Metadata', 'Workload_History', 'TargetNeed_History', 'Workforce_History', 'Profession_Config']) {
     assert.match(appsScript, new RegExp(sheet));
