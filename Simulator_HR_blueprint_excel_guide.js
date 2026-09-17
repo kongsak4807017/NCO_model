@@ -188,12 +188,27 @@ async function importProfileWorkbook(file) {
   return payload;
 }
 
-// Load the profession-specific workload/Data Fitness extension without changing the static HTML deployment order.
+// Load Data Fitness first, then the per-profession activity-unit UI.
 (() => {
-  if (document.querySelector('script[data-nco-data-fitness]')) return;
+  function loadActivityUnits() {
+    if (document.querySelector('script[data-nco-activity-units]')) return;
+    const unitScript = document.createElement('script');
+    unitScript.src = 'Simulator_HR_blueprint_activity_units.js';
+    unitScript.async = false;
+    unitScript.dataset.ncoActivityUnits = '1';
+    document.head.appendChild(unitScript);
+  }
+
+  const existing = document.querySelector('script[data-nco-data-fitness]');
+  if (existing) {
+    if (window.NCO_HR_DATA_FITNESS) loadActivityUnits();
+    else existing.addEventListener('load', loadActivityUnits, { once: true });
+    return;
+  }
   const script = document.createElement('script');
   script.src = 'Simulator_HR_blueprint_data_fitness.js';
   script.async = false;
   script.dataset.ncoDataFitness = '1';
+  script.addEventListener('load', loadActivityUnits, { once: true });
   document.head.appendChild(script);
 })();
