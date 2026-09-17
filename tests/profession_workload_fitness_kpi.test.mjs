@@ -87,6 +87,12 @@ test('Excel template and Google Sheets bridge expose the new profession workload
   assert.match(guide, /Data Fitness|DATA NOT FIT/);
 });
 
+test('Google Sheets bridge skips the friendly helper rows before parsing records', () => {
+  assert.match(appScript, /hasGuides/);
+  assert.match(appScript, /values\.slice\(6\)/);
+  assert.match(appScript, /values\.slice\(1\)/);
+});
+
 test('legacy facility Workload_History is explicitly contextual and not sufficient for a profession WISN conclusion', () => {
   const source = extensionSource();
   assert.match(source, /Workload_History/);
