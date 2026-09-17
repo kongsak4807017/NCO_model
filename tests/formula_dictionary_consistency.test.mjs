@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../Simulator_HR_blueprint.html', import.meta.url), 'utf8');
 const base = readFileSync(new URL('../Simulator_HR_blueprint.js', import.meta.url), 'utf8');
-const historical = readFileSync(new URL('../Simulator_HR_blueprint_historical.js', import.meta.url), 'utf8');
+const formulaCopy = readFileSync(new URL('../Simulator_HR_blueprint_formula_copy.js', import.meta.url), 'utf8');
 const dictionary = readFileSync(new URL('../Simulator_HR_blueprint_dictionary.js', import.meta.url), 'utf8');
 const excel = readFileSync(new URL('../Simulator_HR_blueprint_excel_guide.js', import.meta.url), 'utf8');
 const help = readFileSync(new URL('../Simulator_HR_blueprint_help.js', import.meta.url), 'utf8');
@@ -20,14 +20,16 @@ const ACTIVITY_KEYS = [
   'outreachVisits',
 ];
 
-test('shared formula dictionary is loaded before Excel and help layers', () => {
+test('shared formula dictionary is loaded before formula copy, Excel and help layers', () => {
   const profileIndex = html.indexOf('Simulator_HR_blueprint_profile.js');
   const dictionaryIndex = html.indexOf('Simulator_HR_blueprint_dictionary.js');
+  const formulaCopyIndex = html.indexOf('Simulator_HR_blueprint_formula_copy.js');
   const excelIndex = html.indexOf('Simulator_HR_blueprint_excel_guide.js');
   const helpIndex = html.indexOf('Simulator_HR_blueprint_help.js');
   assert.ok(profileIndex >= 0);
   assert.ok(dictionaryIndex > profileIndex);
-  assert.ok(excelIndex > dictionaryIndex);
+  assert.ok(formulaCopyIndex > dictionaryIndex);
+  assert.ok(excelIndex > formulaCopyIndex);
   assert.ok(helpIndex > dictionaryIndex);
 });
 
@@ -87,11 +89,11 @@ test('formula explanations match the implemented WISN calculation', () => {
 });
 
 test('historical trace explicitly describes actual, target, planning and supply formulas', () => {
-  assert.match(historical, /Actual demand minutes = Σ\(actual workload volume x activity standard minutes x actual complexity index\)/);
-  assert.match(historical, /Target equivalent activity volume = target cases x service frequency x activity mix x target complexity/);
-  assert.match(historical, /Planning activity volume = max\(complexity-adjusted actual volume, target-need equivalent volume\) by activity/);
-  assert.match(historical, /Planning demand minutes = Σ\(planning activity volume x activity standard minutes\)/);
-  assert.match(historical, /Actual supply FTE = actual annual headcount x FTE factor/);
+  assert.match(formulaCopy, /Actual demand minutes = Σ\(actual workload volume x activity standard minutes x actual complexity index\)/);
+  assert.match(formulaCopy, /Target equivalent activity volume = target cases x service frequency x activity mix x target complexity/);
+  assert.match(formulaCopy, /Planning activity volume = max\(complexity-adjusted actual volume, target-need equivalent volume\) by activity/);
+  assert.match(formulaCopy, /Planning demand minutes = Σ\(planning activity volume x activity standard minutes\)/);
+  assert.match(formulaCopy, /Actual supply FTE = actual annual headcount x FTE factor/);
 });
 
 test('result labels distinguish demand-side required FTE from supply FTE', () => {
@@ -99,4 +101,7 @@ test('result labels distinguish demand-side required FTE from supply FTE', () =>
   assert.match(html, /Target Need FTE/);
   assert.match(html, /Planning Required FTE/);
   assert.match(html, /Actual Supply FTE/);
+  assert.match(formulaCopy, /Actual Workload FTE/);
+  assert.match(formulaCopy, /Planning Required FTE/);
+  assert.match(formulaCopy, /Actual Supply FTE/);
 });
