@@ -1,6 +1,4 @@
-// Shared definitions for every formula-sensitive term shown in the Simulator and Excel template.
-// Keep this file descriptive only: formulas are implemented in Simulator_HR_blueprint.js / historical.js.
-
+// Shared data dictionary for formula-sensitive WISN terms used by Simulator + Excel.
 (() => {
   "use strict";
 
@@ -25,286 +23,88 @@
     reallocate: "Reallocate = max(0, −HR GAP)",
   });
 
-  const workloadFields = Object.freeze({
-    opdVisits: {
-      label: "จำนวนครั้งรับบริการผู้ป่วยนอก",
-      description: "จำนวน OPD visit จริงทั้งหมดในปีนั้น เป็นปริมาณงานต่อปี ไม่ใช่เวลามาตรฐานต่อ visit",
-      unit: "ครั้ง/ปี",
-      source: "HIS / HDC / รายงาน OPD ที่ทวนสอบแล้ว",
-      formula: "OPD visits × Activity Standard OPD (นาที/visit) × Complexity Index",
-    },
-    ipdAdmissions: {
-      label: "จำนวนผู้ป่วยในรับใหม่",
-      description: "จำนวน IPD admission จริงในปีนั้น ตามนิยาม admission ของหน่วยบริการ",
-      unit: "admissions/ปี",
-      source: "HIS / DRG / IPD census",
-      formula: "IPD admissions × Activity Standard IPD (นาที/admission) × Complexity Index",
-    },
-    erVisits: {
-      label: "จำนวนครั้งรับบริการห้องฉุกเฉิน",
-      description: "จำนวน ER visit จริงในปีนั้น เป็นจำนวนครั้งรับบริการ ไม่ใช่จำนวนนาที",
-      unit: "ครั้ง/ปี",
-      source: "ER report / HIS",
-      formula: "ER visits × Activity Standard ER (นาที/visit) × Complexity Index",
-    },
-    procedures: {
-      label: "จำนวนหัตถการ/ผ่าตัด",
-      description: "จำนวน OR/Procedure จริงในปีนั้น โดยต้องใช้นิยามการนับ case เดียวกันกับเวลามาตรฐาน",
-      unit: "cases/ปี",
-      source: "OR log / Procedure registry / HIS",
-      formula: "Procedure cases × Activity Standard OR/Procedure (นาที/procedure) × Complexity Index",
-    },
-    deliveries: {
-      label: "จำนวนการคลอด",
-      description: "จำนวน delivery จริงที่หน่วยบริการดูแลในปีนั้น",
-      unit: "deliveries/ปี",
-      source: "ห้องคลอด / HIS",
-      formula: "Deliveries × Activity Standard Delivery (นาที/delivery) × Complexity Index",
-    },
-    chronicVisits: {
-      label: "จำนวนครั้งบริการโรคเรื้อรัง",
-      description: "จำนวน chronic/NCD service visit จริงในปีนั้น ตามนิยามที่พื้นที่รับรอง",
-      unit: "ครั้ง/ปี",
-      source: "HDC / NCD registry / HIS",
-      formula: "Chronic visits × Activity Standard Chronic (นาที/visit) × Complexity Index",
-    },
-    mentalVisits: {
-      label: "จำนวนครั้งบริการสุขภาพจิต",
-      description: "จำนวน mental health/psychiatric service visit จริงในปีนั้น",
-      unit: "ครั้ง/ปี",
-      source: "HIS / Mental Health registry",
-      formula: "Mental visits × Activity Standard Mental (นาที/visit) × Complexity Index",
-    },
-    outreachVisits: {
-      label: "จำนวนกิจกรรมบริการเชิงรุก/PP",
-      description: "จำนวนกิจกรรมหรือ contact Outreach/PP จริงในปีนั้น หน่วยนับต้องตรงกับเวลามาตรฐานที่กำหนด",
-      unit: "กิจกรรมหรือ contacts/ปี",
-      source: "HDC / PP report / ทะเบียนเยี่ยมบ้าน",
-      formula: "Outreach/PP volume × Activity Standard Outreach/PP (นาที/กิจกรรม) × Complexity Index",
-    },
+  const workloadFields = {
+    opdVisits: ["จำนวนครั้งรับบริการผู้ป่วยนอก", "จำนวน OPD visit จริงทั้งหมดในปีนั้น เป็นปริมาณงานต่อปี ไม่ใช่เวลามาตรฐานต่อ visit", "ครั้ง/ปี", "HIS / HDC / รายงาน OPD ที่ทวนสอบแล้ว", "OPD visits × Activity Standard OPD (นาที/visit) × Complexity Index"],
+    ipdAdmissions: ["จำนวนผู้ป่วยในรับใหม่", "จำนวน IPD admission จริงในปีนั้น", "admissions/ปี", "HIS / DRG / IPD census", "IPD admissions × Activity Standard IPD (นาที/admission) × Complexity Index"],
+    erVisits: ["จำนวนครั้งรับบริการห้องฉุกเฉิน", "จำนวน ER visit จริงในปีนั้น", "ครั้ง/ปี", "ER report / HIS", "ER visits × Activity Standard ER (นาที/visit) × Complexity Index"],
+    procedures: ["จำนวนหัตถการ/ผ่าตัด", "จำนวน OR/Procedure จริงในปีนั้น โดยใช้นิยาม case เดียวกันกับเวลามาตรฐาน", "cases/ปี", "OR log / Procedure registry / HIS", "Procedure cases × Activity Standard OR/Procedure (นาที/procedure) × Complexity Index"],
+    deliveries: ["จำนวนการคลอด", "จำนวน delivery จริงที่หน่วยบริการดูแลในปีนั้น", "deliveries/ปี", "ห้องคลอด / HIS", "Deliveries × Activity Standard Delivery (นาที/delivery) × Complexity Index"],
+    chronicVisits: ["จำนวนครั้งบริการโรคเรื้อรัง", "จำนวน chronic/NCD service visit จริงในปีนั้น", "ครั้ง/ปี", "HDC / NCD registry / HIS", "Chronic visits × Activity Standard Chronic (นาที/visit) × Complexity Index"],
+    mentalVisits: ["จำนวนครั้งบริการสุขภาพจิต", "จำนวน mental health/psychiatric service visit จริงในปีนั้น", "ครั้ง/ปี", "HIS / Mental Health registry", "Mental visits × Activity Standard Mental (นาที/visit) × Complexity Index"],
+    outreachVisits: ["จำนวนกิจกรรมบริการเชิงรุก/PP", "จำนวนกิจกรรมหรือ contact Outreach/PP จริงในปีนั้น หน่วยนับต้องตรงกับ Activity Standard", "กิจกรรมหรือ contacts/ปี", "HDC / PP report / ทะเบียนเยี่ยมบ้าน", "Outreach/PP volume × Activity Standard Outreach/PP (นาที/กิจกรรม) × Complexity Index"],
+  };
+  Object.keys(workloadFields).forEach((key) => {
+    const [label, description, unit, source, formula] = workloadFields[key];
+    workloadFields[key] = Object.freeze({ label, description, unit, source, formula });
   });
+  Object.freeze(workloadFields);
 
-  const activityStandards = Object.freeze({
-    opdVisits: {
-      helpKey: "activity-opdVisits",
-      excelKey: "activity_opdVisits",
-      label: "เวลามาตรฐาน OPD",
-      title: "Activity Standard — OPD",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ OPD 1 visit ตามนิยามของโมเดล ไม่ใช่จำนวนครั้งบริการต่อปี",
-      unit: "นาที/OPD visit",
+  const activityStandards = {
+    opdVisits: ["OPD", "นาที/OPD visit", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ OPD 1 visit ตามนิยามของโมเดล ไม่ใช่จำนวนครั้งบริการต่อปี", "OPD visits × นาที/OPD visit × Complexity Index = demand minutes ของ OPD", "แพทย์ 8 นาที/OPD visit", "ใช้เวลาของวิชาชีพนั้นต่อ 1 visit ไม่ใช่เวลารวมทั้งทีม"],
+    ipdAdmissions: ["IPD Admit", "นาที/IPD admission", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ IPD 1 admission ตามนิยามของโมเดล ไม่ใช่จำนวน admission ต่อปี", "IPD admissions × นาที/admission × Complexity Index = demand minutes ของ IPD", "พยาบาล 60 นาที/IPD admission", "ช่องนี้เป็นนาทีต่อ admission ไม่ใช่นาทีต่อ bed-day"],
+    erVisits: ["ER", "นาที/ER visit", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ ER 1 visit ไม่ใช่จำนวนครั้งบริการต่อปี", "ER visits × นาที/ER visit × Complexity Index = demand minutes ของ ER", "แพทย์ 15 นาที/ER visit", "ถ้ามีหลาย acuity level ควรใช้ weighted standard ที่พื้นที่รับรอง"],
+    procedures: ["OR/Procedure", "นาที/procedure", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ OR/Procedure 1 case ไม่ใช่จำนวนหัตถการต่อปี", "Procedure cases × นาที/procedure × Complexity Index = demand minutes ของ OR/Procedure", "แพทย์ 45 นาที/procedure", "นิยาม case ต้องตรงกันทั้ง workload และ standard"],
+    deliveries: ["Delivery", "นาที/delivery", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อการคลอด 1 ครั้ง ไม่ใช่จำนวนการคลอดต่อปี", "Deliveries × นาที/delivery × Complexity Index = demand minutes ของ Delivery", "พยาบาล 120 นาที/delivery", "ใช้เวลาของวิชาชีพนั้น ไม่ใช่เวลารวมตั้งแต่รับถึงจำหน่าย"],
+    chronicVisits: ["Chronic", "นาที/chronic visit", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ chronic/NCD service visit 1 ครั้ง ไม่ใช่จำนวนครั้งบริการต่อปี", "Chronic visits × นาที/chronic visit × Complexity Index = demand minutes ของ Chronic", "พยาบาล 12 นาที/chronic visit", "ถ้ามีหลาย service mix ควรใช้ standard ที่สะท้อนงานจริง"],
+    mentalVisits: ["Mental", "นาที/mental visit", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ mental health service visit 1 ครั้ง ไม่ใช่จำนวนครั้งบริการต่อปี", "Mental visits × นาที/mental visit × Complexity Index = demand minutes ของ Mental", "นักจิตวิทยา 45 นาที/mental visit", "กำหนดให้ชัดว่ารวม counseling/psychotherapy หรือ encounter ใด"],
+    outreachVisits: ["Outreach/PP", "นาที/กิจกรรม Outreach/PP", "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ Outreach/PP 1 หน่วยกิจกรรมหรือ contact ตามนิยามเดียวกับ workload ไม่ใช่จำนวนครั้งบริการต่อปี", "Outreach/PP volume × นาที/กิจกรรม × Complexity Index = demand minutes ของ Outreach/PP", "นักวิชาการสาธารณสุข 25 นาที/กิจกรรม Outreach/PP", "หน่วยนับ workload และ Activity Standard ต้องเป็นหน่วยเดียวกัน"],
+  };
+  for (const [code, values] of Object.entries(activityStandards)) {
+    const [shortLabel, unit, definition, formula, example, caution] = values;
+    activityStandards[code] = Object.freeze({
+      helpKey: `activity-${code}`,
+      excelKey: `activity_${code}`,
+      label: `เวลามาตรฐาน ${shortLabel}`,
+      title: `Activity Standard — ${shortLabel}`,
+      definition,
+      unit,
       source: "time-motion study / service standard / expert consensus",
-      example: "แพทย์ 8 นาที/OPD visit",
-      formula: "OPD visits × นาที/OPD visit × Complexity Index = demand minutes ของ OPD",
-      caution: "ใช้เวลาของวิชาชีพนั้นต่อ 1 visit ไม่ใช่เวลารวมทั้งทีม",
-    },
-    ipdAdmissions: {
-      helpKey: "activity-ipdAdmissions",
-      excelKey: "activity_ipdAdmissions",
-      label: "เวลามาตรฐาน IPD Admit",
-      title: "Activity Standard — IPD Admit",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ IPD 1 admission ตามนิยามของโมเดล ไม่ใช่จำนวน admission ต่อปี",
-      unit: "นาที/IPD admission",
-      source: "time-motion study / service standard / expert consensus",
-      example: "พยาบาล 60 นาที/IPD admission",
-      formula: "IPD admissions × นาที/admission × Complexity Index = demand minutes ของ IPD",
-      caution: "ช่องนี้เป็นนาทีต่อ admission ไม่ใช่นาทีต่อ bed-day; ถ้าพื้นที่ใช้ nursing minutes/bed-day ต้องปรับโมเดลก่อน ไม่ควรใส่ค่าลงช่องนี้ตรง ๆ",
-    },
-    erVisits: {
-      helpKey: "activity-erVisits",
-      excelKey: "activity_erVisits",
-      label: "เวลามาตรฐาน ER",
-      title: "Activity Standard — ER",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ ER 1 visit ไม่ใช่จำนวนครั้งบริการต่อปี",
-      unit: "นาที/ER visit",
-      source: "time-motion study / service standard / expert consensus",
-      example: "แพทย์ 15 นาที/ER visit",
-      formula: "ER visits × นาที/ER visit × Complexity Index = demand minutes ของ ER",
-      caution: "หากแยก acuity/triage หลายระดับ ควรใช้ weighted standard ที่พื้นที่รับรอง",
-    },
-    procedures: {
-      helpKey: "activity-procedures",
-      excelKey: "activity_procedures",
-      label: "เวลามาตรฐาน OR/Procedure",
-      title: "Activity Standard — OR/Procedure",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ OR/Procedure 1 case ตามนิยามการนับของ workload ไม่ใช่จำนวนหัตถการต่อปี",
-      unit: "นาที/procedure",
-      source: "time-motion study / OR standard / expert consensus",
-      example: "แพทย์ 45 นาที/procedure",
-      formula: "Procedure cases × นาที/procedure × Complexity Index = demand minutes ของ OR/Procedure",
-      caution: "นิยาม case ต้องตรงกันทั้ง workload และ standard เช่น จะนับเฉพาะ OR หรือรวม minor procedure ต้องกำหนดให้ชัด",
-    },
-    deliveries: {
-      helpKey: "activity-deliveries",
-      excelKey: "activity_deliveries",
-      label: "เวลามาตรฐาน Delivery",
-      title: "Activity Standard — Delivery",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อการคลอด 1 ครั้ง ตามนิยามของโมเดล ไม่ใช่จำนวนการคลอดต่อปี",
-      unit: "นาที/delivery",
-      source: "time-motion study / labour-room standard / expert consensus",
-      example: "พยาบาล 120 นาที/delivery",
-      formula: "Deliveries × นาที/delivery × Complexity Index = demand minutes ของ Delivery",
-      caution: "ใช้เวลาของวิชาชีพนั้น ไม่ใช่เวลาตั้งแต่รับเข้าห้องคลอดจนจำหน่ายทั้งหมด",
-    },
-    chronicVisits: {
-      helpKey: "activity-chronicVisits",
-      excelKey: "activity_chronicVisits",
-      label: "เวลามาตรฐาน Chronic",
-      title: "Activity Standard — Chronic",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ chronic/NCD service visit 1 ครั้ง ไม่ใช่จำนวนครั้งบริการต่อปี",
-      unit: "นาที/chronic visit",
-      source: "time-motion study / NCD service standard / expert consensus",
-      example: "พยาบาล 12 นาที/chronic visit",
-      formula: "Chronic visits × นาที/chronic visit × Complexity Index = demand minutes ของ Chronic",
-      caution: "ถ้ามีหลายคลินิกหรือหลายความซับซ้อน ควรใช้ standard ที่สะท้อน service mix จริง",
-    },
-    mentalVisits: {
-      helpKey: "activity-mentalVisits",
-      excelKey: "activity_mentalVisits",
-      label: "เวลามาตรฐาน Mental",
-      title: "Activity Standard — Mental",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ mental health/psychiatric service visit 1 ครั้ง ไม่ใช่จำนวนครั้งบริการต่อปี",
-      unit: "นาที/mental visit",
-      source: "time-motion study / mental-health service standard / expert consensus",
-      example: "นักจิตวิทยา 45 นาที/mental visit",
-      formula: "Mental visits × นาที/mental visit × Complexity Index = demand minutes ของ Mental",
-      caution: "ควรกำหนดให้ชัดว่ารวม counseling, psychotherapy หรือเฉพาะ encounter ใดบ้าง",
-    },
-    outreachVisits: {
-      helpKey: "activity-outreachVisits",
-      excelKey: "activity_outreachVisits",
-      label: "เวลามาตรฐาน Outreach/PP",
-      title: "Activity Standard — Outreach/PP",
-      definition: "จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ Outreach/PP 1 หน่วยกิจกรรมหรือ contact ตามนิยามเดียวกับ workload ไม่ใช่จำนวนครั้งบริการต่อปี",
-      unit: "นาที/กิจกรรม Outreach/PP",
-      source: "time-motion study / PP service standard / expert consensus",
-      example: "นักวิชาการสาธารณสุข 25 นาที/กิจกรรม Outreach/PP",
-      formula: "Outreach/PP volume × นาที/กิจกรรม × Complexity Index = demand minutes ของ Outreach/PP",
-      caution: "ต้องกำหนดหน่วยนับให้ตรงกัน เช่น 1 home visit, 1 session หรือ 1 contact ห้ามใช้คนละหน่วยระหว่าง workload กับ standard",
-    },
-  });
-
-  const excelFields = Object.freeze({
-    ...workloadFields,
-    complexityIndex: {
-      label: "ค่าความซับซ้อนงาน (Complexity Index)",
-      description: "ตัวคูณภาระงานของข้อมูล actual ในปีนั้น; 1.00 = ไม่ปรับ, 1.20 = คิดภาระงานเทียบเท่าเพิ่ม 20%",
-      unit: "ดัชนี (เช่น 1.00)",
-      source: "case-mix / acuity / referral complexity / ข้อตกลงที่ทวนสอบแล้ว",
-      formula: formulas.actualDemand,
-      caution: "หากไม่มีหลักฐานรองรับให้ใช้ 1.00 และอย่าเพิ่มซ้ำกับ Activity Standard ที่ปรับ complexity อยู่แล้ว",
-    },
-    awtMinutes: {
-      label: "เวลาทำงานที่มีจริงต่อ 1 FTE ต่อปี (AWT)",
-      description: "Available Working Time หลังหักวันหยุด ลา อบรม และเวลาที่ไม่พร้อมทำงานตามนิยาม WISN",
-      unit: "นาที/คน/ปี",
-      source: "ปฏิทินทำงาน + ข้อมูลลา/อบรม หรือมาตรฐานองค์กร",
-      formula: `${formulas.serviceFte}; ${formulas.requiredFte}`,
-    },
-    casPct: {
-      label: "สัดส่วนกิจกรรมสนับสนุนร่วม (CAS)",
-      description: "ร้อยละเวลาสำหรับกิจกรรมสนับสนุนที่บุคลากรทุกคนในวิชาชีพนั้นทำ เช่น ประชุม บันทึกงาน งานบริหารทั่วไป",
-      unit: "% ของเวลาทำงาน",
-      source: "time-motion / work sampling / expert consensus",
-      formula: `${formulas.caf}; ${formulas.requiredFte}`,
-    },
-    iasHours: {
-      label: "กิจกรรมเพิ่มเติมเฉพาะบุคคล (IAS)",
-      description: "ชั่วโมงต่อปีของกิจกรรมเพิ่มเติมที่ทำโดยบุคลากรบางราย ไม่ใช่ทุกคนในวิชาชีพ เช่น งานหัวหน้า/กรรมการเฉพาะ",
-      unit: "ชั่วโมง/ปี",
-      source: "คำสั่งมอบหมาย / time-motion / ภาระงานจริง",
-      formula: `${formulas.iaf}; ${formulas.requiredFte}`,
-    },
-    fteFactor: {
-      label: "สัดส่วนเวลาปฏิบัติงาน (FTE Factor)",
-      description: "สัดส่วนการทำงานเทียบเท่าคนเต็มเวลา 1 คน เช่น 1.0 = เต็มเวลา, 0.5 = ครึ่งเวลา",
-      unit: "FTE ต่อคน",
-      source: "HR / ตารางปฏิบัติงานจริง",
-      formula: formulas.supplyFte,
-    },
-    coveragePct: {
-      label: "เป้าหมายความครอบคลุม",
-      description: "ร้อยละของ Target Population ที่ควรได้รับบริการตามเป้าหมาย/มาตรฐาน",
-      unit: "%",
-      source: "นโยบาย / Service Plan / CPG",
-      formula: formulas.targetCases,
-    },
-    frequency: {
-      label: "ความถี่บริการต่อปี",
-      description: "จำนวนครั้งบริการที่กลุ่มเป้าหมาย 1 รายควรได้รับต่อปี",
-      unit: "ครั้ง/คน/ปี",
-      source: "CPG / service model / consensus",
-      formula: formulas.targetEquivalent,
-    },
-    targetPopulation: {
-      label: "จำนวนกลุ่มเป้าหมาย",
-      description: "จำนวนคน/cases ในกลุ่มเป้าหมายของปีนั้นก่อนคูณ Coverage %; ต้องเป็นข้อมูลที่มีหลักฐานจริงย้อนหลัง",
-      unit: "คนหรือ cases",
-      source: "HDC / Registry / Program report",
-      formula: formulas.targetCases,
-    },
-    actualServed: {
-      label: "จำนวนที่ได้รับบริการจริง",
-      description: "จำนวนคน/cases ในกลุ่มเป้าหมายที่ได้รับบริการจริงในปีนั้น",
-      unit: "คนหรือ cases",
-      source: "HDC / HIS / Program report",
-      formula: formulas.coverageGap,
-    },
-  });
-
-  const helpItems = Object.freeze({
-    "wisn-mode": {
-      key: "wisn-mode",
-      title: "WISN Standard Mode",
-      category: "4. Profession",
-      aliases: ["WISN Standard Mode"],
-      definition: "เลือกชุด Activity Standard ที่ใช้คำนวณ: WISN default = ค่าเริ่มต้นในระบบ, High complexity +10% = เพิ่มเวลามาตรฐานทุกกิจกรรม 10%, Custom = ผู้ใช้กำหนดเอง",
-      unit: "โหมด",
-      source: "ค่าตั้งต้นของระบบ หรือมาตรฐานที่พื้นที่ทวนสอบ",
-      example: "Custom เมื่อมี time-motion study ของโรงพยาบาล",
-      caution: "High complexity +10% ปรับ Activity Standard minutes ไม่ได้เปลี่ยน Complexity Index ของ workload",
-      origin: "assumption",
-    },
-    awt: { key: "awt", title: "AWT — Available Working Time", category: "4. Profession", aliases: ["AWT min/year"], definition: excelFields.awtMinutes.description, unit: excelFields.awtMinutes.unit, source: excelFields.awtMinutes.source, example: "90,720 นาที/คน/ปี เป็นค่าเริ่มต้นของระบบ", caution: "ต้องใช้ AWT ตามบริบทจริงเมื่อใช้ประกอบการตัดสินใจ", formula: excelFields.awtMinutes.formula, origin: "assumption" },
-    cas: { key: "cas", title: "CAS — Category Allowance Standard", category: "4. Profession", aliases: ["CAS support %"], definition: excelFields.casPct.description, unit: excelFields.casPct.unit, source: excelFields.casPct.source, example: "CAS 14%", caution: "CAS สูงขึ้นทำให้ CAF และ Required FTE สูงขึ้น", formula: excelFields.casPct.formula, origin: "assumption" },
-    ias: { key: "ias", title: "IAS — Individual Allowance Standard", category: "4. Profession", aliases: ["IAS hours/year"], definition: excelFields.iasHours.description, unit: excelFields.iasHours.unit, source: excelFields.iasHours.source, example: "IAS 40 ชั่วโมง/ปี", formula: excelFields.iasHours.formula, origin: "assumption" },
-    "activity-standard": { key: "activity-standard", title: "Activity Standard", category: "4. Profession", aliases: ["Activity Standards (minutes per case)", "Activity Standards"], definition: "เวลามาตรฐานของบุคลากร 1 คนในวิชาชีพนั้นต่อ 1 หน่วยกิจกรรมบริการ ใช้แปลง Workload Volume เป็น Demand Minutes", unit: "นาทีต่อ 1 หน่วยกิจกรรม", source: "time-motion study / service standard / expert consensus", example: "แพทย์ OPD 8 นาที/visit", caution: "ไม่ใช่จำนวนครั้งบริการต่อปี และไม่ใช่เวลารวมทั้งทีม", formula: formulas.actualDemand, origin: "assumption" },
-    complexity: { key: "complexity", title: "Complexity Index", category: "5. Workload", aliases: ["Complexity", "Need Complexity"], definition: excelFields.complexityIndex.description, unit: excelFields.complexityIndex.unit, source: excelFields.complexityIndex.source, example: "1.20 = workload equivalent เพิ่ม 20%", caution: excelFields.complexityIndex.caution, formula: formulas.actualDemand, origin: "assumption" },
-    "fte-factor": { key: "fte-factor", title: "FTE Factor", category: "6. Supply", aliases: ["FTE Factor"], definition: excelFields.fteFactor.description, unit: excelFields.fteFactor.unit, source: excelFields.fteFactor.source, example: "1.0 = เต็มเวลา, 0.5 = ครึ่งเวลา", formula: formulas.supplyFte, origin: "input" },
-    "actual-fte": { key: "actual-fte", title: "Actual Workload FTE", category: "7. Results", aliases: ["Actual FTE", "Actual Workload FTE"], definition: "Required FTE ที่คำนวณจาก workload จริงย้อนหลังของปีนั้น โดยใช้ Activity Standard, Complexity Index, AWT, CAS และ IAS", unit: "FTE", source: "ระบบคำนวณจาก workload จริง", example: "18.4 FTE", formula: `${formulas.actualDemand}; ${formulas.serviceFte}; ${formulas.requiredFte}`, origin: "output" },
-    "target-fte": { key: "target-fte", title: "Target Need FTE", category: "7. Results", aliases: ["Target FTE", "Target Need FTE"], definition: "Required FTE ที่คำนวณจาก target health need ของปีนั้น โดย Target Cases, Frequency, Activity Mix และ Target Complexity ถูกแปลงเป็น equivalent activity volume ก่อน", unit: "FTE", source: "ระบบคำนวณจาก Target Need", example: "21.2 FTE", formula: `${formulas.targetCases}; ${formulas.targetEquivalent}; ${formulas.requiredFte}`, origin: "output" },
-    "planning-fte": { key: "planning-fte", title: "Planning Required FTE", category: "7. Results", aliases: ["Planning FTE", "Required FTE", "Planning Required FTE"], definition: "กำลังคนที่ใช้วางแผน โดยเลือกระดับกิจกรรมที่สูงกว่าระหว่าง actual workload ที่ปรับ complexity กับ target-need equivalent volume แยกรายกิจกรรม แล้วคำนวณ WISN", unit: "FTE", source: "ระบบคำนวณ", example: "22.1 FTE", caution: "จึงไม่จำเป็นต้องเท่ากับ max(Actual Workload FTE, Target Need FTE) แบบเลือกยอดรวม", formula: `${formulas.planningVolume}; ${formulas.planningDemand}; ${formulas.requiredFte}`, origin: "output" },
-    "supply-fte": { key: "supply-fte", title: "Actual Supply FTE", category: "7. Results", aliases: ["Supply FTE", "Actual Supply FTE"], definition: "กำลังคนที่มีจริงในปีนั้นใน historical mode โดยใช้จำนวนคนจริงรายปีคูณ FTE Factor; movement fields ใช้บันทึกเหตุการณ์ย้อนหลังและไม่ back-calculate headcount", unit: "FTE", source: "Actual annual headcount + FTE Factor", example: "17 คน × 1.0 = 17.0 FTE", formula: formulas.supplyFte, origin: "output" },
-    "hr-gap": { key: "hr-gap", title: "HR GAP", category: "7. Results", aliases: ["HR GAP", "Total Positive GAP"], definition: "ส่วนต่างระหว่าง Planning Required FTE กับ Actual Supply FTE", unit: "FTE", source: "ระบบคำนวณ", example: "+5.1 = ขาด 5.1 FTE; -2.0 = supply สูงกว่า need 2 FTE", formula: formulas.gap, origin: "output" },
-    "wisn-ratio": { key: "wisn-ratio", title: "WISN Ratio", category: "7. Results", aliases: ["WISN Ratio"], definition: "สัดส่วน Actual Supply FTE ต่อ Planning Required FTE", unit: "ratio", source: "ระบบคำนวณ", example: "1.00 = สมดุล; 0.80 = supply เท่ากับ 80% ของ need", formula: formulas.wisnRatio, origin: "output" },
-    pressure: { key: "pressure", title: "Pressure Index", category: "7. Results", aliases: ["Pressure"], definition: "Planning Required FTE หารด้วย Actual Supply FTE เป็นค่ากลับของ WISN Ratio", unit: "ratio", source: "ระบบคำนวณ", example: "1.25 = required FTE สูงกว่า supply 25%", formula: formulas.pressure, origin: "output" },
-    trend: { key: "trend", title: "Trend Index", category: "7. Results", aliases: ["Trend"], definition: "Planning Required FTE ของปีนั้นเทียบกับ Planning Required FTE ปีฐาน", unit: "index", source: "ระบบคำนวณ", example: "1.10 = need สูงกว่าปีฐาน 10%", formula: formulas.trend, origin: "output" },
-    "coverage-gap": { key: "coverage-gap", title: "Coverage Gap", category: "7. Results", aliases: ["Coverage Gap"], definition: "จำนวน target cases ที่ควรได้รับบริการตาม Coverage % แต่ยังไม่ได้รับบริการจริง", unit: "คน/cases", source: "ระบบคำนวณ", example: "Target Cases 1,200 − Actual Served 900 = 300", formula: `${formulas.targetCases}; ${formulas.coverageGap}`, origin: "output" },
-    "workload-gap": { key: "workload-gap", title: "Workload Gap", category: "7. Results", aliases: ["Workload Gap"], definition: "จำนวน service contacts เทียบเท่าที่ต้องเพิ่มเพื่อปิด Coverage Gap ตาม Service Frequency", unit: "ครั้งบริการเทียบเท่า", source: "ระบบคำนวณ", example: "300 คน × 3 ครั้ง/ปี = 900 ครั้ง", formula: formulas.workloadGap, origin: "output" },
-    "suggested-add": { key: "suggested-add", title: "Suggested Add", category: "7. Results", aliases: ["Suggested Add"], definition: "จำนวน FTE แบบปัดขึ้นที่โมเดลใช้เป็น planning signal เมื่อ HR GAP เป็นบวก", unit: "FTE โดยประมาณ", source: "ระบบคำนวณ", example: "GAP 4.2 → 5", caution: "ไม่ใช่คำสั่งจัดสรรตำแหน่ง ต้องพิจารณา skill mix, access, budget และ service design", formula: formulas.suggestedAdd, origin: "output" },
-    reallocate: { key: "reallocate", title: "Reallocate", category: "7. Results", aliases: ["Reallocate"], definition: "FTE ที่ Actual Supply สูงกว่า Planning Required FTE ตามโมเดล และอาจนำไปพิจารณาการกระจายงาน/rotation/shared service", unit: "FTE", source: "ระบบคำนวณ", example: "GAP -2.3 → 2.3 FTE", caution: "ไม่ควรย้ายคนจากผลนี้เพียงอย่างเดียว ต้องดู competency, access และ minimum staffing", formula: formulas.reallocate, origin: "output" },
-  });
-
-  for (const [code, item] of Object.entries(activityStandards)) {
-    helpItems[item.helpKey] = Object.freeze({
-      key: item.helpKey,
-      title: item.title,
-      category: "4. Profession / Activity Standard",
-      aliases: [],
-      definition: item.definition,
-      unit: item.unit,
-      source: item.source,
-      example: item.example,
-      caution: item.caution,
-      formula: item.formula,
-      origin: "assumption",
+      formula,
+      example,
+      caution,
     });
   }
+  Object.freeze(activityStandards);
 
-  window.NCO_HR_DATA_DICTIONARY = Object.freeze({
-    formulas,
-    workloadFields,
-    activityStandards,
-    excelFields,
-    helpItems,
-  });
+  const excelFields = {
+    ...workloadFields,
+    complexityIndex: { label: "ค่าความซับซ้อนงาน (Complexity Index)", description: "ตัวคูณภาระงานของ actual workload; 1.00 = ไม่ปรับ, 1.20 = workload equivalent เพิ่ม 20%", unit: "ดัชนี", source: "case-mix / acuity / referral complexity / ข้อตกลงที่ทวนสอบแล้ว", formula: formulas.actualDemand },
+    awtMinutes: { label: "เวลาทำงานที่มีจริงต่อ 1 FTE ต่อปี (AWT)", description: "Available Working Time หลังหักวันหยุด ลา อบรม และเวลาที่ไม่พร้อมทำงานตามนิยาม WISN", unit: "นาที/คน/ปี", source: "ปฏิทินทำงาน + ข้อมูลลา/อบรม หรือมาตรฐานองค์กร", formula: `${formulas.serviceFte}; ${formulas.requiredFte}` },
+    casPct: { label: "สัดส่วนกิจกรรมสนับสนุนร่วม (CAS)", description: "ร้อยละเวลาสำหรับกิจกรรมสนับสนุนที่บุคลากรทุกคนในวิชาชีพนั้นทำ", unit: "% ของเวลาทำงาน", source: "time-motion / work sampling / expert consensus", formula: `${formulas.caf}; ${formulas.requiredFte}` },
+    iasHours: { label: "กิจกรรมเพิ่มเติมเฉพาะบุคคล (IAS)", description: "ชั่วโมงต่อปีของกิจกรรมเพิ่มเติมที่ทำโดยบุคลากรบางราย ไม่ใช่ทุกคนในวิชาชีพ", unit: "ชั่วโมง/ปี", source: "คำสั่งมอบหมาย / time-motion / ภาระงานจริง", formula: `${formulas.iaf}; ${formulas.requiredFte}` },
+    fteFactor: { label: "สัดส่วนเวลาปฏิบัติงาน (FTE Factor)", description: "สัดส่วนการทำงานเทียบเท่าคนเต็มเวลา 1 คน เช่น 1.0 = เต็มเวลา, 0.5 = ครึ่งเวลา", unit: "FTE ต่อคน", source: "HR / ตารางปฏิบัติงานจริง", formula: formulas.supplyFte },
+    coveragePct: { label: "เป้าหมายความครอบคลุม", description: "ร้อยละของ Target Population ที่ควรได้รับบริการ", unit: "%", source: "นโยบาย / Service Plan / CPG", formula: formulas.targetCases },
+    frequency: { label: "ความถี่บริการต่อปี", description: "จำนวนครั้งบริการที่กลุ่มเป้าหมาย 1 รายควรได้รับต่อปี", unit: "ครั้ง/คน/ปี", source: "CPG / service model / consensus", formula: formulas.targetEquivalent },
+    targetPopulation: { label: "จำนวนกลุ่มเป้าหมาย", description: "จำนวนคน/cases ในกลุ่มเป้าหมายของปีนั้นก่อนคูณ Coverage %; ต้องเป็นข้อมูลจริงย้อนหลัง", unit: "คนหรือ cases", source: "HDC / Registry / Program report", formula: formulas.targetCases },
+    actualServed: { label: "จำนวนที่ได้รับบริการจริง", description: "จำนวนคน/cases ในกลุ่มเป้าหมายที่ได้รับบริการจริงในปีนั้น", unit: "คนหรือ cases", source: "HDC / HIS / Program report", formula: formulas.coverageGap },
+  };
+  Object.freeze(excelFields);
+
+  const helpItems = {
+    "wisn-mode": { key:"wisn-mode", title:"WISN Standard Mode", category:"4. Profession", aliases:["WISN Standard Mode"], definition:"เลือกชุด Activity Standard: WISN default = ค่าเริ่มต้น, High complexity +10% = เพิ่ม Activity Standard ทุกกิจกรรม 10%, Custom = ผู้ใช้กำหนดเอง", unit:"โหมด", source:"ระบบ/มาตรฐานพื้นที่", example:"Custom เมื่อมี time-motion study", caution:"High complexity +10% ปรับ Activity Standard minutes ไม่ได้เปลี่ยน Complexity Index", origin:"assumption" },
+    awt: { key:"awt", title:"AWT — Available Working Time", category:"4. Profession", aliases:["AWT min/year"], definition:excelFields.awtMinutes.description, unit:excelFields.awtMinutes.unit, source:excelFields.awtMinutes.source, example:"90,720 นาที/คน/ปี เป็นค่าเริ่มต้น", formula:excelFields.awtMinutes.formula, origin:"assumption" },
+    cas: { key:"cas", title:"CAS — Category Allowance Standard", category:"4. Profession", aliases:["CAS support %"], definition:excelFields.casPct.description, unit:excelFields.casPct.unit, source:excelFields.casPct.source, example:"14%", formula:excelFields.casPct.formula, origin:"assumption" },
+    ias: { key:"ias", title:"IAS — Individual Allowance Standard", category:"4. Profession", aliases:["IAS hours/year"], definition:excelFields.iasHours.description, unit:excelFields.iasHours.unit, source:excelFields.iasHours.source, example:"40 ชั่วโมง/ปี", formula:excelFields.iasHours.formula, origin:"assumption" },
+    "activity-standard": { key:"activity-standard", title:"Activity Standard", category:"4. Profession", aliases:["Activity Standards (minutes per case)","Activity Standards"], definition:"เวลามาตรฐานของบุคลากร 1 คนในวิชาชีพนั้นต่อ 1 หน่วยกิจกรรมบริการ ใช้แปลง Workload Volume เป็น Demand Minutes", unit:"นาทีต่อ 1 หน่วยกิจกรรม", source:"time-motion study / service standard / expert consensus", example:"แพทย์ OPD 8 นาที/visit", caution:"ไม่ใช่จำนวนครั้งบริการต่อปี และไม่ใช่เวลารวมทั้งทีม", formula:formulas.actualDemand, origin:"assumption" },
+    complexity: { key:"complexity", title:"Complexity Index", category:"5. Workload", aliases:["Complexity","Need Complexity"], definition:excelFields.complexityIndex.description, unit:excelFields.complexityIndex.unit, source:excelFields.complexityIndex.source, example:"1.20 = workload equivalent เพิ่ม 20%", formula:formulas.actualDemand, origin:"assumption" },
+    "fte-factor": { key:"fte-factor", title:"FTE Factor", category:"6. Supply", aliases:["FTE Factor"], definition:excelFields.fteFactor.description, unit:excelFields.fteFactor.unit, source:excelFields.fteFactor.source, example:"1.0=เต็มเวลา, 0.5=ครึ่งเวลา", formula:formulas.supplyFte, origin:"input" },
+    "actual-fte": { key:"actual-fte", title:"Actual Workload FTE", category:"7. Results", aliases:["Actual FTE","Actual Workload FTE"], definition:"Required FTE ที่คำนวณจาก workload จริงย้อนหลังของปีนั้น", unit:"FTE", source:"ระบบคำนวณจาก workload จริง", example:"18.4 FTE", formula:`${formulas.actualDemand}; ${formulas.serviceFte}; ${formulas.requiredFte}`, origin:"output" },
+    "target-fte": { key:"target-fte", title:"Target Need FTE", category:"7. Results", aliases:["Target FTE","Target Need FTE"], definition:"Required FTE ที่คำนวณจาก target health need ของปีนั้น", unit:"FTE", source:"ระบบคำนวณจาก Target Need", example:"21.2 FTE", formula:`${formulas.targetCases}; ${formulas.targetEquivalent}; ${formulas.requiredFte}`, origin:"output" },
+    "planning-fte": { key:"planning-fte", title:"Planning Required FTE", category:"7. Results", aliases:["Planning FTE","Required FTE","Planning Required FTE"], definition:"กำลังคนสำหรับวางแผน โดยเลือกระดับกิจกรรมที่สูงกว่าระหว่าง actual workload ที่ปรับ complexity กับ target-need equivalent volume แยกรายกิจกรรม แล้วคำนวณ WISN", unit:"FTE", source:"ระบบคำนวณ", example:"22.1 FTE", formula:`${formulas.planningVolume}; ${formulas.planningDemand}; ${formulas.requiredFte}`, origin:"output" },
+    "supply-fte": { key:"supply-fte", title:"Actual Supply FTE", category:"7. Results", aliases:["Supply FTE","Actual Supply FTE"], definition:"กำลังคนจริงของปีนั้นใน historical mode = actual annual headcount × FTE factor", unit:"FTE", source:"HR annual headcount + FTE factor", example:"17 × 1.0 = 17.0 FTE", formula:formulas.supplyFte, origin:"output" },
+    "hr-gap": { key:"hr-gap", title:"HR GAP", category:"7. Results", aliases:["HR GAP","Total Positive GAP"], definition:"ส่วนต่าง Planning Required FTE กับ Actual Supply FTE", unit:"FTE", source:"ระบบคำนวณ", example:"+5.1 = ขาด 5.1 FTE", formula:formulas.gap, origin:"output" },
+    "wisn-ratio": { key:"wisn-ratio", title:"WISN Ratio", category:"7. Results", aliases:["WISN Ratio"], definition:"Actual Supply FTE ต่อ Planning Required FTE", unit:"ratio", source:"ระบบคำนวณ", example:"0.80 = supply เท่ากับ 80% ของ need", formula:formulas.wisnRatio, origin:"output" },
+    pressure: { key:"pressure", title:"Pressure Index", category:"7. Results", aliases:["Pressure"], definition:"Planning Required FTE หารด้วย Actual Supply FTE", unit:"ratio", source:"ระบบคำนวณ", example:"1.25", formula:formulas.pressure, origin:"output" },
+    trend: { key:"trend", title:"Trend Index", category:"7. Results", aliases:["Trend"], definition:"Planning Required FTE ปีนั้นเทียบปีฐาน", unit:"index", source:"ระบบคำนวณ", example:"1.10", formula:formulas.trend, origin:"output" },
+    "coverage-gap": { key:"coverage-gap", title:"Coverage Gap", category:"7. Results", aliases:["Coverage Gap"], definition:"target cases ที่ควรได้รับบริการแต่ยังไม่ได้รับบริการจริง", unit:"คน/cases", source:"ระบบคำนวณ", example:"1,200−900=300", formula:`${formulas.targetCases}; ${formulas.coverageGap}`, origin:"output" },
+    "workload-gap": { key:"workload-gap", title:"Workload Gap", category:"7. Results", aliases:["Workload Gap"], definition:"จำนวน service contacts เทียบเท่าที่ต้องเพิ่มเพื่อปิด Coverage Gap", unit:"ครั้งบริการเทียบเท่า", source:"ระบบคำนวณ", example:"300×3=900", formula:formulas.workloadGap, origin:"output" },
+    "suggested-add": { key:"suggested-add", title:"Suggested Add", category:"7. Results", aliases:["Suggested Add"], definition:"FTE แบบปัดขึ้นเมื่อ HR GAP เป็นบวก ใช้เป็น planning signal", unit:"FTE โดยประมาณ", source:"ระบบคำนวณ", example:"4.2→5", formula:formulas.suggestedAdd, origin:"output" },
+    reallocate: { key:"reallocate", title:"Reallocate", category:"7. Results", aliases:["Reallocate"], definition:"FTE ที่ Actual Supply สูงกว่า Planning Required FTE ตามโมเดล", unit:"FTE", source:"ระบบคำนวณ", example:"GAP -2.3→2.3", formula:formulas.reallocate, origin:"output" },
+  };
+  for (const [code, item] of Object.entries(activityStandards)) {
+    helpItems[item.helpKey] = Object.freeze({ key:item.helpKey, title:item.title, category:"4. Profession / Activity Standard", aliases:[], definition:item.definition, unit:item.unit, source:item.source, example:item.example, caution:item.caution, formula:item.formula, origin:"assumption" });
+  }
+  Object.freeze(helpItems);
+
+  window.NCO_HR_DATA_DICTIONARY = Object.freeze({ formulas, workloadFields, activityStandards, excelFields, helpItems });
 })();
