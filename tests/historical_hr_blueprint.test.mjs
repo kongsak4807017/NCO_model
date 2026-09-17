@@ -60,6 +60,8 @@ test('UI clearly identifies historical actual-data mode', () => {
   assert.match(html, /ปีอ้างอิงล่าสุด \(พ\.ศ\.\)/);
   assert.match(html, /วิเคราะห์ข้อมูลย้อนหลัง/);
   assert.match(html, /Actual Headcount/);
-  assert.match(html, /Actual FTE/);
+  assert.match(html, /Actual Supply FTE/);
+  assert.match(html, /Actual Workload FTE/);
+  assert.match(html, /Planning Required FTE/);
   assert.match(html, /Simulator_HR_blueprint_historical\.js/);
 });
