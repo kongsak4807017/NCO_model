@@ -187,3 +187,13 @@ async function importProfileWorkbook(file) {
   }
   return payload;
 }
+
+// Load the profession-specific workload/Data Fitness extension without changing the static HTML deployment order.
+(() => {
+  if (document.querySelector('script[data-nco-data-fitness]')) return;
+  const script = document.createElement('script');
+  script.src = 'Simulator_HR_blueprint_data_fitness.js';
+  script.async = false;
+  script.dataset.ncoDataFitness = '1';
+  document.head.appendChild(script);
+})();
