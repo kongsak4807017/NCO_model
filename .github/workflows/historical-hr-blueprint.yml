@@ -13,8 +13,10 @@ on:
       - 'Simulator_HR_blueprint_dictionary.js'
       - 'Simulator_HR_blueprint_formula_copy.js'
       - 'Simulator_HR_blueprint_excel_guide.js'
+      - 'Simulator_HR_blueprint_data_fitness.js'
       - 'Simulator_HR_blueprint_help.js'
       - 'GOOGLE_SHEETS_PROFILE_GUIDE.md'
+      - 'HR_BLUEPRINT_DATA_FITNESS_GUIDE.md'
       - 'integrations/google_apps_script/Code.gs'
       - 'output/hr_blueprint_district_baseline_region1.json'
       - 'scripts/generate_region1_district_hr_baseline.py'
@@ -33,8 +35,10 @@ on:
       - 'Simulator_HR_blueprint_dictionary.js'
       - 'Simulator_HR_blueprint_formula_copy.js'
       - 'Simulator_HR_blueprint_excel_guide.js'
+      - 'Simulator_HR_blueprint_data_fitness.js'
       - 'Simulator_HR_blueprint_help.js'
       - 'GOOGLE_SHEETS_PROFILE_GUIDE.md'
+      - 'HR_BLUEPRINT_DATA_FITNESS_GUIDE.md'
       - 'integrations/google_apps_script/Code.gs'
       - 'output/hr_blueprint_district_baseline_region1.json'
       - 'scripts/generate_region1_district_hr_baseline.py'
@@ -53,6 +57,7 @@ jobs:
       - run: node --check Simulator_HR_blueprint_dictionary.js
       - run: node --check Simulator_HR_blueprint_formula_copy.js
       - run: node --check Simulator_HR_blueprint_excel_guide.js
+      - run: node --check Simulator_HR_blueprint_data_fitness.js
       - run: node --check Simulator_HR_blueprint_help.js
       - run: node --test tests/*.test.mjs
       - uses: actions/setup-python@v5
