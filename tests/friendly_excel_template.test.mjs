@@ -40,11 +40,14 @@ test('friendly template keeps a hidden technical-key row and helper rows before 
   assert.match(friendly, /คำอธิบาย/);
   assert.match(friendly, /หน่วย\/รูปแบบ/);
   assert.match(friendly, /แหล่งข้อมูลแนะนำ/);
+  assert.match(friendly, /ใช้ในสูตร/);
 });
 
-test('friendly importer reads technical keys but skips helper rows', () => {
+test('friendly importer reads technical keys, skips helper rows, and remains compatible with older five-row templates', () => {
   assert.match(friendly, /function importProfileWorkbook/);
-  assert.match(friendly, /range:\s*5/);
+  assert.match(friendly, /dataStartRow/);
+  assert.match(friendly, /\?\s*6\s*:\s*5/);
+  assert.match(friendly, /range:\s*dataStartRow/);
   assert.match(friendly, /profilePayloadFromSheetRows/);
   assert.doesNotMatch(friendly, /Math\.pow\s*\(/);
   assert.doesNotMatch(friendly, /seedRate/);
