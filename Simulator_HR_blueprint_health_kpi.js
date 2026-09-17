@@ -110,3 +110,6 @@
 
   document.addEventListener("DOMContentLoaded", () => setTimeout(installHealthKpiPanel, 0));
 })();
+
+// Load the final interpretation layer before Excel/help scripts execute.
+document.write('<script src="Simulator_HR_blueprint_v2_trace.js"><\/script>');
