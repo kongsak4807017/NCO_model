@@ -34,11 +34,9 @@ test('shared formula dictionary is loaded before formula copy, Excel and help la
 });
 
 test('activity standards are distinct from annual workload volumes for every activity', () => {
-  for (const key of ACTIVITY_KEYS) {
-    assert.match(dictionary, new RegExp(`activity-${key}`));
-    assert.match(dictionary, new RegExp(`activity_${key}`));
-  }
-
+  for (const key of ACTIVITY_KEYS) assert.match(dictionary, new RegExp(`${key}: \[`));
+  assert.match(dictionary, /helpKey:\s*`activity-\$\{code\}`/);
+  assert.match(dictionary, /excelKey:\s*`activity_\$\{code\}`/);
   assert.match(dictionary, /นาที\/OPD visit/);
   assert.match(dictionary, /นาที\/IPD admission/);
   assert.match(dictionary, /นาที\/ER visit/);
@@ -51,9 +49,7 @@ test('activity standards are distinct from annual workload volumes for every act
 });
 
 test('Activity Standards table headers use explicit help keys instead of ambiguous text aliases', () => {
-  for (const key of ACTIVITY_KEYS) {
-    assert.match(html, new RegExp(`data-help-key="activity-${key}"`));
-  }
+  for (const key of ACTIVITY_KEYS) assert.match(html, new RegExp(`data-help-key="activity-${key}"`));
   assert.match(html, /OPD[\s\S]*นาที\/visit/);
   assert.match(html, /IPD Admit[\s\S]*นาที\/admission/);
   assert.match(html, /OR\/Procedure[\s\S]*นาที\/procedure/);
@@ -80,7 +76,6 @@ test('formula explanations match the implemented WISN calculation', () => {
   assert.match(base, /const caf = 1 \/ \(1 - \(casPct \/ 100\)\)/);
   assert.match(base, /const iaf = \(n\(cfg\.iasHours, 0\) \* 60\) \/ awtMinutes/);
   assert.match(base, /const needFte = \(serviceFte \* caf\) \+ iaf/);
-
   assert.match(dictionary, /Demand Minutes = Σ\(Workload Volume × Activity Standard × Complexity Index\)/);
   assert.match(dictionary, /Service FTE = Demand Minutes ÷ AWT/);
   assert.match(dictionary, /CAF = 1 ÷ \(1 − CAS\/100\)/);
