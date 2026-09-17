@@ -14,6 +14,7 @@ on:
       - 'Simulator_HR_blueprint_profession_dictionary.js'
       - 'Simulator_HR_blueprint_profession_workload.js'
       - 'Simulator_HR_blueprint_health_kpi.js'
+      - 'Simulator_HR_blueprint_v2_trace.js'
       - 'Simulator_HR_blueprint_formula_copy.js'
       - 'Simulator_HR_blueprint_excel_guide.js'
       - 'Simulator_HR_blueprint_help.js'
@@ -38,6 +39,7 @@ on:
       - 'Simulator_HR_blueprint_profession_dictionary.js'
       - 'Simulator_HR_blueprint_profession_workload.js'
       - 'Simulator_HR_blueprint_health_kpi.js'
+      - 'Simulator_HR_blueprint_v2_trace.js'
       - 'Simulator_HR_blueprint_formula_copy.js'
       - 'Simulator_HR_blueprint_excel_guide.js'
       - 'Simulator_HR_blueprint_help.js'
@@ -63,6 +65,7 @@ jobs:
       - run: node --check Simulator_HR_blueprint_profession_dictionary.js
       - run: node --check Simulator_HR_blueprint_profession_workload.js
       - run: node --check Simulator_HR_blueprint_health_kpi.js
+      - run: node --check Simulator_HR_blueprint_v2_trace.js
       - run: node --check Simulator_HR_blueprint_formula_copy.js
       - run: node --check Simulator_HR_blueprint_excel_guide.js
       - run: node --check Simulator_HR_blueprint_help.js
