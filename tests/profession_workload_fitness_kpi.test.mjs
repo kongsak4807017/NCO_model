@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
-const root = new URL('../', import.meta.url);
 const extPath = new URL('../Simulator_HR_blueprint_data_fitness.js', import.meta.url);
 const excel = readFileSync(new URL('../Simulator_HR_blueprint_excel_guide.js', import.meta.url), 'utf8');
 const guide = readFileSync(new URL('../GOOGLE_SHEETS_PROFILE_GUIDE.md', import.meta.url), 'utf8');
@@ -86,4 +85,21 @@ test('legacy facility Workload_History is explicitly contextual and not sufficie
   assert.match(source, /Workload_History/);
   assert.match(source, /บริบทระดับหน่วยบริการ|facility context/i);
   assert.match(source, /ไม่ใช้.*สรุป.*วิชาชีพ|not sufficient.*profession/i);
+});
+
+test('activity-standard UI shows the denominator unit per profession instead of one generic column unit', () => {
+  const source = extensionSource();
+  assert.match(source, /renderStandardTable\s*=\s*function/);
+  assert.match(source, /activityUnits/);
+  assert.match(source, /standard-unit|df-unit/);
+  assert.match(source, /patient_day/);
+  assert.match(source, /prescription/);
+  assert.match(source, /session/);
+});
+
+test('Excel activity-standard description points to each profession row activity_unit instead of a universal unit', () => {
+  const source = extensionSource();
+  assert.match(source, /String\(key\)\.startsWith\("activity_"\)/);
+  assert.match(source, /activity_unit_/);
+  assert.match(source, /denominator|หน่วยนับ/);
 });
