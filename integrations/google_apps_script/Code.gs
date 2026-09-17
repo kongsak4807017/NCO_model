@@ -1,11 +1,13 @@
-const NCO_PROFILE_SCHEMA = 'nco-hr-profile-v1';
+const NCO_PROFILE_SCHEMA = 'nco-hr-profile-v2';
 const NCO_PROFILE_SHEETS = [
   'Profile',
   'Section_Metadata',
   'Workload_History',
+  'Profession_Workload',
   'TargetNeed_History',
   'Workforce_History',
   'Profession_Config',
+  'Health_KPI_History',
 ];
 
 function sheetRows_(sheetName) {
