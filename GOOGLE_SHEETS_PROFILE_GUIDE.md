@@ -37,14 +37,32 @@
 ### `Workload_History`
 ข้อมูลจริงย้อนหลัง 2569–2565 เช่น Population, OPD, IPD, ER, OR/Procedure, Delivery, Chronic, Mental, Outreach/PP
 
+**สำคัญ:** ช่อง Workload เป็น **ปริมาณงานจริงต่อปี** เช่น `OPD visits/ปี`, `IPD admissions/ปี`, `ER visits/ปี` ไม่ใช่เวลามาตรฐานเป็นนาที
+
 ### `TargetNeed_History`
 Target Population/Cases และ Actual Served ที่มีหลักฐานจริง แยกตามกลุ่ม Health Need และปี
 
 ### `Workforce_History`
 Actual Headcount และ movement จริงรายวิชาชีพ/รายปี เช่น Recruit, Transfer, Retire, Resign, Study Leave
 
+Actual Supply FTE ใน historical mode คำนวณจาก **Actual Annual Headcount × FTE Factor** โดย movement รายปีใช้เป็นหลักฐานย้อนหลังและไม่ใช้ back-calculate จำนวนคน
+
 ### `Profession_Config`
-วิชาชีพที่ใช้วิเคราะห์และ WISN standards เช่น AWT, CAS, IAS และ activity minutes
+วิชาชีพที่ใช้วิเคราะห์และ WISN standards เช่น AWT, CAS, IAS และ Activity Standard
+
+**Activity Standard คือเวลา ไม่ใช่ปริมาณงาน:** `activity_OPD`, `activity_IPD` ฯลฯ หมายถึง **จำนวนนาทีที่บุคลากร 1 คนในวิชาชีพนั้นใช้ต่อ 1 หน่วยกิจกรรม** เช่น แพทย์ OPD 8 นาที/visit หรือพยาบาล IPD 60 นาที/admission ตามนิยามของโมเดล
+
+สูตรหลักที่ใช้ใน Simulator คือ:
+
+- `Demand Minutes = Σ(Workload Volume × Activity Standard × Complexity Index)`
+- `Service FTE = Demand Minutes ÷ AWT`
+- `CAF = 1 ÷ (1 − CAS/100)`
+- `IAF = IAS × 60 ÷ AWT`
+- `Required FTE = (Service FTE × CAF) + IAF`
+- `HR GAP = Planning Required FTE − Actual Supply FTE`
+- `WISN Ratio = Actual Supply FTE ÷ Planning Required FTE`
+
+> สำหรับ IPD ช่อง Activity Standard ของโมเดลปัจจุบันเป็น **นาทีต่อ admission** ไม่ใช่ nursing minutes ต่อ bed-day หากพื้นที่ต้องการใช้ bed-day model ต้องปรับโมเดลก่อน ไม่ควรนำค่าต่อ bed-day มาใส่ตรง ๆ
 
 ## การแบ่งเจ้าของข้อมูลตัวอย่าง
 
@@ -76,4 +94,4 @@ Actual Headcount และ movement จริงรายวิชาชีพ/�
 4. Import Excel กลับ Simulator
 5. ตรวจ Completeness/Provenance ก่อนวิเคราะห์
 
-Excel และ Google Sheets ใช้ schema เดียวกัน จึงสามารถย้ายจาก workflow แบบไฟล์ไปเป็น collaborative workflow ได้โดยไม่ต้องเปลี่ยนสูตรวิเคราะห์
+Excel และ Google Sheets ใช้ schema เดียวกัน และคำอธิบายของ Workload / Activity Standard / AWT / CAS / IAS ใช้นิยามเดียวกับ Simulator เพื่อให้การกรอกข้อมูลและสูตรวิเคราะห์สอดคล้องกัน
