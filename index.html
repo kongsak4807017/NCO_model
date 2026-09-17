@@ -1,487 +1,372 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NCO Model Pitching Deck — เขตสุขภาพที่ 1</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0a0e17;
-            --surface: #131927;
-            --accent: #6366f1;
-            --accent2: #8b5cf6;
-            --text: #ffffff;
-            --text2: #94a3b8;
-            --green: #10b981;
-            --red: #ef4444;
-            --yellow: #f59e0b;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR Blueprint Simulator Pitching Deck — เขตสุขภาพที่ 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(15, 23, 42, 0.78);
+      --line: rgba(148, 163, 184, 0.24);
+      --text: #f8fafc;
+      --muted: #b6c2d2;
+      --blue: #38bdf8;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --red: #fb7185;
+      --violet: #a78bfa;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Noto Sans Thai', 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.18), transparent 30%),
+        radial-gradient(circle at 85% 15%, rgba(167, 139, 250, 0.16), transparent 34%),
+        linear-gradient(145deg, #06101d, #0b1220 55%, #111827);
+      color: var(--text);
+    }
 
-        body {
-            font-family: 'Noto Sans Thai', 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            overflow: hidden;
-            height: 100vh;
-            width: 100vw;
-        }
+    .deck { display: flex; width: 100%; height: 100%; transition: transform .55s cubic-bezier(.65,0,.35,1); }
+    .slide {
+      min-width: 100vw;
+      height: 100vh;
+      padding: 54px 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .slide::after {
+      content: '';
+      position: absolute;
+      inset: 34px;
+      border: 1px solid rgba(148, 163, 184, .12);
+      border-radius: 34px;
+      pointer-events: none;
+    }
+    .content { width: min(1180px, 100%); opacity: 0; transform: translateY(18px); transition: all .45s ease .16s; }
+    .active-slide .content { opacity: 1; transform: translateY(0); }
 
-        .deck {
-            height: 100%;
-            width: 100%;
-            display: flex;
-            transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
-        }
+    .eyebrow { color: var(--blue); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; font-size: .95rem; }
+    h1 { font-size: clamp(3rem, 6vw, 5.8rem); line-height: 1.04; letter-spacing: -.04em; margin-bottom: 22px; }
+    h2 { font-size: clamp(2.15rem, 4.1vw, 4rem); line-height: 1.12; letter-spacing: -.03em; margin-bottom: 24px; }
+    h3 { font-size: 1.32rem; margin-bottom: 10px; }
+    p { color: var(--muted); font-size: 1.28rem; line-height: 1.58; }
+    strong { color: #ffffff; }
 
-        .slide {
-            min-width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 60px;
-            position: relative;
-            background-size: cover;
-            background-position: center;
-        }
+    .hero-sub { font-size: 1.58rem; max-width: 920px; margin: 0 auto; }
+    .time-pill {
+      display: inline-flex; gap: 9px; align-items: center;
+      border: 1px solid rgba(56, 189, 248, .35);
+      color: #dff6ff;
+      background: rgba(56, 189, 248, .08);
+      padding: 10px 16px;
+      border-radius: 999px;
+      margin-bottom: 22px;
+      font-weight: 700;
+    }
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 30px; }
+    .grid.two { grid-template-columns: repeat(2, 1fr); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px 26px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.20);
+      min-height: 150px;
+    }
+    .card.big { min-height: 210px; }
+    .card p, .item p { font-size: 1.04rem; line-height: 1.48; }
+    .icon { font-size: 2.1rem; margin-bottom: 8px; display: block; }
+    .tag { display: inline-block; padding: 5px 10px; border-radius: 999px; font-size: .82rem; font-weight: 800; margin-bottom: 12px; }
+    .tag.red { color: #ffe4e6; background: rgba(251, 113, 133, .16); border: 1px solid rgba(251,113,133,.25); }
+    .tag.green { color: #dcfce7; background: rgba(34,197,94,.15); border: 1px solid rgba(34,197,94,.25); }
+    .tag.amber { color: #fef3c7; background: rgba(245,158,11,.15); border: 1px solid rgba(245,158,11,.28); }
+    .tag.violet { color: #ede9fe; background: rgba(167,139,250,.15); border: 1px solid rgba(167,139,250,.28); }
 
-        /* Abstract Backgrounds */
-        .slide:nth-child(1) {
-            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent), radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.1), transparent);
-        }
+    .list { display: grid; gap: 14px; margin-top: 28px; }
+    .item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      align-items: start;
+      gap: 14px;
+      padding: 18px 20px;
+      border: 1px solid var(--line);
+      background: rgba(15, 23, 42, .68);
+      border-radius: 20px;
+    }
+    .mark {
+      width: 44px; height: 44px; border-radius: 15px;
+      display: grid; place-items: center;
+      background: rgba(56,189,248,.12);
+      color: var(--blue); font-weight: 900;
+      font-size: 1.15rem;
+    }
+    .workflow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 13px; margin-top: 30px; }
+    .step {
+      border: 1px solid rgba(56,189,248,.25);
+      background: rgba(8, 47, 73, .42);
+      border-radius: 22px;
+      padding: 18px;
+      min-height: 165px;
+      position: relative;
+    }
+    .step b { color: var(--blue); display: block; font-size: 1.8rem; margin-bottom: 8px; }
+    .step p { font-size: .98rem; line-height: 1.42; }
+    .formula {
+      display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 16px; margin-top: 34px;
+    }
+    .formula .box {
+      padding: 28px;
+      border-radius: 26px;
+      background: rgba(15,23,42,.78);
+      border: 1px solid var(--line);
+      text-align: center;
+      min-height: 174px;
+    }
+    .formula .op { color: var(--muted); font-size: 2.4rem; font-weight: 900; }
+    .box .small { font-size: 1rem; margin-top: 8px; }
+    .proof-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 22px; margin-top: 28px; align-items: stretch; }
+    .proof-panel {
+      padding: 28px;
+      background: rgba(15,23,42,.8);
+      border: 1px solid var(--line);
+      border-radius: 26px;
+    }
+    .proof-line { display: flex; gap: 13px; align-items: center; margin: 16px 0; font-size: 1.16rem; color: #e2e8f0; }
+    .proof-line span { color: var(--green); font-weight: 900; }
+    .speaker { margin-top: 28px; padding: 16px 20px; border-left: 4px solid var(--blue); background: rgba(56,189,248,.08); color: #dbeafe; border-radius: 14px; font-size: 1rem; }
+    .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px; }
+    .button {
+      border: 1px solid rgba(56,189,248,.45);
+      background: rgba(56,189,248,.12);
+      color: #f8fafc;
+      padding: 15px 24px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 800;
+      transition: .2s;
+    }
+    .button:hover { background: rgba(56,189,248,.22); transform: translateY(-2px); }
+    .button.secondary { border-color: rgba(34,197,94,.45); background: rgba(34,197,94,.12); }
 
-        .slide:nth-child(2) {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, transparent 100%);
-        }
+    .controls { position: fixed; right: 34px; bottom: 30px; display: flex; gap: 12px; z-index: 50; }
+    .nav-btn {
+      width: 48px; height: 48px; border-radius: 999px;
+      background: rgba(15,23,42,.86);
+      border: 1px solid var(--line);
+      color: white;
+      cursor: pointer;
+      font-size: 1.15rem;
+    }
+    .dots { position: fixed; left: 50%; bottom: 44px; transform: translateX(-50%); display: flex; gap: 10px; z-index: 50; }
+    .dot { width: 10px; height: 10px; border-radius: 999px; background: rgba(226,232,240,.35); cursor: pointer; transition: .2s; }
+    .dot.active { width: 34px; background: var(--blue); }
+    .slide-no { position: fixed; left: 34px; bottom: 34px; color: var(--muted); z-index: 50; font-weight: 700; }
 
-        .slide:nth-child(3) {
-            background: radial-gradient(circle at center, rgba(16, 185, 129, 0.05), transparent);
-        }
-
-        .slide:nth-child(4) {
-            background: linear-gradient(45deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
-        }
-
-        .slide:nth-child(5) {
-            background: radial-gradient(circle at 70% 30%, rgba(99, 102, 241, 0.1), transparent);
-        }
-
-        .content {
-            max-width: 1000px;
-            width: 100%;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease 0.3s;
-        }
-
-        .active-slide .content {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        h2 {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--accent2);
-            margin-bottom: 30px;
-        }
-
-        p {
-            font-size: 1.5rem;
-            color: var(--text2);
-            line-height: 1.6;
-            margin-bottom: 40px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin-top: 40px;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 30px;
-            border-radius: 24px;
-            backdrop-filter: blur(10px);
-        }
-
-        .card h3 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
-            color: var(--accent);
-        }
-
-        .card p {
-            font-size: 1.1rem;
-            margin-bottom: 0;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 8px 16px;
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--accent);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Navigation */
-        .controls {
-            position: fixed;
-            bottom: 40px;
-            right: 40px;
-            display: flex;
-            gap: 16px;
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.3s;
-        }
-
-        .nav-btn:hover {
-            background: var(--accent);
-            transform: scale(1.1);
-        }
-
-        .dots {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 12px;
-            z-index: 100;
-        }
-
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            cursor: pointer;
-        }
-
-        .dot.active {
-            background: var(--accent);
-            width: 30px;
-            border-radius: 10px;
-        }
-
-        /* Slide Specifics */
-        .hero-title {
-            font-size: 5rem;
-            text-align: center;
-        }
-
-        .nco-diagram {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-top: 50px;
-            position: relative;
-        }
-
-        .nco-node {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: var(--surface);
-            border: 2px solid var(--accent);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            z-index: 2;
-        }
-
-        .nco-line {
-            position: absolute;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            width: 80%;
-            top: 50%;
-            z-index: 1;
-        }
-
-        .huge-num {
-            font-size: 8rem;
-            font-weight: 800;
-            color: var(--accent);
-            text-align: center;
-            margin: 20px 0;
-        }
-
-        .list-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 24px;
-            font-size: 1.4rem;
-            color: var(--text);
-        }
-
-        .list-item i {
-            color: var(--green);
-        }
-
-        .list-item.bad i {
-            color: var(--red);
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            h2 {
-                font-size: 2rem;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    @media (max-width: 920px) {
+      body { overflow: auto; height: auto; }
+      .deck { display: block; transform: none !important; }
+      .slide { min-width: auto; min-height: 100vh; height: auto; padding: 48px 22px; }
+      .slide::after, .controls, .dots, .slide-no { display: none; }
+      .grid, .grid.two, .workflow, .proof-grid, .formula { grid-template-columns: 1fr; }
+      .formula .op { display: none; }
+    }
+  </style>
 </head>
-
 <body>
+  <main class="deck" id="deck">
+    <section class="slide active-slide">
+      <div class="content" style="text-align:center;">
+        <div class="time-pill">⏱ Pitching Deck 5 นาที</div>
+        <h1>HR Blueprint Simulator</h1>
+        <p class="hero-sub">เครื่องมือช่วยผู้บริหารเขตสุขภาพ “เห็น-ชี้เป้า-ตัดสินใจ” เรื่องอัตรากำลังคน จากข้อมูลจริงย้อนหลัง 5 ปี และข้อมูลที่หลายกลุ่มงานช่วยกันทวนสอบ</p>
+        <div class="cta-row">
+          <a class="button secondary" href="Simulator_HR_blueprint.html">เปิด Simulator_HR_blueprint.html</a>
+          <a class="button" href="#" onclick="goToSlide(1); return false;">เริ่มนำเสนอ</a>
+        </div>
+        <p class="speaker">ประโยคเปิด: “วันนี้เราไม่ได้เสนอระบบคำนวณคนเพิ่ม แต่เสนอระบบทำให้ทุกตำแหน่งมีที่มา มีเหตุผล และตรวจสอบได้”</p>
+      </div>
+    </section>
 
-    <div class="deck" id="deck">
-        <!-- Slide 1: Welcome -->
-        <section class="slide active-slide">
-            <div class="content" style="text-align: center;">
-                <span class="badge">Innovation in Healthcare</span>
-                <h1 class="hero-title">Beyond Numbers: The NCO Model</h1>
-                <p>ยกระดับการบริหารจัดการกำลังคน ด้วยหลักฐานเชิงประจักษ์
-                    (Evidence-Based)<br>เพื่อยกระดับคุณภาพบริการสุขภาพ เขตสุขภาพที่ 1</p>
-                <div style="margin-top: 60px; font-size: 1.2rem; color: var(--accent2);">โดย Let's Star Shine : HR
-                    blueprint</div>
+    <section class="slide">
+      <div class="content">
+        <div class="eyebrow">1 / ปัญหาที่ผู้ตรวจถาม</div>
+        <h2>เขตต้องรู้ว่า “คนอยู่ตรงไหน ขาดตรงไหน และตำแหน่งว่างจัดการอย่างไร”</h2>
+        <div class="grid two">
+          <div class="card big">
+            <span class="tag red">Pain Point</span>
+            <h3>ข้อมูลอัตรากำลังกระจัดกระจาย</h3>
+            <p>ต้องเห็นภาพรวมตาม <strong>ประเภทการจ้างงาน</strong> และ <strong>ประเภทวิชาชีพ</strong> แต่ข้อมูลจริงอยู่หลายระบบและหลายกลุ่มงาน</p>
+          </div>
+          <div class="card big">
+            <span class="tag red">Blind Spot</span>
+            <h3>ตำแหน่งว่างยังชี้เป้าไม่ครบ</h3>
+            <p>เขตต้องรู้ว่า <strong>ตำแหน่งว่าง</strong> ใดบริหารได้แล้ว ตำแหน่งใดยังติดขัด และ <strong>ตำแหน่งที่ต้องยุบ</strong> มีจำนวนเท่าไร</p>
+          </div>
+        </div>
+        <div class="list">
+          <div class="item"><div class="mark">!</div><p>จังหวัดทำกระบวนการบริหารตำแหน่งหลายขั้น แต่เขตมักเห็นเพียงผลลัพธ์ปลายทาง ไม่เห็น process และ evidence กลางทาง</p></div>
+          <div class="item"><div class="mark">!</div><p>ถ้าคิดตาม “กรอบ” อย่างเดียว อาจไม่สะท้อนภาระงานจริงและความซับซ้อนของพื้นที่</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content">
+        <div class="eyebrow">2 / แนวคิดที่นำมาแก้</div>
+        <h2>เปลี่ยนจาก “ขอคนเพิ่ม” เป็น “พิสูจน์ความจำเป็นของคน”</h2>
+        <div class="formula">
+          <div class="box">
+            <span class="icon">📌</span>
+            <h3>Actual History</h3>
+            <p class="small">ใช้ข้อมูลจริงย้อนหลัง 5 ปี: 2569, 2568, 2567, 2566, 2565</p>
+          </div>
+          <div class="op">+</div>
+          <div class="box">
+            <span class="icon">⚙️</span>
+            <h3>WISN Logic</h3>
+            <p class="small">เทียบภาระงานกับเวลามาตรฐาน AWT, CAS, IAS และ FTE</p>
+          </div>
+          <div class="op">+</div>
+          <div class="box">
+            <span class="icon">🤝</span>
+            <h3>Collaborative Profile</h3>
+            <p class="small">ให้ HR, HIS, ยุทธศาสตร์, NCD/Service Plan เติมข้อมูลใน Profile เดียวกัน</p>
+          </div>
+        </div>
+        <p class="speaker">แก่นของระบบ: ไม่สร้างข้อมูลจากอนาคต ไม่เฉลี่ยยอดจังหวัดลงอำเภอโดยไม่มีหลักฐาน และไม่ตีความช่องว่างเป็นศูนย์</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content">
+        <div class="eyebrow">3 / ใช้อย่างไร</div>
+        <h2>Workflow เดียวที่เข้ากับงานราชการ: Excel + Google Sheets + Simulator</h2>
+        <div class="workflow">
+          <div class="step"><b>1</b><h3>เลือกพื้นที่</h3><p>จังหวัด / อำเภอ / หน่วยบริการ และปีอ้างอิงล่าสุด</p></div>
+          <div class="step"><b>2</b><h3>Export Excel Template</h3><p>ได้ไฟล์ที่มีหัวตารางไทย คำอธิบาย หน่วย และแหล่งข้อมูลแนะนำ</p></div>
+          <div class="step"><b>3</b><h3>กรอกพร้อมกัน</h3><p>เปิดใน Google Sheets ให้หลายกลุ่มงานแก้ไฟล์เดียว ไม่ต้องส่ง final หลายเวอร์ชัน</p></div>
+          <div class="step"><b>4</b><h3>Import Excel / Sync</h3><p>นำข้อมูลกลับเข้า Simulator โดยข้ามแถวคำอธิบายอัตโนมัติ</p></div>
+          <div class="step"><b>5</b><h3>ตรวจ Completeness</h3><p>ดูความครบถ้วนของ Population, Workload, Workforce, Target Need และ Provenance</p></div>
+        </div>
+        <p class="speaker">เหมาะกับสถานการณ์จริง เพราะไม่บังคับให้ทุกกลุ่มงานเข้าระบบใหม่ทันที แต่ยังรวมข้อมูลเป็นมาตรฐานเดียวกันได้</p>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content">
+        <div class="eyebrow">4 / ได้คำตอบอะไร</div>
+        <h2>สิ่งที่ผู้บริหารเขตเห็นได้ทันทีหลังวิเคราะห์</h2>
+        <div class="grid">
+          <div class="card"><span class="tag green">ภาพรวมคน</span><h3>มีคนเท่าไร</h3><p>แยกตามวิชาชีพ ปี และกำลังคนจริง เพื่อเห็น supply trend ย้อนหลัง</p></div>
+          <div class="card"><span class="tag amber">ภาระงาน</span><h3>ควรมีคนเท่าไร</h3><p>คำนวณ Required FTE จาก workload จริง ไม่ใช่ความรู้สึกหรือค่าเฉลี่ยลอย ๆ</p></div>
+          <div class="card"><span class="tag red">GAP</span><h3>ขาด/เกินตรงไหน</h3><p>เห็น HR GAP, WISN Ratio, Pressure และ Risk รายปี รายวิชาชีพ</p></div>
+          <div class="card"><span class="tag violet">ตำแหน่งว่าง</span><h3>บริหารตำแหน่งอย่างไร</h3><p>ใช้ข้อมูล vacancy และ movement เพื่อชี้เป้าว่าควรเติม ย้าย ปรับ หรือทวนสอบ</p></div>
+          <div class="card"><span class="tag violet">ตำแหน่งที่ต้องยุบ</span><h3>ชี้เป้าได้มีเหตุผล</h3><p>ระบุตำแหน่งที่ไม่มี workload รองรับหรือไม่สามารถบริหารได้ พร้อมหลักฐานประกอบ</p></div>
+          <div class="card"><span class="tag green">แผนปีถัดไป</span><h3>ปรับแผนจากข้อมูลจริง</h3><p>เทียบกรอบ ภาระงาน ส่วนขาด และความพร้อมข้อมูล เพื่อจัดทำข้อเสนอปีต่อไป</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide">
+      <div class="content">
+        <div class="eyebrow">5 / พิสูจน์และกำกับคุณภาพ</div>
+        <h2>คำตอบทุกตัวเลขต้องย้อนกลับไปตรวจได้</h2>
+        <div class="proof-grid">
+          <div class="proof-panel">
+            <h3>Evidence Trail</h3>
+            <div class="proof-line"><span>✓</span> สถานะข้อมูล: Draft → Reviewed → Verified</div>
+            <div class="proof-line"><span>✓</span> มี owner, source, updated date และ note ทุก section</div>
+            <div class="proof-line"><span>✓</span> ใช้ Trace & Export เพื่อแสดงสูตร แหล่งข้อมูล และข้อจำกัด</div>
+            <div class="proof-line"><span>✓</span> ช่องว่าง = ยังไม่มีข้อมูล, 0 = ค่าจริงเป็นศูนย์</div>
+          </div>
+          <div class="proof-panel">
+            <h3>Governance Message</h3>
+            <p>ระบบนี้ไม่ได้แทนการตัดสินใจของผู้บริหาร แต่ทำให้การตัดสินใจมี “หลักฐานกลาง” ระหว่างจังหวัด เขต และหน่วยบริการ</p>
+            <div class="cta-row" style="justify-content:flex-start;">
+              <a class="button secondary" href="Simulator_HR_blueprint.html">เปิด HR Blueprint Simulator</a>
             </div>
-        </section>
+          </div>
+        </div>
+        <p class="speaker">ข้อเสนอในที่ประชุม: ใช้เป็นเครื่องมือกลางสำหรับ 1) เก็บข้อมูลอัตรากำลัง 2) ทวนสอบตำแหน่งว่าง 3) จัดทำข้อเสนอปรับอัตรากำลังปีถัดไป</p>
+      </div>
+    </section>
 
-        <!-- Slide 2: The Problem -->
-        <section class="slide">
-            <div class="content">
-                <span class="badge"
-                    style="background: rgba(239,68,68,0.1); color: var(--red); border-color: rgba(239,68,68,0.2);">The
-                    Challenge</span>
-                <h2>ทำไมต้องเปลี่ยน?</h2>
-                <div class="list-item bad"><i>✕</i> การจัดสรรเดิมใช้ "FTE" และ กรอบตาม SAP เป็นหลัก</div>
-                <div class="list-item bad"><i>✕</i> รพ.ชุมชน จัดสรรตามแพทย์ทั่วไปที่อยู่ในระบบ (ไม่สะท้อนความเฉพาะทาง)
-                </div>
-                <div class="list-item bad"><i>✕</i> ไม่สะท้อนภาระโรคที่แท้จริงในพื้นที่ (Actual Need)</div>
-                <div class="list-item bad"><i>✕</i> ไม่เชื่อมโยงผลการรักษากับจำนวนคน (Outcomes)</div>
-                <div class="list-item bad"><i>✕</i> ข้อมูลกระจัดกระจาย ยากต่อการตัดสินใจเชิงนโยบาย</div>
-            </div>
-        </section>
+    <section class="slide">
+      <div class="content" style="text-align:center;">
+        <div class="eyebrow">Closing / Ask</div>
+        <h2>ขอให้เขตใช้ HR Blueprint Simulator เป็น “โต๊ะกลางข้อมูลอัตรากำลัง”</h2>
+        <p class="hero-sub">เริ่มจากข้อมูลจริงที่มี แยกเจ้าของข้อมูลให้ชัด ทวนสอบด้วยสถานะเดียวกัน แล้วใช้ผลวิเคราะห์เพื่อชี้เป้าการบริหารตำแหน่งว่างและแผนอัตรากำลังปีถัดไป</p>
+        <div class="grid" style="text-align:left;">
+          <div class="card"><span class="icon">1️⃣</span><h3>กำหนดเจ้าของข้อมูล</h3><p>HR / HIS / ยุทธศาสตร์ / Service Plan รับผิดชอบ Sheet ของตน</p></div>
+          <div class="card"><span class="icon">2️⃣</span><h3>นำร่อง 1 รอบข้อมูล</h3><p>เก็บย้อนหลัง 5 ปี ทวนสอบ Provenance และ Completeness ก่อนใช้ตัดสินใจ</p></div>
+          <div class="card"><span class="icon">3️⃣</span><h3>นำเข้าวาระเขต</h3><p>ใช้ผลลัพธ์เป็นหลักฐานประกอบข้อเสนอเติมคน ปรับคน หรือยุบตำแหน่ง</p></div>
+        </div>
+        <div class="cta-row"><a class="button secondary" href="Simulator_HR_blueprint.html">ไปที่ Simulator</a></div>
+      </div>
+    </section>
+  </main>
 
-        <!-- Slide 3: The Solution (NCO) -->
-        <section class="slide">
-            <div class="content">
-                <span class="badge"
-                    style="background: rgba(16,185,129,0.1); color: var(--green); border-color: rgba(16,185,129,0.2);">The
-                    Solution</span>
-                <h2>NCO Model Strategy</h2>
-                <div class="grid">
-                    <div class="card">
-                        <h3>NEED</h3>
-                        <p>วิเคราะห์ภาระโรคประชากร (HNI) จากข้อมูล HDC จริง</p>
-                    </div>
-                    <div class="card" style="border-color: var(--accent2);">
-                        <h3>CAPACITY</h3>
-                        <p>วัดศักยภาพกำลังคน (WCI) รายสาขาเฉพาะทาง</p>
-                    </div>
-                    <div class="card">
-                        <h3>OUTCOME</h3>
-                        <p>ยืนยันด้วยผลลัพธ์การรักษา (Performance A-H)</p>
-                    </div>
-                </div>
-                <p style="margin-top: 40px; text-align: center; color: var(--accent);">"ไม่ตัดสินใจจากความรู้สึก
-                    แต่ใช้ข้อมูลสามเหลี่ยมยืนยัน"</p>
-            </div>
-        </section>
+  <div class="slide-no" id="slideNo">1 / 6</div>
+  <div class="dots" id="dots"></div>
+  <div class="controls">
+    <button class="nav-btn" onclick="prevSlide()">←</button>
+    <button class="nav-btn" onclick="nextSlide()">→</button>
+  </div>
 
-        <!-- Slide 4: Data Integration -->
-        <section class="slide">
-            <div class="content" style="text-align: center;">
-                <span class="badge">Real-time Dashboard</span>
-                <h2>พลังของข้อมูลจริง (Real Data)</h2>
-                <div class="huge-num">9,072</div>
-                <p>Rows of Integrated Data across R1</p>
-                <div class="grid" style="text-align: left;">
-                    <div class="card">
-                        <div style="font-size: 2rem; margin-bottom: 10px;">📊</div>
-                        <strong>HDC ปี 2569</strong>
-                        <p>ข้อมูลประชากรรายกลุ่มอายุ</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 2rem; margin-bottom: 10px;">🩺</div>
-                        <strong>CMI Web</strong>
-                        <p>Performance & Service Plan</p>
-                    </div>
-                    <div class="card">
-                        <div style="font-size: 2rem; margin-bottom: 10px;">🏥</div>
-                        <strong>HR DB</strong>
-                        <p>ข้อมูลบุคลากรรายโรงพยาบาล</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const deck = document.getElementById('deck');
+    const dotsContainer = document.getElementById('dots');
+    const slideNo = document.getElementById('slideNo');
 
-        <!-- Slide 5: Call to Action -->
-        <section class="slide">
-            <div class="content">
-                <span class="badge">Executive Summary</span>
-                <h2>ก้าวต่อไป : สู่การตัดสินใจที่แม่นยำ</h2>
-                <div class="list-item"><i>✓</i> <strong>Targeted Recruitment:</strong> เติมคนให้ตรงจุด Service Plan
-                    ที่มีปัญหา</div>
-                <div class="list-item"><i>✓</i> <strong>Process Optimization:</strong>
-                    แก้ปัญหาหน้างานหากคนพอแต่ผลงานยังไม่ดี</div>
-                <div class="list-item"><i>✓</i> <strong>Data Quality First:</strong> พัฒนาคุณภาพข้อมูล (G01-G04)
-                    ทั่วทั้งเขต</div>
-                <div class="list-item"><i>✓</i> <strong>Sustainable Planning:</strong> วางแผนระยะยาวเพื่อความยั่งยืน
-                </div>
-            </div>
-        </section>
+    slides.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.onclick = () => goToSlide(i);
+      dotsContainer.appendChild(dot);
+    });
 
-        <!-- Slide 6: Future Roadmap -->
-        <section class="slide">
-            <div class="content">
-                <span class="badge"
-                    style="background: rgba(139,92,246,0.1); color: var(--accent2); border-color: rgba(139,92,246,0.2);">Future
-                    Roadmap</span>
-                <h2>Ongoing Task: ความแม่นยำขั้นสูง</h2>
-                <p>แผนการพัฒนาเพื่อความแม่นยำในการเติมทรัพยากรบุคคลในทุกมิติ</p>
-                <div class="grid">
-                    <div class="card">
-                        <h3>Specialty Precision</h3>
-                        <p>ระบบคัดกรองแพทย์เฉพาะทางรายสาขา และ Sub-board เพื่อเป้าหมายการรักษาที่ซับซ้อน</p>
-                    </div>
-                    <div class="card">
-                        <h3>All Professions</h3>
-                        <p>ขยายฐานข้อมูลให้ครอบคลุมทุกสายวิชาชีพแพทย์ พยาบาล และสหวิชาชีพในทุกระดับ</p>
-                    </div>
-                    <div class="card">
-                        <h3>Smart Matching</h3>
-                        <p>AI-Driven Resource Matching จับคู่ "ทักษะและความเชี่ยวชาญ" ให้ตรงกับ "ภาระโรคซับซ้อน"</p>
-                    </div>
-                </div>
+    function updateSlides() {
+      deck.style.transform = `translateX(-${currentSlide * 100}vw)`;
+      slides.forEach((slide, i) => slide.classList.toggle('active-slide', i === currentSlide));
+      document.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === currentSlide));
+      slideNo.textContent = `${currentSlide + 1} / ${slides.length}`;
+    }
 
-                <div style="margin-top: 60px; text-align: center; display:flex; gap:14px; justify-content:center; flex-wrap:wrap;">
-                    <button class="nav-btn"
-                        style="width: auto; height: auto; padding: 16px 32px; border-radius: 12px; font-weight: 700;"
-                        onclick="window.location.href='simulation.html'">
-                        LAUNCH SIMULATION TOOL
-                    </button>
-                    <button class="nav-btn"
-                        style="width: auto; height: auto; padding: 16px 32px; border-radius: 12px; font-weight: 700; border-color: rgba(16,185,129,0.65); color: var(--green);"
-                        onclick="window.location.href='Simulator_HR_blueprint.html'">
-                        HR BLUEPRINT SIMULATOR
-                    </button>
-                </div>
-            </div>
-        </section>
-    </div>
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide += 1;
+        updateSlides();
+      }
+    }
 
-    <div class="dots" id="dots"></div>
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide -= 1;
+        updateSlides();
+      }
+    }
 
-    <div class="controls">
-        <button class="nav-btn" onclick="prevSlide()">←</button>
-        <button class="nav-btn" onclick="nextSlide()">→</button>
-    </div>
+    function goToSlide(index) {
+      currentSlide = Math.max(0, Math.min(slides.length - 1, index));
+      updateSlides();
+    }
 
-    <script>
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const deck = document.getElementById('deck');
-        const dotsContainer = document.getElementById('dots');
-
-        // Create dots
-        slides.forEach((_, i) => {
-            const dot = document.createElement('div');
-            dot.className = 'dot' + (i === 0 ? ' active' : '');
-            dot.onclick = () => goToSlide(i);
-            dotsContainer.appendChild(dot);
-        });
-
-        function updateSlides() {
-            deck.style.transform = `translateX(-${currentSlide * 100}vw)`;
-            slides.forEach((s, i) => {
-                s.classList.toggle('active-slide', i === currentSlide);
-            });
-            document.querySelectorAll('.dot').forEach((d, i) => {
-                d.classList.toggle('active', i === currentSlide);
-            });
-        }
-
-        function nextSlide() {
-            if (currentSlide < slides.length - 1) {
-                currentSlide++;
-                updateSlides();
-            }
-        }
-
-        function prevSlide() {
-            if (currentSlide > 0) {
-                currentSlide--;
-                updateSlides();
-            }
-        }
-
-        function goToSlide(n) {
-            currentSlide = n;
-            updateSlides();
-        }
-
-        // Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
-            if (e.key === 'ArrowLeft') prevSlide();
-        });
-    </script>
-
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === ' ' || event.key === 'PageDown') nextSlide();
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') prevSlide();
+      if (event.key === 'Home') goToSlide(0);
+      if (event.key === 'End') goToSlide(slides.length - 1);
+    });
+  </script>
 </body>
-
 </html>
