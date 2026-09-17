@@ -4,6 +4,8 @@ import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../Simulator_HR_blueprint.html', import.meta.url), 'utf8');
 const friendly = readFileSync(new URL('../Simulator_HR_blueprint_excel_guide.js', import.meta.url), 'utf8');
+const dictionary = readFileSync(new URL('../Simulator_HR_blueprint_dictionary.js', import.meta.url), 'utf8');
+const presentation = `${friendly}\n${dictionary}`;
 
 test('friendly Excel layer loads after the profile adapter', () => {
   const profileIndex = html.indexOf('Simulator_HR_blueprint_profile.js');
@@ -30,7 +32,7 @@ test('technical field names are mapped to user-friendly Thai labels and descript
     'จำนวนเกษียณ',
     'แหล่งข้อมูล',
     'ผู้รับผิดชอบข้อมูล',
-  ]) assert.match(friendly, new RegExp(text));
+  ]) assert.match(presentation, new RegExp(text));
   assert.match(friendly, /technical key/i);
 });
 
