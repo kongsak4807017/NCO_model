@@ -149,8 +149,8 @@
           <button class="btn ghost" id="btnClearProfessions">ล้างการเลือก</button>
         </div>
         <div class="profession-grid" id="professionGrid"></div>
-        <div class="subsection-head"><div><h4>Activity Standards (minutes per case)</h4><p>แก้เวลามาตรฐานต่อกิจกรรมได้รายวิชาชีพ ถ้ามี time-motion หรือ consensus ของโรงพยาบาลให้แทนค่าตรงนี้</p></div></div>
-        <div class="table-shell"><table class="data-table standard-table" id="standardTable"><thead><tr><th>วิชาชีพ</th><th>OPD</th><th>IPD Admit</th><th>ER</th><th>OR/Procedure</th><th>Delivery</th><th>Chronic</th><th>Mental</th><th>Outreach/PP</th></tr></thead><tbody></tbody></table></div>
+        <div class="subsection-head"><div><h4 data-help-key="activity-standard">Activity Standards (minutes per service unit)</h4><p><strong>ค่าด้านล่างคือเวลา ไม่ใช่ปริมาณงาน:</strong> กรอกจำนวนนาทีที่วิชาชีพนั้นใช้ต่อ 1 หน่วยกิจกรรม ระบบคำนวณ Demand Minutes จาก Workload Volume × Activity Standard × Complexity Index</p></div></div>
+        <div class="table-shell"><table class="data-table standard-table" id="standardTable"><thead><tr><th>วิชาชีพ</th><th data-help-key="activity-opdVisits">OPD<br><small>นาที/visit</small></th><th data-help-key="activity-ipdAdmissions">IPD Admit<br><small>นาที/admission</small></th><th data-help-key="activity-erVisits">ER<br><small>นาที/visit</small></th><th data-help-key="activity-procedures">OR/Procedure<br><small>นาที/procedure</small></th><th data-help-key="activity-deliveries">Delivery<br><small>นาที/delivery</small></th><th data-help-key="activity-chronicVisits">Chronic<br><small>นาที/visit</small></th><th data-help-key="activity-mentalVisits">Mental<br><small>นาที/visit</small></th><th data-help-key="activity-outreachVisits">Outreach/PP<br><small>นาที/กิจกรรม</small></th></tr></thead><tbody></tbody></table></div>
       </section>
 
       <section class="panel" id="need">
@@ -165,7 +165,7 @@
           <div class="explain-card"><strong>1. พื้นที่บริการ</strong><span>ใช้ประชากรจริงของปีนั้น หากยังไม่มีข้อมูล ระบบจะแสดง 0 เพื่อไม่สร้างข้อมูลแทน</span></div>
           <div class="explain-card"><strong>2. Workload จริง</strong><span>ใช้จำนวนบริการจริงรายปี OPD, IPD, ER, OR, delivery, chronic, mental และ outreach</span></div>
           <div class="explain-card"><strong>3. Target need</strong><span>ใช้เป้าหมาย/กลุ่มเป้าหมายที่ประกาศหรือบันทึกจริงในปีนั้น ไม่ใช้ forecast</span></div>
-          <div class="explain-card"><strong>4. Capacity จริง</strong><span>ใช้ actual headcount รายปี, time standard, AWT, CAS และ IAS เพื่อเทียบ Required FTE กับ Actual FTE</span></div>
+          <div class="explain-card"><strong>4. Capacity จริง</strong><span>เปรียบเทียบ Planning Required FTE กับ Actual Supply FTE ซึ่งมาจาก actual annual headcount × FTE Factor</span></div>
         </div>
       </section>
 
@@ -175,13 +175,13 @@
           <p>กรอก Actual Headcount และการเคลื่อนไหวจริงของแต่ละปี ระบบไม่ back-calculate จำนวนคนจากปัจจุบัน</p>
         </div>
         <div class="tool-row"><label class="field inline"><span>แสดงวิชาชีพ</span><select id="supplyProfessionFilter"></select></label><button class="btn secondary" id="btnHistoricalPolicy" disabled>ไม่กระจายเกษียณอัตโนมัติ — ใช้ข้อมูลจริง</button></div>
-        <div class="table-shell tall"><table class="data-table" id="supplyTable"><thead><tr><th>วิชาชีพ</th><th>ปี</th><th>Actual Headcount</th><th>Recruit</th><th>Transfer In</th><th>Return In</th><th>Retire</th><th>Resign</th><th>Transfer Out</th><th>Study Leave</th><th>FTE Factor</th><th>Actual FTE</th></tr></thead><tbody></tbody></table></div>
+        <div class="table-shell tall"><table class="data-table" id="supplyTable"><thead><tr><th>วิชาชีพ</th><th>ปี</th><th>Actual Headcount</th><th>Recruit</th><th>Transfer In</th><th>Return In</th><th>Retire</th><th>Resign</th><th>Transfer Out</th><th>Study Leave</th><th>FTE Factor</th><th>Actual Supply FTE</th></tr></thead><tbody></tbody></table></div>
       </section>
 
       <section class="panel" id="results">
         <div class="panel-header">
           <div><span class="section-num">7</span><h3>Historical Results</h3></div>
-          <p>ผล Required FTE / Actual Supply / GAP / WISN ratio / pressure จากข้อมูลจริงของแต่ละปี</p>
+          <p>แยก demand-side FTE ออกจากกำลังคนที่มีจริง เพื่อให้ HR GAP และ WISN Ratio ตีความได้ตรงสูตร</p>
         </div>
         <div class="summary-grid">
           <div class="metric danger"><span>Total Positive GAP</span><strong id="summaryGap">0 FTE</strong></div>
@@ -189,7 +189,7 @@
           <div class="metric"><span>Coverage Gap</span><strong id="summaryReplacement">0 คน</strong></div>
           <div class="metric"><span>Workload Gap</span><strong id="summaryNetOutflow">0 visits</strong></div>
         </div>
-        <div class="table-shell tall"><table class="data-table" id="resultTable"><thead><tr><th>ปี</th><th>วิชาชีพ</th><th>Actual FTE</th><th>Target FTE</th><th>Planning FTE</th><th>Supply FTE</th><th>HR GAP</th><th>WISN Ratio</th><th>Pressure</th><th>Trend</th><th>Coverage Gap</th><th>Workload Gap</th><th>Suggested Add</th><th>Reallocate</th><th>Risk</th><th>Recommendation</th></tr></thead><tbody></tbody></table></div>
+        <div class="table-shell tall"><table class="data-table" id="resultTable"><thead><tr><th>ปี</th><th>วิชาชีพ</th><th>Actual Workload FTE</th><th>Target Need FTE</th><th>Planning Required FTE</th><th>Actual Supply FTE</th><th>HR GAP</th><th>WISN Ratio</th><th>Pressure</th><th>Trend</th><th>Coverage Gap</th><th>Workload Gap</th><th>Suggested Add</th><th>Reallocate</th><th>Risk</th><th>Recommendation</th></tr></thead><tbody></tbody></table></div>
       </section>
 
       <section class="panel" id="trace">
@@ -211,6 +211,7 @@
   <script src="Simulator_HR_blueprint_district_status.js"></script>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script src="Simulator_HR_blueprint_profile.js"></script>
+  <script src="Simulator_HR_blueprint_dictionary.js"></script>
   <script src="Simulator_HR_blueprint_excel_guide.js"></script>
   <script src="Simulator_HR_blueprint_help.js"></script>
 </body>
