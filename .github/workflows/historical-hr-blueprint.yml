@@ -14,6 +14,7 @@ on:
       - 'Simulator_HR_blueprint_formula_copy.js'
       - 'Simulator_HR_blueprint_excel_guide.js'
       - 'Simulator_HR_blueprint_data_fitness.js'
+      - 'Simulator_HR_blueprint_activity_units.js'
       - 'Simulator_HR_blueprint_help.js'
       - 'GOOGLE_SHEETS_PROFILE_GUIDE.md'
       - 'HR_BLUEPRINT_DATA_FITNESS_GUIDE.md'
@@ -36,6 +37,7 @@ on:
       - 'Simulator_HR_blueprint_formula_copy.js'
       - 'Simulator_HR_blueprint_excel_guide.js'
       - 'Simulator_HR_blueprint_data_fitness.js'
+      - 'Simulator_HR_blueprint_activity_units.js'
       - 'Simulator_HR_blueprint_help.js'
       - 'GOOGLE_SHEETS_PROFILE_GUIDE.md'
       - 'HR_BLUEPRINT_DATA_FITNESS_GUIDE.md'
@@ -58,6 +60,7 @@ jobs:
       - run: node --check Simulator_HR_blueprint_formula_copy.js
       - run: node --check Simulator_HR_blueprint_excel_guide.js
       - run: node --check Simulator_HR_blueprint_data_fitness.js
+      - run: node --check Simulator_HR_blueprint_activity_units.js
       - run: node --check Simulator_HR_blueprint_help.js
       - run: node --test tests/*.test.mjs
       - uses: actions/setup-python@v5
