@@ -3,6 +3,7 @@ name: Historical HR Blueprint regression
 on:
   push:
     paths:
+      - 'index.html'
       - 'Simulator_HR_blueprint.html'
       - 'Simulator_HR_blueprint.js'
       - 'Simulator_HR_blueprint_historical.js'
@@ -19,6 +20,7 @@ on:
       - '.github/workflows/historical-hr-blueprint.yml'
   pull_request:
     paths:
+      - 'index.html'
       - 'Simulator_HR_blueprint.html'
       - 'Simulator_HR_blueprint.js'
       - 'Simulator_HR_blueprint_historical.js'
