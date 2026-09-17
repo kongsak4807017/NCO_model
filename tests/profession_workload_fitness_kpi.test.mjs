@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
 const extPath = new URL('../Simulator_HR_blueprint_data_fitness.js', import.meta.url);
+const unitUiPath = new URL('../Simulator_HR_blueprint_activity_units.js', import.meta.url);
 const excel = readFileSync(new URL('../Simulator_HR_blueprint_excel_guide.js', import.meta.url), 'utf8');
 const guide = readFileSync(new URL('../GOOGLE_SHEETS_PROFILE_GUIDE.md', import.meta.url), 'utf8');
 const appScript = readFileSync(new URL('../integrations/google_apps_script/Code.gs', import.meta.url), 'utf8');
@@ -12,8 +13,14 @@ function extensionSource() {
   return readFileSync(extPath, 'utf8');
 }
 
+function activityUnitSource() {
+  assert.equal(existsSync(unitUiPath), true, 'activity-unit UI module must exist');
+  return readFileSync(unitUiPath, 'utf8');
+}
+
 test('profession-specific workload extension is loaded by the existing Excel/profile layer', () => {
   assert.match(excel, /Simulator_HR_blueprint_data_fitness\.js/);
+  assert.match(excel, /Simulator_HR_blueprint_activity_units\.js/);
   const source = extensionSource();
   assert.match(source, /Profession_Workload_History/);
   assert.match(source, /Health_KPI_History/);
@@ -88,7 +95,7 @@ test('legacy facility Workload_History is explicitly contextual and not sufficie
 });
 
 test('activity-standard UI shows the denominator unit per profession instead of one generic column unit', () => {
-  const source = extensionSource();
+  const source = activityUnitSource();
   assert.match(source, /renderStandardTable\s*=\s*function/);
   assert.match(source, /activityUnits/);
   assert.match(source, /standard-unit|df-unit/);
@@ -98,7 +105,8 @@ test('activity-standard UI shows the denominator unit per profession instead of 
 });
 
 test('Excel activity-standard description points to each profession row activity_unit instead of a universal unit', () => {
-  const source = extensionSource();
+  const source = activityUnitSource();
+  assert.match(source, /excelFieldGuide\s*=\s*function/);
   assert.match(source, /String\(key\)\.startsWith\("activity_"\)/);
   assert.match(source, /activity_unit_/);
   assert.match(source, /denominator|หน่วยนับ/);
