@@ -95,9 +95,14 @@
       "Year | Profession | Actual Workload FTE | Target Need FTE | Planning Required FTE | Actual Supply FTE | HR GAP | WISN Ratio | Pressure | Trend | Coverage Gap | Workload Gap | Suggested Add | Risk | Recommendation",
     ];
     for (const row of state.results) {
-      lines.push(`${row.year} | ${row.professionLabel} | ${row.actualNeedFte.toFixed(1)} | ${row.targetNeedFte.toFixed(1)} | ${row.needFte.toFixed(1)} | ${row.supplyFte.toFixed(1)} | ${row.gapFte.toFixed(1)} | ${fmtRatio(row.wisnRatio)} | ${fmtRatio(row.pressureIndex)} | ${fmtRatio(row.trendIndex)} | ${row.coverageGap.toFixed(0)} | ${row.workloadGap.toFixed(0)} | ${row.suggestedAdd} | ${row.risk} | ${row.recommendation}`);
+      lines.push(`${row.year} | ${row.professionLabel} | ${(row.actualNeedFte ?? 0).toFixed(1)} | ${(row.targetNeedFte ?? 0).toFixed(1)} | ${(row.needFte ?? 0).toFixed(1)} | ${(row.supplyFte ?? 0).toFixed(1)} | ${(row.gapFte ?? 0).toFixed(1)} | ${fmtRatio(row.wisnRatio)} | ${fmtRatio(row.pressureIndex)} | ${fmtRatio(row.trendIndex)} | ${row.coverageGap == null ? "N/A" : row.coverageGap.toFixed(0)} | ${row.workloadGap == null ? "N/A" : row.workloadGap.toFixed(0)} | ${row.suggestedAdd ?? "—"} | ${row.risk} | ${row.recommendation}`);
     }
     lines.push("", "Formula", $("formulaText").textContent, "", "Source / Assumption", $("sourceText").textContent);
     return lines.join("\n");
   };
 })();
+
+// Parser-inserted loader keeps v2 layers ahead of the Excel/help scripts without changing the large HTML document.
+document.write('<script src="Simulator_HR_blueprint_profession_dictionary.js"><\/script>');
+document.write('<script src="Simulator_HR_blueprint_profession_workload.js"><\/script>');
+document.write('<script src="Simulator_HR_blueprint_health_kpi.js"><\/script>');
