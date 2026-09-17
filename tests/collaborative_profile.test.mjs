@@ -58,7 +58,7 @@ test('profile module defines stable profile and interchange functions', () => {
   assert.match(profile, /nco-hr-profile-v1/);
 });
 
-test('workbook schema contains the six collaboration sheets', () => {
+test('legacy profile module retains the six base collaboration sheets', () => {
   for (const sheet of [
     'Profile',
     'Section_Metadata',
@@ -94,13 +94,13 @@ test('Google sync applies the same profile payload path used by Excel', () => {
   assert.match(body, /profileEndpoint/);
 });
 
-test('Apps Script exposes only workbook sheets as JSON snapshot', () => {
+test('Apps Script exposes profile v2 workbook sheets as JSON snapshot', () => {
   assert.match(appsScript, /function doGet\s*\(/);
   assert.match(appsScript, /ContentService/);
   assert.match(appsScript, /\.createTextOutput\s*\(/);
   assert.match(appsScript, /\.setMimeType\s*\(ContentService\.MimeType\.JSON\)/);
-  assert.match(appsScript, /nco-hr-profile-v1/);
-  for (const sheet of ['Profile', 'Section_Metadata', 'Workload_History', 'TargetNeed_History', 'Workforce_History', 'Profession_Config']) {
+  assert.match(appsScript, /nco-hr-profile-v2/);
+  for (const sheet of ['Profile', 'Section_Metadata', 'Workload_History', 'Profession_Workload', 'TargetNeed_History', 'Workforce_History', 'Profession_Config', 'Health_KPI_History']) {
     assert.match(appsScript, new RegExp(sheet));
   }
 });
