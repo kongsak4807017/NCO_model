@@ -86,10 +86,12 @@ test('formula explanations match the implemented WISN calculation', () => {
   assert.match(dictionary, /Required FTE = \(Service FTE × CAF\) \+ IAF/);
 });
 
-test('historical trace explicitly includes complexity and actual annual supply formula', () => {
-  assert.match(historical, /Demand minutes = Σ\(actual\/planning activity volume x activity standard minutes x complexity factor\)/);
-  assert.match(historical, /Actual supply FTE = actual annual headcount x FTE factor/);
+test('historical trace explicitly describes actual, target, planning and supply formulas', () => {
+  assert.match(historical, /Actual demand minutes = Σ\(actual workload volume x activity standard minutes x actual complexity index\)/);
+  assert.match(historical, /Target equivalent activity volume = target cases x service frequency x activity mix x target complexity/);
   assert.match(historical, /Planning activity volume = max\(complexity-adjusted actual volume, target-need equivalent volume\) by activity/);
+  assert.match(historical, /Planning demand minutes = Σ\(planning activity volume x activity standard minutes\)/);
+  assert.match(historical, /Actual supply FTE = actual annual headcount x FTE factor/);
 });
 
 test('result labels distinguish demand-side required FTE from supply FTE', () => {
