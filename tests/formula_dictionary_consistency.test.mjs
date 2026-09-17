@@ -34,7 +34,7 @@ test('shared formula dictionary is loaded before formula copy, Excel and help la
 });
 
 test('activity standards are distinct from annual workload volumes for every activity', () => {
-  for (const key of ACTIVITY_KEYS) assert.match(dictionary, new RegExp(`${key}: \[`));
+  for (const key of ACTIVITY_KEYS) assert.ok(dictionary.includes(`${key}: [`), `missing activity definition ${key}`);
   assert.match(dictionary, /helpKey:\s*`activity-\$\{code\}`/);
   assert.match(dictionary, /excelKey:\s*`activity_\$\{code\}`/);
   assert.match(dictionary, /นาที\/OPD visit/);
