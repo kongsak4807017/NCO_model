@@ -1,5 +1,21 @@
 # Google Sheets Collaborative Profile — HR Blueprint v2
 
+## โปรไฟล์สาธิตที่ฝังใน Simulator — เชียงราย(mock up)
+
+ในหน้า **Collaborative Data Profile** มีปุ่ม **โหลด เชียงราย(mock up)** สำหรับสาธิต end-to-end โดยใช้ schema `nco-hr-profile-v2` ชุดเดียวกับ Profile จริง
+
+หลักการของชุดนี้:
+- แยกชั้นข้อมูลเป็น **ACTUAL / REFERENCE / MOCK** ชัดเจน
+- ACTUAL ที่ฝังอยู่ ได้แก่ประชากรเชียงราย HDC ปี 2569, provincial HR baseline จาก `hr_blueprint.db` และ KPI A01/DH0101 ที่เป็น **บริบทระดับ รพศ.เชียงรายประชานุเคราะห์**
+- Profession-specific workload, historical trend, movement, Target Need และ KPI อื่นที่ยังไม่มีข้อมูลจริงครบ เป็น **MOCK**
+- Facility Workload ใช้เป็น reference/reconciliation เท่านั้น; WISN ใช้ `Profession_Workload`
+- ป้าย **MOCK PROFILE — FOR DEMONSTRATION ONLY** ต้องคงอยู่เสมอเมื่อใช้ Profile นี้
+- ค่า `Verified` ใน Profile สาธิตหมายถึง “ข้อมูล demo มีโครงสร้างครบเพื่อทดสอบ Data Fitness” ไม่ใช่การรับรองข้อมูลภาคสนาม
+- ห้ามใช้ผลขาด/เกินกำลังคนจาก Profile นี้เป็นข้อเสนอเชิงนโยบายจนกว่าค่าจำลองจะถูกแทนด้วยข้อมูลจริงที่ทวนสอบแล้ว
+
+สามารถ Export Profile นี้เป็น Excel เพื่อใช้สาธิต workbook ทั้ง 8 sheets ได้เหมือน Profile จริง
+
+
 เอกสารนี้ใช้กับ `Simulator_HR_blueprint.html` เพื่อให้หลายกลุ่มงานกรอกข้อมูล Profile เดียวกันพร้อมกัน โดย Simulator ยังคงเป็นหน้าวิเคราะห์บน GitHub Pages
 
 ## หลักสำคัญของ v2
