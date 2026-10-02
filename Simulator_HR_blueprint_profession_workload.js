@@ -27,6 +27,24 @@
     return PD.hisExtractionGuide?.[code]?.[activityCode] || {};
   }
 
+  function enrichProfessionWorkloadRow(row) {
+    const def = definitionFor(row?.profession_code, row?.activity_code) || {};
+    const his = hisGuideFor(row?.profession_code, row?.activity_code);
+    return {
+      ...row,
+      workload_label: def.workload_label || row?.workload_label || "",
+      volume_unit: def.volume_unit || row?.volume_unit || "",
+      his_extract_rule: his.his_extract_rule || row?.his_extract_rule || "",
+      counting_basis: his.counting_basis || row?.counting_basis || "",
+      provider_rule: his.provider_rule || row?.provider_rule || "",
+      his_fields_hint: his.his_fields_hint || row?.his_fields_hint || "",
+      source_hint: def.source_hint || row?.source_hint || "",
+      definition: def.definition || row?.definition || "",
+      inclusion_criteria: def.inclusion_criteria || row?.inclusion_criteria || "",
+      exclusion_criteria: def.exclusion_criteria || row?.exclusion_criteria || "",
+    };
+  }
+
   function selectedCodesForV2() {
     return Array.from(state.selectedProfessions || []);
   }
@@ -58,7 +76,7 @@
           const key = workloadKey(code, year, def.activity_code);
           const prior = existing.get(key);
           const his = hisGuideFor(code, def.activity_code);
-          rows.push(prior || {
+          const baseRow = {
             profession_code: code,
             profession_label: prof?.label || code,
             year,
@@ -84,7 +102,8 @@
             standard_status: "Draft",
             related_kpi_codes: (def.related_kpi_codes || []).join(","),
             note: "",
-          });
+          };
+          rows.push(enrichProfessionWorkloadRow({ ...baseRow, ...(prior || {}) }));
         }
       }
     }
@@ -212,7 +231,7 @@
     }
     const legacyCompatible = { ...payload, schema_version: V1_SCHEMA };
     baseApplyProfilePayload(legacyCompatible);
-    state.professionWorkloadRows = (payload.profession_workload || []).map((row) => ({ ...row }));
+    state.professionWorkloadRows = (payload.profession_workload || []).map((row) => enrichProfessionWorkloadRow({ ...row }));
     state.healthKpiRows = (payload.health_kpi_history || []).map((row) => ({ ...row }));
     for (const row of state.professionWorkloadRows) {
       if (row.volume !== null && row.volume !== undefined && String(row.volume).trim() !== "") {
