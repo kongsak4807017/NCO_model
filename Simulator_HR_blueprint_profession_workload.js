@@ -3,7 +3,7 @@
 (() => {
   const V2_SCHEMA = "nco-hr-profile-v2";
   const V1_SCHEMA = "nco-hr-profile-v1";
-  const PD = window.NCO_HR_PROFESSION_DICTIONARY || { workloadDefinitions: {}, healthKpis: {}, overlapOptions: [] };
+  const PD = window.NCO_HR_PROFESSION_DICTIONARY || { workloadDefinitions: {}, hisExtractionGuide: {}, healthKpis: {}, overlapOptions: [] };
 
   if (!NCO_PROFILE_SHEETS.includes("Profession_Workload")) NCO_PROFILE_SHEETS.push("Profession_Workload");
   if (!NCO_PROFILE_SHEETS.includes("Health_KPI_History")) NCO_PROFILE_SHEETS.push("Health_KPI_History");
@@ -21,6 +21,10 @@
 
   function definitionFor(code, activityCode) {
     return canonicalDefinitions(code).find((item) => item.activity_code === activityCode) || null;
+  }
+
+  function hisGuideFor(code, activityCode) {
+    return PD.hisExtractionGuide?.[code]?.[activityCode] || {};
   }
 
   function selectedCodesForV2() {
@@ -53,14 +57,19 @@
         for (const def of canonicalDefinitions(code)) {
           const key = workloadKey(code, year, def.activity_code);
           const prior = existing.get(key);
+          const his = hisGuideFor(code, def.activity_code);
           rows.push(prior || {
             profession_code: code,
             profession_label: prof?.label || code,
             year,
-            activity_code: def.activity_code,
             workload_label: def.workload_label,
             volume: blank ? null : null,
             volume_unit: def.volume_unit,
+            his_extract_rule: his.his_extract_rule || "",
+            counting_basis: his.counting_basis || "",
+            provider_rule: his.provider_rule || "",
+            his_fields_hint: his.his_fields_hint || "",
+            source_hint: def.source_hint || "",
             definition: def.definition,
             inclusion_criteria: def.inclusion_criteria,
             exclusion_criteria: def.exclusion_criteria,
@@ -68,6 +77,7 @@
             verification_status: "Draft",
             overlap_policy: def.overlap_policy_default || "unknown",
             complexity_index: 1,
+            activity_code: def.activity_code,
             activity_standard_minutes: nullableNumber(cfg.activityMinutes?.[def.activity_code]),
             activity_standard_unit: `minutes/${def.volume_unit.replace(/\/year$/i, "")}`,
             standard_source: defaultStandardSource(),
@@ -496,7 +506,8 @@
         <td><strong>${profileEscape(row.workload_label)}</strong><br><small>${profileEscape(row.definition || "")}</small></td>
         <td><input data-pw-field="volume" data-pw-key="${profileEscape(workloadKey(row.profession_code,row.year,row.activity_code))}" type="number" min="0" step="any" value="${row.volume ?? ""}"></td>
         <td>${profileEscape(row.volume_unit)}</td>
-        <td><input data-pw-field="source" data-pw-key="${profileEscape(workloadKey(row.profession_code,row.year,row.activity_code))}" value="${profileEscape(row.source || "")}" placeholder="HIS table/report"></td>
+        <td><small><b>นับ:</b> ${profileEscape(row.counting_basis || "")}<br><b>วิธีดึง:</b> ${profileEscape(row.his_extract_rule || "")}<br><b>Provider:</b> ${profileEscape(row.provider_rule || "")}<br><b>จุดที่หา:</b> ${profileEscape(row.source_hint || "")}</small></td>
+        <td><input data-pw-field="source" data-pw-key="${profileEscape(workloadKey(row.profession_code,row.year,row.activity_code))}" value="${profileEscape(row.source || "")}" placeholder="เช่น HOSxP > รายงานแพทย์ตรวจ OPD / query name"></td>
         <td><select data-pw-field="verification_status" data-pw-key="${profileEscape(workloadKey(row.profession_code,row.year,row.activity_code))}"><option>Draft</option><option${row.verification_status === "Reviewed" ? " selected" : ""}>Reviewed</option><option${row.verification_status === "Verified" ? " selected" : ""}>Verified</option></select></td>
         <td><select data-pw-field="overlap_policy" data-pw-key="${profileEscape(workloadKey(row.profession_code,row.year,row.activity_code))}">${(PD.overlapOptions || []).map((x)=>`<option${row.overlap_policy===x?" selected":""}>${x}</option>`).join("")}</select></td>
         <td><input data-pw-field="activity_standard_minutes" data-pw-key="${profileEscape(workloadKey(row.profession_code,row.year,row.activity_code))}" type="number" min="0" step="any" value="${row.activity_standard_minutes ?? ""}"><br><small>${profileEscape(row.activity_standard_unit || "")}</small></td>
@@ -504,7 +515,7 @@
         <td><select data-pw-field="standard_status" data-pw-key="${profileEscape(workloadKey(row.profession_code,row.year,row.activity_code))}"><option>Draft</option><option${row.standard_status === "Reviewed" ? " selected" : ""}>Reviewed</option><option${row.standard_status === "Verified" ? " selected" : ""}>Verified</option></select></td>
         <td><small>${profileEscape(row.related_kpi_codes || "")}</small></td>
       </tr>`;
-    }).join("") || `<tr><td colspan="12">เลือกวิชาชีพก่อน แล้วกด Refresh workload rows</td></tr>`;
+    }).join("") || `<tr><td colspan="13">เลือกวิชาชีพก่อน แล้วกด Refresh workload rows</td></tr>`;
   }
   window.renderProfessionWorkloadTable = renderProfessionWorkloadTable;
 
@@ -572,10 +583,10 @@
     const block = document.createElement("div");
     block.className = "v2-workload-block";
     block.innerHTML = `
-      <div class="validation-banner"><strong>หลักสำคัญ:</strong> เช่น Doctor OPD ต้องเป็นจำนวนครั้งที่แพทย์ตรวจจริง ไม่ใช่ Total OPD ของโรงพยาบาล หากไม่มีข้อมูลตรง ให้เว้นว่าง — ระบบจะ Block การสรุปขาด/เกินแทนการใช้ proxy อัตโนมัติ</div>
+      <div class="validation-banner"><strong>หลักสำคัญ:</strong> ให้ตอบคำถามว่า “วิชาชีพนี้ทำงานกับผู้ป่วย/บริการกี่หน่วยในปีนี้” จาก HIS หรือทะเบียนจริง เช่น แพทย์ OPD = distinct visit ที่มีแพทย์เป็น provider, พยาบาล IPD = patient-days, เภสัชกร = dispensing episodes ไม่ใช่ Total OPD ของโรงพยาบาล หาก HIS ไม่มี field ที่ผูกกับวิชาชีพ ให้ใช้ service log/registry ของหน่วยงานและระบุ Source ให้ตรวจย้อนกลับได้</div>
       <div class="tool-row"><label class="field inline"><span>แสดงวิชาชีพ</span><select id="professionWorkloadFilter"></select></label><button class="btn secondary" id="btnRefreshProfessionWorkload" type="button">Refresh workload rows</button></div>
       <p id="dataFitnessSummary" class="profile-status"></p>
-      <div class="table-shell tall"><table class="data-table" id="professionWorkloadTable"><thead><tr><th>วิชาชีพ</th><th>ปี</th><th>งานตัวแทนที่ใช้คำนวณ</th><th>ปริมาณจริง</th><th>หน่วย</th><th>Source</th><th>Workload Verify</th><th>Overlap</th><th>Activity Standard</th><th>Standard Source</th><th>Standard Verify</th><th>Related KPI</th></tr></thead><tbody id="professionWorkloadBody"></tbody></table></div>`;
+      <div class="table-shell tall"><table class="data-table" id="professionWorkloadTable"><thead><tr><th>วิชาชีพ</th><th>ปี</th><th>งานที่วิชาชีพทำจริง</th><th>จำนวนจาก HIS</th><th>หน่วยนับ</th><th>ดึงจาก HIS อย่างไร</th><th>แหล่งข้อมูลจริงที่ใช้</th><th>Workload Verify</th><th>Overlap</th><th>Activity Standard</th><th>Standard Source</th><th>Standard Verify</th><th>Related KPI</th></tr></thead><tbody id="professionWorkloadBody"></tbody></table></div>`;
     const firstDetails = needPanel.querySelector("details.legacy-workload-reference");
     needPanel.insertBefore(block, firstDetails || needPanel.children[1]);
 
@@ -600,10 +611,15 @@
     if (typeof excelFieldGuide !== "function" || excelFieldGuide.__v2) return;
     const baseGuide = excelFieldGuide;
     const fields = {
-      activity_code:{label:"รหัสกิจกรรมภายใน",description:"technical slot ที่เชื่อม workload กับ standard; ใช้นิยามที่แสดงใน workload_label เป็นหลัก",unit:"รหัส",source:"ระบบ",formula:"เชื่อม profession workload กับ Activity Standard"},
-      workload_label:{label:"งานตัวแทนของวิชาชีพ",description:"ชื่อ workload ที่ต้องเป็นงานของวิชาชีพนั้นจริง",unit:"ข้อความ",source:"Profession workload dictionary",formula:"เป็น numerator ของ WISN รายวิชาชีพ"},
-      volume:{label:"ปริมาณงานจริง",description:"จำนวนหน่วยบริการจริงของวิชาชีพนั้นตามนิยาม ห้ามใช้ facility total แทนอัตโนมัติ",unit:"ตาม volume_unit",source:"HIS/registry ที่ระบุ provider",formula:"Volume × Activity Standard × Complexity"},
-      volume_unit:{label:"หน่วยของปริมาณงาน",description:"ต้องตรงกับนิยามและ Activity Standard เช่น physician visits/year, patient-days/year, prescriptions/year",unit:"ข้อความ",source:"Dictionary",formula:"Data Fitness ตรวจ unit match"},
+      activity_code:{label:"รหัสระบบ (ห้ามแก้)",description:"technical slot หลังบ้านสำหรับเชื่อม workload กับ Activity Standard ผู้เก็บข้อมูลไม่ต้องตีความหรือกรอกเอง",unit:"รหัส",source:"ระบบ",formula:"เชื่อม Profession_Workload กับ Activity Standard"},
+      workload_label:{label:"งานที่วิชาชีพทำจริง (รายการที่ต้องนับ)",description:"ชื่อ workload ที่ต้องนับจาก HIS/ทะเบียนของวิชาชีพนี้ ไม่ใช่ยอดบริการรวมทั้งโรงพยาบาล",unit:"ข้อความ",source:"Profession workload dictionary",formula:"เป็น numerator ของ WISN รายวิชาชีพ"},
+      volume:{label:"จำนวนงานจริงของวิชาชีพจาก HIS",description:"จำนวนที่ดึงได้ตามวิธีนับของแถวนี้ เช่น distinct visit/VN, patient-days, prescription หรือ session",unit:"ตาม volume_unit",source:"HIS/registry/service log ของหน่วยงาน",formula:"Volume × Activity Standard × Complexity"},
+      volume_unit:{label:"หน่วยที่ต้องนับ",description:"หน่วยของ numerator ที่ต้องตรงกับ Activity Standard เช่น physician visits/year, patient-days/year, prescriptions/year",unit:"ข้อความ",source:"Dictionary",formula:"Data Fitness ตรวจ unit match"},
+      his_extract_rule:{label:"วิธีดึง/วิธีนับจาก HIS",description:"กติกาการ aggregate ที่ต้องใช้เพื่อให้ได้ตัวเลขของวิชาชีพ เช่น COUNT DISTINCT VN ที่มีแพทย์เป็น provider หรือ SUM patient-days",unit:"ข้อความ",source:"Profession workload dictionary",formula:"ใช้กำหนด numerator ก่อนเข้าสูตร WISN"},
+      counting_basis:{label:"ตัวตั้งที่ต้องนับ",description:"ชนิดของหน่วยที่ต้องนับ เช่น distinct visit/VN, AN, patient-days, prescription, procedure หรือ session",unit:"ข้อความ",source:"Profession workload dictionary",formula:"กำหนด grain ของ Volume"},
+      provider_rule:{label:"เงื่อนไขเชื่อมกับวิชาชีพ",description:"เกณฑ์ที่ยืนยันว่า workload เป็นงานของวิชาชีพนี้จริง เช่น provider=physician, operator=dentist หรือเป็น team patient-days ของ ward",unit:"ข้อความ",source:"Profession workload dictionary",formula:"ป้องกันการเหมารวม facility total"},
+      his_fields_hint:{label:"Field/ข้อมูลใน HIS ที่ควรมองหา",description:"ข้อมูลเชิงแนวคิดที่ควรใช้ในการดึง เช่น VN/AN, วันที่, provider/profession, clinic, procedure code; ชื่อ field จริงต่างกันตาม HIS",unit:"ข้อความ",source:"Profession workload dictionary",formula:"คู่มือสำหรับ data query"},
+      source_hint:{label:"จุดที่แนะนำให้หาในระบบ",description:"ระบบ/ทะเบียน/รายงานที่มักมีข้อมูลนี้ เช่น HIS encounter/provider table, IPD census, pharmacy dispensing system",unit:"ข้อความ",source:"Profession workload dictionary",formula:"คู่มือค้นหาแหล่งข้อมูล"},
       definition:{label:"นิยามข้อมูล",description:"นิยาม operational definition ของ numerator ที่ใช้คำนวณ",unit:"ข้อความ",source:"Dictionary",formula:"กำหนดความหมายของ Volume"},
       inclusion_criteria:{label:"เกณฑ์รวม",description:"รายการที่นับเข้าตัวตั้ง",unit:"ข้อความ",source:"Dictionary/ข้อตกลงพื้นที่",formula:"ป้องกันการนับผิด scope"},
       exclusion_criteria:{label:"เกณฑ์ไม่รวม",description:"รายการที่ต้องตัดออก เช่น non-physician-only OPD สำหรับ Doctor OPD",unit:"ข้อความ",source:"Dictionary/ข้อตกลงพื้นที่",formula:"ป้องกัน over-count"},
@@ -628,13 +644,13 @@
       buildExcelInstructionRows = function buildExcelInstructionRowsV2() {
         const rows = baseInstructions();
         rows.splice(5,0,
-          ["Profession-specific workload", "Workload_History = facility/population reference only. WISN ใช้ Profession_Workload เท่านั้น เช่น Doctor OPD = physician OPD encounters ไม่ใช่ Total OPD"],
+          ["Profession-specific workload", "ให้กรอกคำตอบว่า ‘วิชาชีพนี้ทำงานกับผู้ป่วย/บริการกี่หน่วยในปีนั้น’ โดยใช้คอลัมน์ วิธีดึง/วิธีนับจาก HIS + ตัวตั้งที่ต้องนับ + เงื่อนไขเชื่อมกับวิชาชีพ เป็นหลัก; Total OPD/IPD ของ รพ.เป็น reference เท่านั้น"],
           ["Data Fitness Gate", "ระบบสรุปขาด/เกินและ Suggested Add เฉพาะข้อมูลที่ผ่าน workforce + workload definition/unit + overlap + standard verification"],
           ["Health KPI", "Health_KPI_History ใช้เชื่อมผลลัพธ์สุขภาพ/บริการกับ capacity เพื่อประกอบการวิเคราะห์ แต่ไม่ใช่หลักฐานว่า staffing เป็นสาเหตุโดยลำพัง"]
         );
         const idx = rows.findIndex((row)=>row?.[0] === "Workload_History");
         if (idx >= 0) rows[idx][2] = "ประชากรและ facility totals เพื่อ reference/reconcile เท่านั้น ไม่ใช้เป็น profession WISN numerator";
-        rows.push(["Profession_Workload", "ทีมวิชาชีพ + HIS/เวชระเบียน", "ปริมาณงานจริงเฉพาะวิชาชีพ นิยาม หน่วย source verification overlap และเวลามาตรฐาน"]);
+        rows.push(["Profession_Workload", "ทีมวิชาชีพ + IT/HIS + เวชระเบียน", "เริ่มจาก ‘งานที่วิชาชีพทำจริง’ → ‘วิธีดึง/วิธีนับจาก HIS’ → ‘ตัวตั้งที่ต้องนับ’ → กรอก ‘จำนวนงานจริงของวิชาชีพจาก HIS’ และระบุแหล่งข้อมูลจริงที่ใช้"]);
         rows.push(["Health_KPI_History", "ยุทธศาสตร์/คุณภาพ/Service Plan", "ค่าตัวชี้วัด outcome/service KPI จริงรายปี พร้อม source/status"]);
         return rows;
       };
