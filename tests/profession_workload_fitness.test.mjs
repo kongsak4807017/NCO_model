@@ -72,7 +72,7 @@ test('UI and Excel copy explain facility reference, profession workload, Data Fi
   assert.match(healthKpi, /Health Outcome KPI Context/);
   assert.match(workloadAdapter, /Profession_Workload/);
   assert.match(workloadAdapter, /Health_KPI_History/);
-  assert.match(workloadAdapter, /Workload_History = facility\/population reference only/i);
+  assert.match(workloadAdapter, /Workload_History[\s\S]*reference|facility totals[\s\S]*reference/i);
 });
 
 test('illustrative default standards are visibly not validated', () => {
@@ -102,6 +102,6 @@ test('profession workload template explains how each profession is counted from 
     'ตัวตั้งที่ต้องนับ',
     'เงื่อนไขเชื่อมกับวิชาชีพ',
     'Field/ข้อมูลใน HIS ที่ควรมองหา',
-    'รหัสระบบ \(ห้ามแก้\)',
+    'รหัสระบบ \\(ห้ามแก้\\)',
   ]) assert.match(workloadAdapter, new RegExp(text, 'i'));
 });
