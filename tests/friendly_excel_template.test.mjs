@@ -54,3 +54,14 @@ test('friendly importer reads technical keys, skips helper rows, and remains com
   assert.doesNotMatch(friendly, /Math\.pow\s*\(/);
   assert.doesNotMatch(friendly, /seedRate/);
 });
+
+
+test('TargetNeed template exposes operational definitions and hospital-level source guidance', () => {
+  for (const text of [
+    'นิยามที่ใช้เก็บจริง',
+    'แหล่งข้อมูลจำนวนกลุ่มเป้าหมาย',
+    'แหล่งข้อมูลจำนวนที่ได้รับบริการจริง',
+    'วิธีนับ',
+    'ไม่บังคับว่าทุกกลุ่มต้องมาจาก HDC',
+  ]) assert.match(friendly, new RegExp(text));
+});
