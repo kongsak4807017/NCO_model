@@ -75,8 +75,8 @@
     fteFactor: { label: "สัดส่วนเวลาปฏิบัติงาน (FTE Factor)", description: "สัดส่วนการทำงานเทียบเท่าคนเต็มเวลา 1 คน เช่น 1.0 = เต็มเวลา, 0.5 = ครึ่งเวลา", unit: "FTE ต่อคน", source: "HR / ตารางปฏิบัติงานจริง", formula: formulas.supplyFte },
     coveragePct: { label: "เป้าหมายความครอบคลุม", description: "ร้อยละของ Target Population ที่ควรได้รับบริการ", unit: "%", source: "นโยบาย / Service Plan / CPG", formula: formulas.targetCases },
     frequency: { label: "ความถี่บริการต่อปี", description: "จำนวนครั้งบริการที่กลุ่มเป้าหมาย 1 รายควรได้รับต่อปี", unit: "ครั้ง/คน/ปี", source: "CPG / service model / consensus", formula: formulas.targetEquivalent },
-    targetPopulation: { label: "จำนวนกลุ่มเป้าหมาย", description: "จำนวนคน/cases ในกลุ่มเป้าหมายของปีนั้นก่อนคูณ Coverage %; ต้องเป็นข้อมูลจริงย้อนหลัง", unit: "คนหรือ cases", source: "HDC / Registry / Program report", formula: formulas.targetCases },
-    actualServed: { label: "จำนวนที่ได้รับบริการจริง", description: "จำนวนคน/cases ในกลุ่มเป้าหมายที่ได้รับบริการจริงในปีนั้น", unit: "คนหรือ cases", source: "HDC / HIS / Program report", formula: formulas.coverageGap },
+    targetPopulation: { label: "จำนวนกลุ่มเป้าหมาย", description: "จำนวนคน/cases ที่เข้าเกณฑ์ ‘นิยามที่ใช้เก็บจริง’ ของแถวนั้นในปีนั้น ก่อนคูณ Coverage %; ดูคอลัมน์แหล่งข้อมูลรายกลุ่มใน Excel/ตารางนิยามบนหน้าเว็บ", unit: "คนหรือ cases ตาม count rule ของกลุ่ม", source: "ใช้ targetSource รายกลุ่ม: HDC เมื่อมีรายงานตรงนิยาม หรือ HIS/Registry ของ รพ.เมื่อ HDC ไม่มี", formula: formulas.targetCases },
+    actualServed: { label: "จำนวนที่ได้รับบริการจริง", description: "จำนวนคน/cases จากกลุ่มเป้าหมายเดียวกันที่ได้รับบริการตาม service definition ของกลุ่มนั้นจริงในปี ไม่ใช้จำนวน visit ทั้งหมดแทนโดยอัตโนมัติ", unit: "คนหรือ cases ตาม count rule ของกลุ่ม", source: "ใช้ actualSource รายกลุ่ม: HDC/HIS/Registry/Program report ที่ตรวจสอบย้อนกลับได้", formula: formulas.coverageGap },
   };
   Object.freeze(excelFields);
 
