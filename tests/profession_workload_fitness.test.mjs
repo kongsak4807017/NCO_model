@@ -86,3 +86,22 @@ test('formula layer loads v2 modules before Excel and help execute', () => {
   const kpi = formula.indexOf('Simulator_HR_blueprint_health_kpi.js');
   assert.ok(dictionary >= 0 && workload > dictionary && kpi > workload);
 });
+
+
+test('profession workload template explains how each profession is counted from HIS', () => {
+  for (const text of [
+    'hisExtractionGuide',
+    'COUNT DISTINCT visit/VN',
+    'patient-days',
+    'prescription/dispensing episode',
+    'provider_rule',
+    'his_fields_hint',
+  ]) assert.match(professionDictionary, new RegExp(text, 'i'));
+  for (const text of [
+    'วิธีดึง/วิธีนับจาก HIS',
+    'ตัวตั้งที่ต้องนับ',
+    'เงื่อนไขเชื่อมกับวิชาชีพ',
+    'Field/ข้อมูลใน HIS ที่ควรมองหา',
+    'รหัสระบบ \(ห้ามแก้\)',
+  ]) assert.match(workloadAdapter, new RegExp(text, 'i'));
+});
