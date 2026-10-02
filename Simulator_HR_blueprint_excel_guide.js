@@ -22,7 +22,7 @@ const NCO_EXCEL_FIELD_GUIDE = {
   countRule: { label: "วิธีนับ", description: "กติกาการนับที่ต้องใช้เหมือนกันทุกปี เช่น คนไม่ซ้ำต่อปี, episode, case หรือ visit เพื่อให้ข้อมูลเปรียบเทียบกันได้", unit: "ข้อความ", source: "Data owner / ผู้ทวนสอบข้อมูล" },
   caution: { label: "ข้อควรระวัง", description: "ข้อจำกัดหรือความเสี่ยงของการตีความ เช่น กลุ่มซ้ำกัน, HDC ไม่มีรายงานตรงนิยาม, ห้ามผสมคนกับ visit", unit: "ข้อความ", source: "Data dictionary" },
   placement: { label: "ระดับ/หน่วยบริการที่รับผิดชอบ", description: "ระดับหรือประเภทหน่วยบริการที่ควรรับผิดชอบบริการกลุ่มนี้", unit: "ข้อความ", source: "Service Plan / ระบบบริการ" },
-  profession_code: { label: "รหัสวิชาชีพ", description: "รหัสภายในของวิชาชีพที่ระบบใช้เชื่อมข้อมูล ห้ามแก้ถ้าไม่จำเป็น", unit: "รหัส", source: "ระบบ" },
+  profession_code: { label: "รหัสระบบวิชาชีพ (ห้ามแก้)", description: "รหัสหลังบ้านที่ระบบใช้เชื่อมข้อมูล เช่น doctor/nurse/pharmacist ผู้เก็บข้อมูลไม่ต้องกรอกหรือแปลความหมาย", unit: "รหัส", source: "ระบบ" },
   profession_label: { label: "วิชาชีพ", description: "ชื่อกลุ่มวิชาชีพ", unit: "ข้อความ", source: "HR" },
   actualHeadcount: { label: "จำนวนบุคลากรที่ปฏิบัติงานจริง", description: "จำนวนคนจริงของวิชาชีพที่ปฏิบัติงานในพื้นที่/หน่วยบริการในปีนั้น", unit: "คน", source: "HRIS / HROPS / จ.18", formula: "Actual Supply FTE = Actual Annual Headcount × FTE Factor" },
   recruit: { label: "จำนวนบรรจุ/รับเข้า", description: "จำนวนบุคลากรที่บรรจุหรือรับเข้ามาปฏิบัติงานจริงในปีนั้น", unit: "คน", source: "HRIS / คำสั่งบุคลากร", formula: "บันทึก movement ย้อนหลัง; historical supply ใช้ Actual Headcount โดยตรง ไม่ back-calculate จาก movement" },
