@@ -177,6 +177,40 @@
     });
   }
 
+  function injectTargetNeedSourceGuide() {
+    if (document.getElementById("targetNeedSourceGuide")) return;
+    const table = document.getElementById("targetNeedTable");
+    const shell = table?.closest(".table-shell");
+    if (!shell || typeof TARGET_NEED_DEFS === "undefined") return;
+    const guide = document.createElement("section");
+    guide.id = "targetNeedSourceGuide";
+    guide.className = "target-need-source-guide";
+    guide.innerHTML = `
+      <div class="target-need-source-guide__head">
+        <div>
+          <h4>นิยามสำหรับเก็บข้อมูลจริงระดับโรงพยาบาล</h4>
+          <p>เริ่มจากนิยามและแหล่งข้อมูลด้านล่างก่อนกรอก Target Population / Actual Served — ไม่จำเป็นต้องมาจาก HDC ทุกตัว ถ้า HDC ไม่มีรายงานตรงนิยามให้ใช้ทะเบียน/HIS ของโรงพยาบาลที่ตรวจสอบย้อนกลับได้</p>
+        </div>
+      </div>
+      <div class="target-need-source-guide__scroll">
+        <table>
+          <thead><tr><th>กลุ่มที่ใช้เก็บจริง</th><th>นิยาม</th><th>จำนวนกลุ่มเป้าหมาย เอาจากไหน</th><th>จำนวนได้รับบริการ เอาจากไหน</th><th>วิธีนับ</th><th>ข้อควรระวัง</th></tr></thead>
+          <tbody>
+            ${TARGET_NEED_DEFS.map((def) => `<tr>
+              <td><strong>${escapeHtml(def.label || def.code)}</strong><small>${escapeHtml(def.code)}</small></td>
+              <td>${escapeHtml(def.operationalDefinition || "-")}</td>
+              <td>${escapeHtml(def.targetSource || "-")}</td>
+              <td>${escapeHtml(def.actualSource || "-")}</td>
+              <td>${escapeHtml(def.countRule || "-")}</td>
+              <td>${escapeHtml(def.caution || "-")}</td>
+            </tr>`).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
+    shell.insertAdjacentElement("afterend", guide);
+  }
+
   function injectTooltip() {
     if (document.getElementById("hrHelpTooltip")) return;
     const tip = document.createElement("div");
@@ -248,6 +282,7 @@
   function bootHelp() {
     injectStartGuide();
     injectSectionNotes();
+    injectTargetNeedSourceGuide();
     injectTooltip();
     injectDictionary();
     enhanceLabels();
