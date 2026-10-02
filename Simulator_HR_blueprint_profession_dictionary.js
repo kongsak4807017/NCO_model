@@ -60,6 +60,187 @@
     ]),
   });
 
+  // HIS extraction guidance is intentionally conceptual because field/table names vary by HIS vendor.
+  // It tells data teams what to COUNT and how to link the workload to the profession.
+  const hisExtractionGuide = Object.freeze({
+    doctor: Object.freeze({
+      opdVisits: Object.freeze({
+        counting_basis: "distinct OPD visit/VN",
+        provider_rule: "นับเฉพาะ visit ที่มีแพทย์เป็นผู้ตรวจ/ผู้ให้บริการ (physician provider)",
+        his_extract_rule: "COUNT DISTINCT visit/VN ในช่วงปีงบประมาณ WHERE มี provider วิชาชีพแพทย์; ไม่ใช้ Total OPD ของ รพ.",
+        his_fields_hint: "visit/VN, วันที่รับบริการ, provider_id/provider_profession, clinic/department"
+      }),
+      ipdAdmissions: Object.freeze({
+        counting_basis: "distinct IPD admission/AN",
+        provider_rule: "นับ admission ที่มีแพทย์รับผิดชอบ/attending physician ใน scope ที่วิเคราะห์",
+        his_extract_rule: "COUNT DISTINCT AN ที่มี attending/responsible physician; ถ้า HIS มีหลายแพทย์ต่อ AN ให้นับ AN ครั้งเดียวต่อ scope",
+        his_fields_hint: "AN, admit/discharge date, attending/responsible physician, ward/service"
+      }),
+      erVisits: Object.freeze({
+        counting_basis: "distinct ER visit",
+        provider_rule: "นับเฉพาะ ER visit ที่มี physician assessment",
+        his_extract_rule: "COUNT DISTINCT ER visit/VN WHERE มีบันทึกแพทย์ประเมินหรือ provider=physician",
+        his_fields_hint: "ER visit id/VN, visit date, provider profession, ER disposition"
+      }),
+      procedures: Object.freeze({
+        counting_basis: "distinct procedure/OR case",
+        provider_rule: "นับ procedure ที่แพทย์เป็น operator/ผู้ทำจริง",
+        his_extract_rule: "COUNT procedure/OR case WHERE operator/provider เป็นแพทย์ใน scope; ใช้ case id เดียวกันเพื่อกันซ้ำ",
+        his_fields_hint: "procedure/OR case id, procedure code, operator/provider, procedure date"
+      }),
+      deliveries: Object.freeze({
+        counting_basis: "distinct delivery case",
+        provider_rule: "นับ delivery ที่มีแพทย์เข้าร่วมตามบทบาทที่นิยาม",
+        his_extract_rule: "COUNT DISTINCT delivery case WHERE มี physician attendance/intervention ตามเกณฑ์ของ รพ.",
+        his_fields_hint: "delivery id/AN, delivery date, mode of delivery, physician/provider"
+      }),
+      chronicVisits: Object.freeze({
+        counting_basis: "distinct chronic/NCD encounter",
+        provider_rule: "นับ encounter NCD ที่แพทย์ตรวจจริง",
+        his_extract_rule: "COUNT DISTINCT visit/VN ของคลินิก NCD WHERE provider=physician และต้องตัดรายการที่ถูกนับใน Doctor OPD ถ้าใช้สองแถวพร้อมกัน",
+        his_fields_hint: "visit/VN, NCD clinic/service code, diagnosis, provider profession"
+      }),
+      mentalVisits: Object.freeze({
+        counting_basis: "distinct mental-health encounter",
+        provider_rule: "นับ encounter จิตเวชที่แพทย์ตรวจจริง",
+        his_extract_rule: "COUNT DISTINCT visit/VN ของบริการ mental/psychiatric WHERE provider=physician; ไม่รวม psychologist-only/counsellor-only",
+        his_fields_hint: "visit/VN, mental clinic/service, diagnosis, provider profession"
+      }),
+      outreachVisits: Object.freeze({
+        counting_basis: "distinct physician direct-service contact",
+        provider_rule: "นับเฉพาะ home/community contact ที่แพทย์ให้บริการโดยตรง",
+        his_extract_rule: "COUNT contact/visit ที่มี physician participation จริงจาก home visit/outreach roster; ไม่ใช้จำนวน event ทั้งทีม",
+        his_fields_hint: "contact/event id, date, patient/HN (ถ้ามี), provider/profession, service type"
+      })
+    }),
+    nurse: Object.freeze({
+      opdVisits: Object.freeze({
+        counting_basis: "distinct nursing OPD service contact",
+        provider_rule: "นับ contact ที่มี nursing assessment/procedure/service บันทึกจริง",
+        his_extract_rule: "COUNT DISTINCT service contact/VN ที่มี nursing activity code หรือ nurse provider; ถ้า HIS ไม่เก็บ provider พยาบาลให้ใช้ nursing service log",
+        his_fields_hint: "visit/VN, nursing activity/service code, nurse/provider, clinic"
+      }),
+      ipdAdmissions: Object.freeze({
+        counting_basis: "patient-days",
+        provider_rule: "เป็น team workload ของหน่วยพยาบาล ไม่ต้องผูกกับพยาบาลรายบุคคล",
+        his_extract_rule: "SUM occupied patient-days ของ ward ในปีงบประมาณ; ไม่ใช้จำนวน admissions เมื่อ Activity Standard เป็นนาที/patient-day",
+        his_fields_hint: "AN, ward, admit date, discharge date, daily census/occupied bed-days"
+      }),
+      erVisits: Object.freeze({
+        counting_basis: "distinct ER nursing encounter",
+        provider_rule: "นับ ER encounter ที่มี triage/ER nursing care",
+        his_extract_rule: "COUNT DISTINCT ER visit ที่มี nursing service/triage record",
+        his_fields_hint: "ER visit id/VN, triage record, nursing activity, date"
+      }),
+      procedures: Object.freeze({
+        counting_basis: "nursing procedure count",
+        provider_rule: "นับ procedure ที่พยาบาลเป็นผู้ปฏิบัติจริง",
+        his_extract_rule: "COUNT procedure/service code ของงานพยาบาลตามรายการที่กำหนด; กันซ้ำกับ encounter standard หากรวมเวลาไว้แล้ว",
+        his_fields_hint: "procedure/service id, service code, performer/provider profession, date"
+      }),
+      deliveries: Object.freeze({
+        counting_basis: "delivery cases",
+        provider_rule: "นับ delivery case ที่ทีมพยาบาล/ผดุงครรภ์ดูแล",
+        his_extract_rule: "COUNT DISTINCT delivery case จาก labour room registry ใน scope",
+        his_fields_hint: "delivery id/AN, labour room, delivery date, nursing/midwife service"
+      }),
+      chronicVisits: Object.freeze({
+        counting_basis: "nurse-led chronic contact",
+        provider_rule: "นับ contact NCD ที่มี nurse-led activity จริง",
+        his_extract_rule: "COUNT DISTINCT chronic/NCD service contact ที่มี nursing activity; deduplicate กับ Nursing OPD ถ้าใช้ทั้งสอง numerator",
+        his_fields_hint: "visit/VN, chronic clinic, nursing service/activity, provider"
+      }),
+      mentalVisits: Object.freeze({
+        counting_basis: "mental-health nursing contact",
+        provider_rule: "นับ contact ที่มี mental-health nursing activity",
+        his_extract_rule: "COUNT DISTINCT contact/session ที่พยาบาลให้บริการสุขภาพจิตจริง",
+        his_fields_hint: "visit/session id, mental service code, nurse/provider, date"
+      }),
+      outreachVisits: Object.freeze({
+        counting_basis: "nursing home/outreach contact",
+        provider_rule: "นับ direct nursing contact ไม่ใช่จำนวน event ทั้งทีม",
+        his_extract_rule: "COUNT DISTINCT home visit/outreach contact ที่มีพยาบาลเป็นผู้ให้บริการ",
+        his_fields_hint: "home visit/contact id, date, provider/profession, service type"
+      })
+    }),
+    pharmacist: Object.freeze({
+      opdVisits: Object.freeze({
+        counting_basis: "prescription/dispensing episode",
+        provider_rule: "นับ transaction ที่ผ่าน workflow เภสัชกร",
+        his_extract_rule: "COUNT DISTINCT prescription/dispensing episode ของ OPD; ไม่ใช้จำนวน OPD visit",
+        his_fields_hint: "prescription/dispense id, dispense date, pharmacy department, pharmacist/provider"
+      }),
+      ipdAdmissions: Object.freeze({
+        counting_basis: "IPD medication review/dispensing episode",
+        provider_rule: "นับ episode ที่เภสัชกรให้บริการจริง",
+        his_extract_rule: "COUNT medication review/dispensing episode ของ IPD ตามหน่วยที่กำหนด; ไม่ใช้ AN แทนถ้า 1 AN มีหลาย episode",
+        his_fields_hint: "AN, medication episode/order id, dispense/review date, pharmacist/provider"
+      }),
+      erVisits: Object.freeze({
+        counting_basis: "ER dispensing/review episode",
+        provider_rule: "นับ episode ยาที่เภสัชกรให้บริการแก่ ER",
+        his_extract_rule: "COUNT DISTINCT ER pharmacy dispensing/review episode",
+        his_fields_hint: "ER visit/VN, prescription/dispense id, pharmacy service, date"
+      }),
+      chronicVisits: Object.freeze({
+        counting_basis: "chronic medication-care episode",
+        provider_rule: "นับ medication review/counselling ที่เภสัชกรทำจริง",
+        his_extract_rule: "COUNT chronic medication review/counselling episode; deduplicate กับ OPD dispensing ถ้าเป็นกิจกรรมเดียวกัน",
+        his_fields_hint: "visit/VN, medication-care service code, pharmacist/provider, date"
+      })
+    }),
+    dentist: Object.freeze({
+      opdVisits: Object.freeze({
+        counting_basis: "dental visit",
+        provider_rule: "นับ visit ที่มีทันตแพทย์เป็น provider",
+        his_extract_rule: "COUNT DISTINCT dental visit WHERE provider profession=dentist",
+        his_fields_hint: "dental visit id/VN, provider, service date"
+      }),
+      procedures: Object.freeze({
+        counting_basis: "dental procedure",
+        provider_rule: "นับ procedure ที่ทันตแพทย์เป็น operator",
+        his_extract_rule: "COUNT dental procedure code/case ที่ทันตแพทย์ทำจริง",
+        his_fields_hint: "procedure id/code, tooth/site (ถ้ามี), dentist/operator, date"
+      })
+    }),
+    physio: Object.freeze({
+      procedures: Object.freeze({
+        counting_basis: "completed physiotherapy session",
+        provider_rule: "นับ session ที่นักกายภาพให้ treatment จริง",
+        his_extract_rule: "COUNT DISTINCT completed treatment session; exclude appointment/no-show",
+        his_fields_hint: "session id, service code, therapist/provider, session date, status"
+      }),
+      outreachVisits: Object.freeze({
+        counting_basis: "completed home/community rehab session",
+        provider_rule: "นับ session ที่นักกายภาพให้บริการจริง",
+        his_extract_rule: "COUNT DISTINCT home/community rehab session ที่มี physiotherapist provider",
+        his_fields_hint: "session/contact id, therapist, service type, date"
+      })
+    }),
+    psychologist: Object.freeze({
+      mentalVisits: Object.freeze({
+        counting_basis: "completed psychology session",
+        provider_rule: "นับ assessment/counselling/psychotherapy ที่นักจิตวิทยาเป็นผู้ให้บริการ",
+        his_extract_rule: "COUNT DISTINCT completed psychology session; ไม่รวม physician-only encounter",
+        his_fields_hint: "session/visit id, psychology service code, psychologist/provider, date"
+      })
+    }),
+    public_health: Object.freeze({
+      outreachVisits: Object.freeze({
+        counting_basis: "declared public-health service unit",
+        provider_rule: "นับเฉพาะหน่วยบริการที่นักวิชาการสาธารณสุขปฏิบัติงานจริง",
+        his_extract_rule: "กำหนดหน่วยให้ชัดก่อน (คน/ครั้ง/event) แล้ว COUNT หน่วยนั้นจาก PP/outreach/home-visit registry ห้ามผสมหน่วยใน numerator เดียว",
+        his_fields_hint: "service/contact/event id, service type, provider/profession, date"
+      }),
+      chronicVisits: Object.freeze({
+        counting_basis: "public-health chronic follow-up contact",
+        provider_rule: "นับ follow-up ที่นักวิชาการสาธารณสุขให้บริการโดยตรง",
+        his_extract_rule: "COUNT DISTINCT chronic follow-up contact; deduplicate กับ outreach ถ้าเป็น contact เดียวกัน",
+        his_fields_hint: "contact/visit id, chronic program, provider/profession, date"
+      })
+    })
+  });
+
   const healthKpis = Object.freeze({
     A01: { code:"A01", name:"Crude Death Rate", unit:"%", direction:"low", threshold:"< 3.5", source:"NCO_INDICATOR_STANDARD.md" },
     A04: { code:"A04", name:"AMI Mortality", unit:"%", direction:"low", threshold:"< 8", source:"NCO_INDICATOR_STANDARD.md" },
@@ -85,6 +266,7 @@
   window.NCO_HR_PROFESSION_DICTIONARY = Object.freeze({
     version: "2026-09-18",
     workloadDefinitions,
+    hisExtractionGuide,
     healthKpis,
     overlapOptions: Object.freeze(["independent", "exclusive", "deduplicated", "unknown"]),
     note: "Health KPI is outcome context only; association does not prove staffing causality.",
