@@ -125,6 +125,17 @@ function selectedProfessionRows() {
   return Array.from(state.selectedProfessions).map((code) => getProfession(code)).filter(Boolean);
 }
 
+function targetNeedDefinitionMeta(code) {
+  const def = (typeof TARGET_NEED_DEFS !== "undefined" ? TARGET_NEED_DEFS : []).find((item) => String(item.code) === String(code)) || {};
+  return {
+    operationalDefinition: def.operationalDefinition || "",
+    targetSource: def.targetSource || "",
+    actualSource: def.actualSource || "",
+    countRule: def.countRule || "",
+    caution: def.caution || "",
+  };
+}
+
 function collectProfilePayload() {
   if (typeof syncInputsFromDom === "function") syncInputsFromDom();
   ensureProfileMetadata();
@@ -146,6 +157,7 @@ function collectProfilePayload() {
     year: row.year,
     groupCode: row.groupCode,
     groupLabel: row.groupLabel,
+    ...targetNeedDefinitionMeta(row.groupCode),
     targetPopulation: observedFact("targetNeed", `${row.year}:${row.groupCode}:targetPopulation`, row.targetPopulation),
     actualServed: observedFact("targetNeed", `${row.year}:${row.groupCode}:actualServed`, row.actualServed),
     coveragePct: nullableNumber(row.coveragePct),
@@ -420,6 +432,7 @@ function blankTemplatePayload(payload) {
     year: row.year,
     groupCode: row.groupCode,
     groupLabel: row.groupLabel,
+    ...targetNeedDefinitionMeta(row.groupCode),
     targetPopulation: null,
     actualServed: null,
     coveragePct: row.coveragePct,
