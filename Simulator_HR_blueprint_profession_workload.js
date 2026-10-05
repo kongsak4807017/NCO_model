@@ -82,7 +82,16 @@
       const priorHasValue = prior && prior.value !== null && prior.value !== undefined && String(prior.value).trim() !== "";
       const rowWasCanonical = String(raw?.indicator_code || "") === row.indicator_code;
       const priorWasCanonical = prior && String(prior.source_indicator_code || "") === String(prior.indicator_code || "");
-      if (!prior || (rowHasValue && !priorHasValue) || (rowWasCanonical && !priorWasCanonical)) byKey.set(key, row);
+      if (!prior || (rowHasValue && !priorHasValue) || (rowWasCanonical && !priorWasCanonical)) {
+        if (prior && priorHasValue && rowHasValue && Number(prior.value) !== Number(row.value)) {
+          row.note = [row.note, `Alias conflict: ${prior.source_indicator_code}=${prior.value} vs ${row.source_indicator_code}=${row.value}; review required`].filter(Boolean).join(" | ");
+          row.verification_status = "Draft";
+        }
+        byKey.set(key, row);
+      } else if (prior && priorHasValue && rowHasValue && Number(prior.value) !== Number(row.value)) {
+        prior.note = [prior.note, `Alias conflict: ${prior.source_indicator_code}=${prior.value} vs ${row.source_indicator_code}=${row.value}; review required`].filter(Boolean).join(" | ");
+        prior.verification_status = "Draft";
+      }
     }
     return Array.from(byKey.values());
   }
