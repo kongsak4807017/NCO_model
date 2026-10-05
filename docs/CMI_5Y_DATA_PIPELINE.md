@@ -117,3 +117,24 @@ Future refreshes should create a new version instead of silently overwriting the
 - A04 and DH0102 both carry AMI mortality labels in historical catalogs. The UI hides A04 by default to avoid duplicate entry, but values are not migrated between them until definitions are reconciled.
 - Preserve numerator/denominator whenever available.
 - Hospital code is the preferred join key; hospital name is display text, not the primary key.
+
+
+## Bulk Excel fallback
+
+If browser collection can open the source but cannot reliably switch every year or if the data owner provides exported workbooks directly, place the CMI `.xlsx` files in a local folder and run:
+
+```bash
+python scripts/import_cmi_excel_exports.py path/to/cmi_exports
+python scripts/validate_cmi_snapshot.py
+```
+
+The importer:
+
+- detects indicator code and fiscal year from filename/sheet content;
+- extracts hospital code/name, numerator, denominator and value;
+- calculates SHA-256 of the exact exported workbook;
+- upserts only previously missing hospital-indicator-year observations;
+- **does not silently overwrite conflicting values**;
+- writes conflicts to `data/cmi/manifests/import_conflicts.json`.
+
+This is the preferred fallback when the CMI team can provide a five-year bulk Excel package.
