@@ -109,15 +109,15 @@ test('profession workload template explains how each profession is counted from 
 });
 
 
-test('Health KPI History uses canonical CMI Service Plan codes without duplicate outcome rows', () => {
-  assert.match(professionDictionary, /A04:\s*"DH0102"/);
-  assert.match(professionDictionary, /A09:\s*"CI0101"/);
-  assert.match(professionDictionary, /B01:\s*"CM0101"/);
+test('Health KPI History hides duplicate AMI display without unsafe cross-definition value migration', () => {
+  assert.match(professionDictionary, /A04:[\s\S]*display:false[\s\S]*duplicateLabelOf:"DH0102"/);
+  assert.match(professionDictionary, /kpiDisplayExclusions/);
+  assert.match(professionDictionary, /A09:[\s\S]*Core Outcome/);
+  assert.match(professionDictionary, /B01:[\s\S]*Core Outcome/);
   assert.match(professionDictionary, /co_thip_new/);
-  assert.match(workloadAdapter, /canonicalHealthKpiCode/);
   assert.match(workloadAdapter, /normalizeHealthKpiRows/);
-  assert.match(healthKpi, /Object\.keys\(PD\.healthKpis/);
-  assert.match(healthKpi, /A04 → DH0102/);
+  assert.match(healthKpi, /display !== false/);
+  assert.match(healthKpi, /ไม่ย้ายค่า A04 ไป DH0102 อัตโนมัติ/);
 });
 
 
