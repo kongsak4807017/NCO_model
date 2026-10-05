@@ -36,6 +36,18 @@ const NCO_EXCEL_FIELD_GUIDE = {
   current: { label: "จำนวนบุคลากรปัจจุบัน", description: "จำนวนบุคลากรปีอ้างอิงล่าสุดที่ใช้ตั้งต้นหน้า Profession", unit: "คน", source: "HRIS / HROPS / จ.18" },
   vacant: { label: "ตำแหน่งว่าง", description: "จำนวนกรอบตำแหน่งที่ว่างตามข้อมูลจริง", unit: "ตำแหน่ง", source: "HRIS / กรอบอัตรากำลัง" },
   retire5y: { label: "ผู้ที่จะเกษียณภายใน 5 ปี", description: "จำนวนบุคลากรตามทะเบียนที่อยู่ในช่วงเกษียณภายใน 5 ปี ใช้เป็นข้อมูลประกอบ ไม่กระจายย้อนหลังอัตโนมัติ", unit: "คน", source: "ทะเบียนบุคลากร / HRIS" },
+  indicator_code: { label: "รหัสตัวชี้วัด CMI", description: "รหัสตัวชี้วัดจากระบบ CMI / Service Plan ใช้เป็น key หลักของ Definition Registry", unit: "รหัส", source: "CMI / Service Plan" },
+  indicator_name: { label: "ชื่อตัวชี้วัด", description: "ชื่อที่แสดงในระบบ CMI / Service Plan", unit: "ข้อความ", source: "CMI / Service Plan" },
+  definition_status: { label: "สถานะนิยาม", description: "verified/source-page-derived = มีนิยามจาก CMI แล้ว; pending_source_page = ยังต้องดึง metadata ต้นทาง", unit: "สถานะ", source: "CMI Definition Registry" },
+  definition_version: { label: "เวอร์ชันนิยาม", description: "version/hash ของ source metadata ที่ใช้สร้างนิยาม เพื่อดู definition drift ข้ามปี", unit: "รหัส/hash", source: "CMI source archive" },
+  numerator_label: { label: "ตัวตั้งตาม CMI", description: "คำอธิบาย numerator จากหัวตาราง/นิยาม CMI ใช้เป็นหลักเกณฑ์เดียวกันทุก รพ.", unit: "ข้อความ", source: "CMI / Service Plan" },
+  denominator_label: { label: "ตัวหารตาม CMI", description: "คำอธิบาย denominator จากหัวตาราง/นิยาม CMI ถ้ามี", unit: "ข้อความ", source: "CMI / Service Plan" },
+  output_label: { label: "ผลลัพธ์ที่ CMI แสดง", description: "ชื่อผลลัพธ์ เช่น ร้อยละ เฉลี่ย อัตรา CMI", unit: "ข้อความ", source: "CMI / Service Plan" },
+  formula: { label: "สูตรวิธีคิด", description: "สูตรจากโครงสร้างตัวตั้ง/ตัวหารของ CMI เช่น numerator ÷ denominator × 100; ไม่สร้างสูตรเองเมื่อ source ไม่ระบุ", unit: "สูตร", source: "CMI Definition Registry" },
+  measure_type: { label: "ประเภทตัวชี้วัด", description: "percentage / rate / average / source_defined", unit: "ข้อความ", source: "CMI Definition Registry" },
+  hosxp_logical_source: { label: "ข้อมูลที่ต้องหาใน HOSxP", description: "logical field/concept ที่ต้องใช้ เช่น AN/VN, diagnosis, procedure, discharge status, LOS, AdjRW โดยยังไม่ผูกกับ physical table ของแต่ละรุ่น", unit: "รายการข้อมูล", source: "CMI definition → HOSxP logical mapping" },
+  hosxp_mapping_status: { label: "สถานะ HOSxP Mapping", description: "logical_ready_physical_mapping_pending หมายถึงรู้หลักเกณฑ์แล้ว แต่ต้อง map ชื่อ table/field ของ HOSxP ในแต่ละ รพ.", unit: "สถานะ", source: "NCO CMI Definition Registry" },
+  physical_mapping_note: { label: "ข้อกำหนดการ map HOSxP", description: "คำเตือน/เงื่อนไขสำหรับ IT รพ.ในการ map logical fields กับ schema จริง โดยห้ามเปลี่ยนนิยาม CMI", unit: "ข้อความ", source: "Data governance" },
 };
 
 function excelFieldGuide(key) {
@@ -85,6 +97,8 @@ function buildExcelInstructionRows() {
     ["Target Need — หน่วยนับ", "Data owner", "กำหนดให้ชัดว่าเป็น ‘คนไม่ซ้ำ’, ‘case/episode’ หรือ ‘visit’ และใช้หน่วยเดียวกันทุกปี ห้ามผสมกัน"],
     ["Workforce_History", "HR / บริหารทรัพยากรบุคคล", "จำนวนบุคลากรจริง และการเข้า-ออกของบุคลากรรายปี"],
     ["Profession_Config", "HR + ทีมวิชาชีพ / พัฒนาคุณภาพ", "AWT, CAS, IAS และ Activity Standard นาทีต่อ 1 หน่วยกิจกรรม"],
+    ["CMI_KPI_Definitions", "ทีมยุทธศาสตร์/คุณภาพ + IT/HOSxP", "นิยามมาตรฐานจาก CMI: ตัวตั้ง ตัวหาร สูตร หน่วย และ logical fields ที่ต้องดึงจาก HOSxP; ใช้ได้แม้ค่าจริงบางปีจะยังไม่ครบ"],
+    ["CMI Definition vs Value", "หลักสำคัญ", "Definition Ready แยกจาก Data Available: ถ้านิยาม CMI พร้อม แต่ปีใดไม่มีค่าจริง ให้คงนิยามไว้และเว้นค่า observed value — ห้ามใส่ 0 แทนข้อมูลขาด"],
     [],
     ["ข้อควรระวัง", "ข้อมูลในไฟล์นี้ควรเป็นข้อมูลรวมระดับพื้นที่/บริการ ไม่ใส่ชื่อบุคคล เลขบัตรประชาชน หรือข้อมูลสุขภาพรายบุคคล"],
   ];
