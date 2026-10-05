@@ -106,4 +106,5 @@
 document.write('<script src="Simulator_HR_blueprint_profession_dictionary.js"><\/script>');
 document.write('<script src="Simulator_HR_blueprint_profession_workload.js"><\/script>');
 document.write('<script src="Simulator_HR_blueprint_health_kpi.js"><\/script>');
+document.write('<script src="Simulator_HR_blueprint_cmi_import.js"><\/script>');
 document.write('<script src="Simulator_HR_blueprint_mock_chiangrai.js"><\/script>');
