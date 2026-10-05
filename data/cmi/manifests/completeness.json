@@ -1,0 +1,19 @@
+{
+  "schema_version": "nco-cmi-completeness-v1",
+  "generated_at": null,
+  "years": [
+    2565,
+    2566,
+    2567,
+    2568,
+    2569
+  ],
+  "indicators": [],
+  "summary": {
+    "expected": 0,
+    "available": 0,
+    "parsed": 0,
+    "percent": 0
+  },
+  "status": "awaiting_authorised_collection"
+}
