@@ -1,0 +1,37 @@
+name: Validate CMI five-year snapshot
+
+on:
+  push:
+    paths:
+      - 'data/cmi/**'
+      - 'output/cmi_5y/**'
+      - 'scripts/cmi_collect_browser.py'
+      - 'scripts/normalize_cmi_archive.py'
+      - 'scripts/validate_cmi_snapshot.py'
+      - 'requirements-cmi.txt'
+      - '.github/workflows/validate-cmi-snapshot.yml'
+  pull_request:
+    paths:
+      - 'data/cmi/**'
+      - 'output/cmi_5y/**'
+      - 'scripts/cmi_collect_browser.py'
+      - 'scripts/normalize_cmi_archive.py'
+      - 'scripts/validate_cmi_snapshot.py'
+      - 'requirements-cmi.txt'
+      - '.github/workflows/validate-cmi-snapshot.yml'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python syntax
+        run: |
+          python -m py_compile scripts/cmi_collect_browser.py
+          python -m py_compile scripts/normalize_cmi_archive.py
+          python -m py_compile scripts/validate_cmi_snapshot.py
+      - name: Validate committed snapshot
+        run: python scripts/validate_cmi_snapshot.py
