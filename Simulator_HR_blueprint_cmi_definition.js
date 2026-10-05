@@ -4,6 +4,54 @@
   const DEF_URL = "data/cmi/catalog/definitions.json";
   let definitionCache = null;
 
+  if (!NCO_PROFILE_SHEETS.includes("CMI_KPI_Definitions")) NCO_PROFILE_SHEETS.push("CMI_KPI_Definitions");
+  state.cmiDefinitionRows ||= [];
+
+  const baseCollectProfilePayloadCmiDef = collectProfilePayload;
+  const baseProfileRowsFromPayloadCmiDef = profileRowsFromPayload;
+  const baseBlankTemplatePayloadCmiDef = blankTemplatePayload;
+  const baseWorkbookSheetsFromXlsxCmiDef = workbookSheetsFromXlsx;
+  const baseProfilePayloadFromSheetRowsCmiDef = profilePayloadFromSheetRows;
+  const baseApplyProfilePayloadCmiDef = applyProfilePayload;
+
+  collectProfilePayload = function collectProfilePayloadWithCmiDefinitions() {
+    const payload = baseCollectProfilePayloadCmiDef();
+    payload.cmi_kpi_definitions = JSON.parse(JSON.stringify(state.cmiDefinitionRows || []));
+    return payload;
+  };
+
+  profileRowsFromPayload = function profileRowsFromPayloadWithCmiDefinitions(payload) {
+    const rows = baseProfileRowsFromPayloadCmiDef(payload);
+    rows.CMI_KPI_Definitions = payload.cmi_kpi_definitions || state.cmiDefinitionRows || [];
+    return rows;
+  };
+
+  blankTemplatePayload = function blankTemplatePayloadWithCmiDefinitions(payload) {
+    const copy = baseBlankTemplatePayloadCmiDef(payload);
+    copy.cmi_kpi_definitions = JSON.parse(JSON.stringify(state.cmiDefinitionRows || []));
+    return copy;
+  };
+
+  workbookSheetsFromXlsx = function workbookSheetsFromXlsxWithCmiDefinitions(workbook) {
+    const sheets = baseWorkbookSheetsFromXlsxCmiDef(workbook);
+    const ws = workbook.Sheets.CMI_KPI_Definitions;
+    sheets.CMI_KPI_Definitions = ws ? XLSX.utils.sheet_to_json(ws, { defval:null, raw:false }) : [];
+    return sheets;
+  };
+
+  profilePayloadFromSheetRows = function profilePayloadFromSheetRowsWithCmiDefinitions(sheets) {
+    const payload = baseProfilePayloadFromSheetRowsCmiDef(sheets);
+    payload.cmi_kpi_definitions = (sheets.CMI_KPI_Definitions || []).map((row) => ({ ...row }));
+    return payload;
+  };
+
+  applyProfilePayload = function applyProfilePayloadWithCmiDefinitions(payload) {
+    baseApplyProfilePayloadCmiDef(payload);
+    if (Array.isArray(payload.cmi_kpi_definitions) && payload.cmi_kpi_definitions.length) {
+      state.cmiDefinitionRows = payload.cmi_kpi_definitions.map((row) => ({ ...row }));
+    }
+  };
+
   async function loadDefinitions(force = false) {
     if (definitionCache && !force) return definitionCache;
     const res = await fetch(DEF_URL, { cache: force ? "reload" : "no-cache" });
@@ -12,6 +60,7 @@
     if (doc?.schema_version !== "nco-cmi-definition-registry-v1") throw new Error("CMI definition registry schema ไม่ถูกต้อง");
     definitionCache = doc;
     window.NCO_CMI_DEFINITIONS = doc;
+    state.cmiDefinitionRows = (doc.indicators || []).map((row) => ({ ...row }));
     return doc;
   }
 
