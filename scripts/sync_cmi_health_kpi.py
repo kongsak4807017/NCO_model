@@ -25,11 +25,14 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode, urljoin, urlparse, parse_qsl, urlunparse
-from urllib.request import Request, urlopen
+from http.cookiejar import CookieJar
+from urllib.request import Request, build_opener, HTTPCookieProcessor
 
 BASE = "https://cmi.maewanghospital.go.th/web/index.php"
 OUTPUT = Path("output/cmi_health_kpi_region1.json")
-USER_AGENT = "NCO-HR-Blueprint/1.0 (+https://github.com/kongsak4807017/NCO_model)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+COOKIE_JAR = CookieJar()
+OPENER = build_opener(HTTPCookieProcessor(COOKIE_JAR))
 
 SERVICE_CODES = [
     "DH0101", "DH0102", "DN0101", "DN0142D", "CI0101", "PE0102",
@@ -177,8 +180,16 @@ def request_html(url: str, method: str = "GET", data: dict[str, str] | None = No
         q = dict(parse_qsl(parsed.query, keep_blank_values=True))
         q.update(data)
         url = urlunparse(parsed._replace(query=urlencode(q)))
-    req = Request(url, data=payload, headers={"User-Agent": USER_AGENT, "Accept": "text/html,*/*"})
-    with urlopen(req, timeout=timeout) as res:
+    headers = {
+        "User-Agent": USER_AGENT,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "th-TH,th;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Referer": "https://cmi.maewanghospital.go.th/web/",
+        "Upgrade-Insecure-Requests": "1",
+        "Cache-Control": "no-cache",
+    }
+    req = Request(url, data=payload, headers=headers)
+    with OPENER.open(req, timeout=timeout) as res:
         raw = res.read()
         charset = res.headers.get_content_charset() or "utf-8"
         return raw.decode(charset, errors="replace")
@@ -348,6 +359,11 @@ def sync(codes: list[str], min_year: int | None = None, max_year: int | None = N
     all_records: list[dict[str, Any]] = []
     catalog: dict[str, Any] = {}
     errors: list[dict[str, str]] = []
+
+    try:
+        request_html("https://cmi.maewanghospital.go.th/web/")
+    except Exception:
+        pass
 
     for code in codes:
         url = source_url(code)
