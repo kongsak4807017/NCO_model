@@ -20,9 +20,9 @@
     doctor: Object.freeze([
       w("opdVisits", "OPD ที่แพทย์ตรวจจริง", "physician visits/year", "physician OPD encounters: จำนวนครั้งที่ผู้ป่วยนอกได้รับการประเมิน/ตรวจโดยแพทย์จริง ไม่ใช่ Total OPD ของโรงพยาบาล", "visit ที่มี provider profession = physician หรือมีหลักฐาน physician encounter", "exclude nurse-only, dental, physiotherapy, pharmacy-only และบริการวิชาชีพอื่นที่ไม่มีแพทย์ตรวจ", "HIS encounter/provider table หรือรายงานแพทย์ตรวจ OPD", "deduplicated", ["A01", "F10"], true),
       w("ipdAdmissions", "IPD admission ที่แพทย์รับผิดชอบ", "admissions/year", "จำนวน IPD admissions ที่มีแพทย์รับผิดชอบตามนิยามเดียวกับ Activity Standard นาที/admission", "admission ที่อยู่ในความรับผิดชอบของแพทย์/ทีมแพทย์ที่กำลังวิเคราะห์", "exclude admission ที่อยู่นอก scope หรือไม่มี physician workload ตามนิยาม", "HIS/DRG admission + attending physician", "independent", ["A01", "C02", "D01", "F10"]),
-      w("erVisits", "ER ที่แพทย์ประเมิน", "physician ER visits/year", "จำนวน ER encounters ที่มีการประเมินโดยแพทย์จริง", "ER visit ที่มี physician assessment/provider", "exclude triage/nurse-only encounter ที่ไม่มีแพทย์ประเมิน", "ER HIS/provider log", "deduplicated", ["A04", "A09", "DH0101", "DN0101", "DN0142D", "CI0101"], true),
+      w("erVisits", "ER ที่แพทย์ประเมิน", "physician ER visits/year", "จำนวน ER encounters ที่มีการประเมินโดยแพทย์จริง", "ER visit ที่มี physician assessment/provider", "exclude triage/nurse-only encounter ที่ไม่มีแพทย์ประเมิน", "ER HIS/provider log", "deduplicated", ["DH0102", "CI0101", "DH0101", "DN0101", "DN0142D"], true),
       w("procedures", "หัตถการ/ผ่าตัดที่แพทย์ทำ", "procedures/year", "จำนวน procedure/OR case ที่แพทย์ทำจริงและหน่วยนับตรงกับนาที/procedure", "procedure ที่แพทย์เป็น operator/ผู้ทำตามนิยาม", "exclude procedure ที่นับอยู่ใน encounter อื่นแล้วหากเวลามาตรฐาน encounter รวม procedure ไว้", "OR log/procedure registry/operator field", "unknown", ["C02", "F10", "DG0201", "DC0401"], true),
-      w("deliveries", "การคลอดที่แพทย์เข้าร่วมดูแล", "deliveries/year", "จำนวนการคลอดที่มีแพทย์ปฏิบัติงานตามบทบาทที่นิยามไว้", "delivery ที่มี physician attendance/intervention ตามเกณฑ์พื้นที่", "exclude delivery ที่ไม่มี physician work ตาม standard นี้", "Labour room log/operative delivery record", "independent", ["B01", "CM0101", "CM0203"]),
+      w("deliveries", "การคลอดที่แพทย์เข้าร่วมดูแล", "deliveries/year", "จำนวนการคลอดที่มีแพทย์ปฏิบัติงานตามบทบาทที่นิยามไว้", "delivery ที่มี physician attendance/intervention ตามเกณฑ์พื้นที่", "exclude delivery ที่ไม่มี physician work ตาม standard นี้", "Labour room log/operative delivery record", "independent", ["CM0101", "CM0203"]),
       w("chronicVisits", "NCD/โรคเรื้อรังที่แพทย์ตรวจ", "physician chronic visits/year", "จำนวน chronic/NCD encounters ที่แพทย์ตรวจจริงและต้องไม่ซ้ำกับ Doctor OPD encounters ที่นำมาคำนวณ", "physician NCD/chronic encounter ที่แยกออกจาก OPD numerator ได้", "exclude encounter ที่รวมอยู่ใน Doctor OPD volume แล้ว เว้นแต่ OPD numerator ถูกหักออกอย่างชัดเจน", "NCD registry + provider field", "unknown", ["A01", "F10"], true),
       w("mentalVisits", "บริการสุขภาพจิตที่แพทย์ตรวจ", "physician mental visits/year", "จำนวน mental-health encounters ที่แพทย์ตรวจจริงและไม่ซ้ำกับ Doctor OPD numerator", "psychiatric/mental encounter with physician provider", "exclude psychologist-only/counsellor-only และ encounter ที่ถูกนับใน Doctor OPD แล้วโดยไม่หักซ้ำ", "Mental health HIS/provider registry", "unknown", ["PS0001", "A01"], true),
       w("outreachVisits", "เยี่ยมบ้าน/บริการเชิงรุกที่แพทย์ให้บริการ", "physician contacts/year", "จำนวน outreach/home/community contacts ที่แพทย์ให้บริการจริงตามหน่วยที่กำหนด", "contact ที่แพทย์มี direct service activity", "exclude team outreach ที่แพทย์ไม่ได้ให้บริการโดยตรง", "Home visit/outreach roster", "independent", ["F10"]),
@@ -30,9 +30,9 @@
     nurse: Object.freeze([
       w("opdVisits", "OPD contact ที่พยาบาลให้บริการ", "nursing contacts/year", "จำนวน OPD service contacts ที่พยาบาลทำกิจกรรมตาม Activity Standard ของพยาบาล", "nursing assessment/procedure/contact ที่มีบันทึกจริง", "exclude งานที่ไม่มี nursing activity ตามนิยาม", "Nursing/HIS service log", "deduplicated", ["A01", "F10"], true),
       w("ipdAdmissions", "วันนอนผู้ป่วยในที่ทีมพยาบาลดูแล (patient-days)", "patient-days/year", "จำนวน patient-days ที่พยาบาลดูแลผู้ป่วยใน ใช้คู่กับ Activity Standard นาที/patient-day; ไม่ใช่ IPD admissions", "occupied inpatient patient-days ใน scope ของทีมพยาบาล", "exclude admissions count เมื่อ standard เป็นนาที/patient-day", "IPD census/bed-day report", "independent", ["A01", "A09", "D01", "CI0101"]),
-      w("erVisits", "ER encounter ที่พยาบาลดูแล", "nursing ER encounters/year", "จำนวน ER encounters ที่มี nursing workload ตามนิยาม", "triage/ER nursing care ที่บันทึกจริง", "exclude contact ที่ไม่มี nursing service", "ER nursing log/HIS", "deduplicated", ["A04", "A09", "DH0101", "DN0101", "CI0101"], true),
-      w("procedures", "หัตถการที่พยาบาลทำ", "nursing procedures/year", "จำนวน nursing procedures ที่หน่วยนับตรงกับนาที/procedure", "procedure ที่พยาบาลเป็นผู้ปฏิบัติ", "exclude procedure ที่รวมอยู่ใน encounter standard แล้วหากจะทำให้นับเวลาซ้ำ", "Nursing procedure log", "unknown", ["A09", "CI0101"], true),
-      w("deliveries", "การคลอดที่ทีมพยาบาล/ผดุงครรภ์ดูแล", "deliveries/year", "จำนวน delivery cases ที่พยาบาล/พยาบาลผดุงครรภ์ปฏิบัติงานตาม standard", "delivery ใน labour room ที่ทีมพยาบาลดูแล", "exclude cases outside scope", "Labour room registry", "independent", ["B01", "CM0101", "CM0203"]),
+      w("erVisits", "ER encounter ที่พยาบาลดูแล", "nursing ER encounters/year", "จำนวน ER encounters ที่มี nursing workload ตามนิยาม", "triage/ER nursing care ที่บันทึกจริง", "exclude contact ที่ไม่มี nursing service", "ER nursing log/HIS", "deduplicated", ["DH0102", "CI0101", "DH0101", "DN0101"], true),
+      w("procedures", "หัตถการที่พยาบาลทำ", "nursing procedures/year", "จำนวน nursing procedures ที่หน่วยนับตรงกับนาที/procedure", "procedure ที่พยาบาลเป็นผู้ปฏิบัติ", "exclude procedure ที่รวมอยู่ใน encounter standard แล้วหากจะทำให้นับเวลาซ้ำ", "Nursing procedure log", "unknown", ["CI0101"], true),
+      w("deliveries", "การคลอดที่ทีมพยาบาล/ผดุงครรภ์ดูแล", "deliveries/year", "จำนวน delivery cases ที่พยาบาล/พยาบาลผดุงครรภ์ปฏิบัติงานตาม standard", "delivery ใน labour room ที่ทีมพยาบาลดูแล", "exclude cases outside scope", "Labour room registry", "independent", ["CM0101", "CM0203"]),
       w("chronicVisits", "NCD/โรคเรื้อรังที่พยาบาลให้บริการ", "nursing chronic contacts/year", "จำนวน nurse-led NCD/chronic contacts ที่มี nursing activity จริง", "nurse-led chronic care contacts", "exclude contact ที่ถูกนับซ้ำใน OPD nursing numerator โดยไม่ deduplicate", "NCD clinic/HIS provider log", "unknown", ["F10"], true),
       w("mentalVisits", "บริการสุขภาพจิตที่พยาบาลให้บริการ", "nursing mental contacts/year", "จำนวน mental-health nursing contacts จริง", "mental-health nursing encounter", "exclude duplicate OPD contact unless deduplicated", "Mental health service log", "unknown", ["PS0001"], true),
       w("outreachVisits", "เยี่ยมบ้าน/บริการเชิงรุกที่พยาบาลให้บริการ", "nursing contacts/year", "จำนวน home visit/outreach contacts ที่พยาบาลให้บริการจริง", "direct nursing outreach/home-care contact", "exclude team events without nursing service", "Home visit/community nursing log", "independent", ["RH0101", "F10"]),
@@ -241,33 +241,44 @@
     })
   });
 
-  const healthKpis = Object.freeze({
-    A01: { code:"A01", name:"Crude Death Rate", unit:"%", direction:"low", threshold:"< 3.5", source:"NCO_INDICATOR_STANDARD.md" },
-    A04: { code:"A04", name:"AMI Mortality", unit:"%", direction:"low", threshold:"< 8", source:"NCO_INDICATOR_STANDARD.md" },
-    A09: { code:"A09", name:"Septicemia / Sepsis Mortality", unit:"%", direction:"low", threshold:"< 20", source:"NCO_INDICATOR_STANDARD.md" },
-    B01: { code:"B01", name:"Maternal Mortality", unit:"/100k", direction:"low", threshold:"< 70", source:"NCO_INDICATOR_STANDARD.md" },
-    C02: { code:"C02", name:"CMI", unit:"AdjRW", direction:"high", threshold:"> 1.5", source:"NCO_INDICATOR_STANDARD.md" },
-    D01: { code:"D01", name:"Bed Occupancy", unit:"%", direction:"range", threshold:"80-85", source:"NCO_INDICATOR_STANDARD.md" },
-    F10: { code:"F10", name:"Referral leakage to tertiary", unit:"%", direction:"low", threshold:"< 15", source:"NCO_INDICATOR_STANDARD.md" },
-    DH0101: { code:"DH0101", name:"STEMI Mortality", unit:"%", direction:"low", threshold:"< 12%", source:"NCO_INDICATOR_STANDARD.md" },
-    DH0102: { code:"DH0102", name:"AMI Mortality", unit:"%", direction:"low", threshold:null, source:"API/district_baseline_store.py" },
-    DN0101: { code:"DN0101", name:"Stroke Mortality", unit:"%", direction:"low", threshold:"< 15%", source:"NCO_INDICATOR_STANDARD.md" },
-    DN0142D: { code:"DN0142D", name:"Ischemic Stroke Death with rtPA", unit:"%", direction:"low", threshold:"< 1%", source:"NCO_INDICATOR_STANDARD.md" },
-    CI0101: { code:"CI0101", name:"Sepsis Mortality", unit:"%", direction:"low", threshold:"< 20%", source:"NCO_INDICATOR_STANDARD.md" },
-    PE0102: { code:"PE0102", name:"Pediatric Pneumonia Mortality", unit:"%", direction:"low", threshold:null, source:"API/district_baseline_store.py" },
-    CM0203: { code:"CM0203", name:"Neonatal Mortality", unit:"/1000", direction:"low", threshold:"< 10/1000", source:"NCO_INDICATOR_STANDARD.md" },
-    CM0101: { code:"CM0101", name:"Maternal Mortality", unit:"/100k", direction:"low", threshold:"< 70/100k", source:"NCO_INDICATOR_STANDARD.md" },
-    DC0401: { code:"DC0401", name:"Cancer Mortality", unit:"", direction:"low", threshold:null, source:"API/district_baseline_store.py" },
-    DG0201: { code:"DG0201", name:"Perforated Appendicitis", unit:"", direction:"low", threshold:null, source:"API/district_baseline_store.py" },
-    PS0001: { code:"PS0001", name:"Suicide Rate", unit:"", direction:"low", threshold:null, source:"API/district_baseline_store.py" },
-    RH0101: { code:"RH0101", name:"Stroke Rehabilitation Coverage", unit:"", direction:"high", threshold:null, source:"API/district_baseline_store.py" },
+  const CMI_BASE = "https://cmi.maewanghospital.go.th/web/index.php";
+  const serviceUrl = (code) => `${CMI_BASE}?co_thip_new=${encodeURIComponent(code)}&r=service%2Findex`;
+  const reportUrl = (code) => `${CMI_BASE}?id=${encodeURIComponent(code)}&r=report%2Fdrgindexreport`;
+
+  // Canonical KPI rows shown in Health_KPI_History.
+  // Legacy A04/A09/B01 are intentionally aliases only so the same outcome is not entered twice.
+  const kpiAliases = Object.freeze({
+    A04: "DH0102", // AMI Mortality
+    A09: "CI0101", // Sepsis Mortality
+    B01: "CM0101", // Maternal Mortality
   });
+
+  const healthKpis = Object.freeze({
+    A01: { code:"A01", name:"Crude Death Rate", unit:"%", direction:"low", threshold:"< 3.5", sourceSystem:"CMI/DRG outcome", sourceUrl:reportUrl("A01") },
+    C02: { code:"C02", name:"CMI", unit:"AdjRW", direction:"high", threshold:"> 1.5", sourceSystem:"CMI main report", sourceUrl:CMI_BASE },
+    D01: { code:"D01", name:"Bed Occupancy", unit:"%", direction:"range", threshold:"80-85", sourceSystem:"CMI main report", sourceUrl:CMI_BASE },
+    F10: { code:"F10", name:"Referral leakage to tertiary", unit:"%", direction:"low", threshold:"< 15", sourceSystem:"NCO context", sourceUrl:"" },
+
+    DH0101: { code:"DH0101", name:"STEMI Mortality", unit:"%", direction:"low", threshold:"< 12%", sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("DH0101") },
+    DH0102: { code:"DH0102", name:"AMI Mortality", unit:"%", direction:"low", threshold:null, sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("DH0102"), legacyAliases:["A04"] },
+    DN0101: { code:"DN0101", name:"Stroke Mortality", unit:"%", direction:"low", threshold:"< 15%", sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("DN0101") },
+    DN0142D: { code:"DN0142D", name:"Ischemic Stroke Death with rtPA", unit:"%", direction:"low", threshold:"< 1%", sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("DN0142D") },
+    CI0101: { code:"CI0101", name:"Sepsis Mortality", unit:"%", direction:"low", threshold:"< 20%", sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("CI0101"), legacyAliases:["A09"] },
+    PE0102: { code:"PE0102", name:"Pediatric Pneumonia Mortality", unit:"%", direction:"low", threshold:null, sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("PE0102") },
+    CM0203: { code:"CM0203", name:"Neonatal Mortality", unit:"/1000", direction:"low", threshold:"< 10/1000", sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("CM0203") },
+    CM0101: { code:"CM0101", name:"Maternal Mortality", unit:"/100k", direction:"low", threshold:"< 70/100k", sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("CM0101"), legacyAliases:["B01"] },
+    DC0401: { code:"DC0401", name:"Cancer Mortality", unit:"", direction:"low", threshold:null, sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("DC0401") },
+    DG0201: { code:"DG0201", name:"Perforated Appendicitis", unit:"", direction:"low", threshold:null, sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("DG0201") },
+    PS0001: { code:"PS0001", name:"Suicide Rate", unit:"", direction:"low", threshold:null, sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("PS0001") },
+    RH0101: { code:"RH0101", name:"Stroke Rehabilitation Coverage", unit:"", direction:"high", threshold:null, sourceSystem:"CMI Service Plan", sourceUrl:serviceUrl("RH0101") },
+  });;
 
   window.NCO_HR_PROFESSION_DICTIONARY = Object.freeze({
     version: "2026-09-18",
     workloadDefinitions,
     hisExtractionGuide,
     healthKpis,
+    kpiAliases,
     overlapOptions: Object.freeze(["independent", "exclusive", "deduplicated", "unknown"]),
     note: "Health KPI is outcome context only; association does not prove staffing causality.",
   });
