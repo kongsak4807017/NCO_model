@@ -10,6 +10,7 @@ const professionDictionary = read('Simulator_HR_blueprint_profession_dictionary.
 const workloadAdapter = read('Simulator_HR_blueprint_profession_workload.js');
 const healthKpi = read('Simulator_HR_blueprint_health_kpi.js');
 const cmiImport = read('Simulator_HR_blueprint_cmi_import.js');
+const cmiSnapshot = read('Simulator_HR_blueprint_cmi_snapshot.js');
 
 const v2Presentation = `${professionDictionary}\n${workloadAdapter}\n${healthKpi}`;
 
@@ -85,8 +86,9 @@ test('formula layer loads v2 modules before Excel and help execute', () => {
   const dictionary = formula.indexOf('Simulator_HR_blueprint_profession_dictionary.js');
   const workload = formula.indexOf('Simulator_HR_blueprint_profession_workload.js');
   const kpi = formula.indexOf('Simulator_HR_blueprint_health_kpi.js');
+  const cmiSnapshotLoader = formula.indexOf('Simulator_HR_blueprint_cmi_snapshot.js');
   const cmiImportLoader = formula.indexOf('Simulator_HR_blueprint_cmi_import.js');
-  assert.ok(dictionary >= 0 && workload > dictionary && kpi > workload && cmiImportLoader > kpi);
+  assert.ok(dictionary >= 0 && workload > dictionary && kpi > workload && cmiSnapshotLoader > kpi && cmiImportLoader > cmiSnapshotLoader);
 });
 
 
@@ -129,4 +131,20 @@ test('CMI export import layer maps source KPI/year/scope into Health KPI History
   assert.match(cmiImport, /hospital-row|province-aggregate/);
   assert.match(cmiImport, /verification_status = "Reviewed"/);
   assert.match(cmiImport, /cmiKpiImport/);
+});
+
+
+test('five-year CMI snapshot loader uses validated hospital-code/province matching', () => {
+  assert.match(cmiSnapshot, /output\/cmi_5y\/health_kpi_records\.json/);
+  assert.match(cmiSnapshot, /cmiHospitalCode/);
+  assert.match(cmiSnapshot, /โหลด CMI 5 ปีย้อนหลัง/);
+  assert.match(cmiSnapshot, /numerator/);
+  assert.match(cmiSnapshot, /denominator/);
+  assert.match(cmiSnapshot, /province aggregate/);
+  assert.match(cmiSnapshot, /verification_status:\s*"Reviewed"/);
+});
+
+test('Health KPI table can display snapshot indicators discovered beyond the seed dictionary', () => {
+  assert.match(healthKpi, /for \(const row of state\.healthKpiRows/);
+  assert.match(healthKpi, /allowed\.add\(row\.indicator_code\)/);
 });
