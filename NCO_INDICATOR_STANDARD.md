@@ -5,25 +5,28 @@
 ---
 
 
-## Health KPI canonical source policy
+## Health KPI display/source policy
 
-สำหรับ `Health_KPI_History` ให้ใช้ **รหัสจากระบบ CMI / Service Plan ของเขตสุขภาพที่ 1 เป็น canonical code** เมื่อมีตัวชี้วัดเดียวกันอยู่ทั้งใน Core Outcome catalog และ Service Plan catalog เพื่อไม่ให้ผู้ใช้กรอกผลลัพธ์เดียวกันซ้ำสองแถว
+สำหรับ `Health_KPI_History` ให้ใช้รหัสและนิยามจากแหล่งต้นทางอย่างชัดเจน และ **ห้ามรวมค่าของตัวชี้วัดเพียงเพราะชื่อคล้ายกัน** หากยังไม่ยืนยัน numerator/denominator, inclusion/exclusion และระดับข้อมูลว่าเท่ากัน
 
-| Legacy/Core code | Canonical code ใน Health_KPI_History | Outcome | การจัดการ |
-|---|---|---|---|
-| A04 | DH0102 | AMI Mortality | A04 เป็น legacy alias; import เก่าถูก map เป็น DH0102 |
-| A09 | CI0101 | Sepsis Mortality | A09 เป็น legacy alias; ไม่สร้างแถวซ้ำ |
-| B01 | CM0101 | Maternal Mortality | B01 เป็น legacy alias; ไม่สร้างแถวซ้ำ |
+### AMI duplicate ที่พบในการทดลองใช้
+
+- `A04` = AMI Mortality ใน Core Outcome/DRG catalog เดิม
+- `DH0102` = AMI Mortality ใน Service Plan catalog
+- หน้า Health KPI History ใหม่จะแสดง `DH0102` เป็นค่าเริ่มต้นและซ่อน `A04` เพื่อลดการกรอกซ้ำ
+- **ไม่ย้ายค่า A04 → DH0102 อัตโนมัติ** จนกว่าจะทวนสอบนิยามจากแหล่งต้นทางว่าเทียบเท่ากันจริง
+- A09/CI0101 และ B01/CM0101 ยังคงเป็นคนละ indicator context จนกว่าจะมีหลักฐานยืนยันว่า definition เดียวกัน
 
 แหล่งตรวจสอบตัวชี้วัด Service Plan โดยตรง:
 `https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=<CODE>&r=service%2Findex`
 
 หลักปฏิบัติ:
-- ชื่อเหมือนกันไม่ได้แปลว่าต้องเก็บสองครั้ง; ให้ตรวจ numerator/denominator และ source ก่อนกำหนด canonical code
-- Excel template ใหม่ต้อง export เฉพาะ canonical row
-- ไฟล์เก่าที่มี alias ต้อง migrate โดยรักษาค่าจริงและ provenance เดิม
+- Excel template ใหม่ไม่ควรมี AMI สองแถวที่ชื่อเหมือนกันโดยไม่มีคำอธิบาย
+- เก็บ source URL และ source indicator code ไว้เสมอ
+- ถ้าค่าเดิมจากคนละ code ไม่ตรงกัน ให้คงเป็นคนละ observation และส่งกลับให้ data owner ทวนสอบ
 - `Health_KPI_History` เป็น outcome context และไม่เข้า WISN FTE โดยตรง
-- หากระบบ CMI ไม่อนุญาต server-to-server access ให้ใช้ URL ต้นทาง/ไฟล์ Export จาก CMI เป็นหลักฐานแทนการสร้างค่าจำลอง
+- ระบบ CMI ปัจจุบันปฏิเสธ server-to-server request จาก GitHub-hosted runner (HTTP 403) จึงใช้ไฟล์ `Save as Excel / Export Page Data` จากหน้า CMI เป็นช่องทางนำเข้าค่าจริงแบบไม่ต้องคีย์ซ้ำ
+
 
 ## 1) Canonical Outcome Set
 | Code | Name | Direction | Threshold | Unit | Role in NCO |
@@ -95,9 +98,9 @@ Health/Service KPI ใช้เป็น **outcome context** เพื่อป�
 
 แนวทางเชื่อม:
 - Doctor/ER/Cardio workload → DH0102, DH0101
-- Doctor/Nurse ER-IPD sepsis workload → CI0101
+- Doctor/Nurse ER-IPD sepsis workload → A09, CI0101
 - Doctor/Nurse stroke workload → DN0101, DN0142D
-- Maternal/Delivery workload → CM0101, CM0203
+- Maternal/Delivery workload → B01, CM0101, CM0203
 - IPD capacity → C02, D01
 - Network/service capability → F10
 - Rehabilitation workload → RH0101 (เมื่อมีค่าจริงจาก source)
