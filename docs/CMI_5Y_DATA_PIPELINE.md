@@ -52,6 +52,33 @@ The collector will:
 
 A missing year is recorded as missing; it is never fabricated.
 
+## Step 1B — Build the Definition Registry
+
+The CMI definition is useful even when observed hospital values are incomplete.
+
+```bash
+python scripts/build_cmi_definition_registry.py
+```
+
+This reads the latest available CMI source page for each indicator and records:
+
+- indicator name/code;
+- numerator label;
+- denominator label;
+- output label;
+- measure type and calculation formula when represented by the CMI table;
+- unit;
+- source URL and source SHA-256;
+- logical HOSxP/HIS data concepts required to reproduce the same indicator.
+
+The registry deliberately separates:
+
+- **Definition Ready** — we know what to count and how CMI calculates it;
+- **Physical HOSxP Mapping Ready** — local IT has mapped the logical fields to its HOSxP/HOSxP XE schema/report;
+- **Observed Value Available** — a hospital/year value is present in the five-year snapshot.
+
+A missing historical value must never erase or invalidate an otherwise valid standard definition.
+
 ## Step 2 — Normalize all raw pages
 
 ```bash
@@ -138,3 +165,24 @@ The importer:
 - writes conflicts to `data/cmi/manifests/import_conflicts.json`.
 
 This is the preferred fallback when the CMI team can provide a five-year bulk Excel package.
+
+
+## HOSxP logical mapping rule
+
+CMI definitions are the calculation standard. HOSxP is the operational data source at hospital level.
+
+Therefore the extraction specification should be written as logical concepts first, for example:
+
+- encounter key: VN / AN;
+- fiscal date: visit/admit/discharge date;
+- population: age/sex/residence when required;
+- condition: ICD-10 diagnoses;
+- intervention: procedure/operation code and timestamp;
+- outcome: discharge/death status;
+- utilization: LOS/bed-days;
+- DRG: AdjRW/RW;
+- finance: charge/cost/claim amount.
+
+Each hospital may map those concepts to its actual HOSxP/HOSxP XE table/field names, but it must **not change the CMI numerator, denominator, inclusion/exclusion or formula**.
+
+This makes the method portable across hospitals while preserving one regional definition.
