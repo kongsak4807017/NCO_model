@@ -726,7 +726,7 @@
         const idx = rows.findIndex((row)=>row?.[0] === "Workload_History");
         if (idx >= 0) rows[idx][2] = "ประชากรและ facility totals เพื่อ reference/reconcile เท่านั้น ไม่ใช้เป็น profession WISN numerator";
         rows.push(["Profession_Workload", "ทีมวิชาชีพ + IT/HIS + เวชระเบียน", "เริ่มจาก ‘งานที่วิชาชีพทำจริง’ → ‘วิธีดึง/วิธีนับจาก HIS’ → ‘ตัวตั้งที่ต้องนับ’ → กรอก ‘จำนวนงานจริงของวิชาชีพจาก HIS’ และระบุแหล่งข้อมูลจริงที่ใช้"]);
-        rows.push(["Health_KPI_History", "ยุทธศาสตร์/คุณภาพ/Service Plan", "ค่าตัวชี้วัด outcome/service KPI จริงรายปี พร้อม source/status"]);
+        rows.push(["Health_KPI_History", "ระบบ CMI / Service Plan + ยุทธศาสตร์/คุณภาพ", "ใช้รหัส canonical จาก CMI Service Plan; ไม่กรอก alias ซ้ำ (A04→DH0102, A09→CI0101, B01→CM0101). ค่า KPI สามารถนำเข้าจากไฟล์ Save as Excel / Export Page Data ของระบบ CMI"]);
         return rows;
       };
     }
