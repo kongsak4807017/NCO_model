@@ -1,0 +1,21 @@
+{
+  "schema_version": "nco-cmi-kpi-5y-v1",
+  "generated_at": null,
+  "source_system": "CMI / Service Plan Region 1",
+  "source_base_url": "https://cmi.maewanghospital.go.th/web/index.php",
+  "years": [
+    2565,
+    2566,
+    2567,
+    2568,
+    2569
+  ],
+  "status": "awaiting_authorised_collection",
+  "records": [],
+  "completeness": {
+    "indicator_year_expected": 0,
+    "indicator_year_available": 0,
+    "percent": 0
+  },
+  "note": "Populate with scripts/cmi_collect_browser.py then scripts/normalize_cmi_archive.py on a machine that can access the CMI site."
+}
