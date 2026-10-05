@@ -1,0 +1,225 @@
+{
+  "schema_version": "nco-cmi-definition-registry-v1",
+  "generated_at": "2026-10-05T00:00:00+07:00",
+  "source_system": "CMI / Service Plan Region 1",
+  "policy": {
+    "definition_authority": "CMI source page / official indicator specification",
+    "value_independence": "Definition metadata remains usable even when a hospital-year observed value is missing.",
+    "hosxp_mapping": "Map CMI numerator/denominator conditions to logical HOSxP/HIS concepts. Physical table/field names are site/version mappings and must be verified locally.",
+    "formula_rule": "Use the formula represented by CMI numerator/denominator/output columns; never invent missing clinical inclusion criteria."
+  },
+  "hosxp_logical_dictionary": {
+    "patient_identity": [
+      "HN/CID or local patient key"
+    ],
+    "encounter": [
+      "VN for OPD/ER or AN for IPD"
+    ],
+    "time": [
+      "visit date",
+      "admit date",
+      "discharge date",
+      "fiscal year"
+    ],
+    "diagnosis": [
+      "principal diagnosis",
+      "secondary diagnosis",
+      "ICD-10"
+    ],
+    "procedure": [
+      "procedure/operation code",
+      "ICD-9-CM/local OR code",
+      "procedure date/time"
+    ],
+    "outcome": [
+      "discharge status",
+      "death status",
+      "discharge type"
+    ],
+    "utilization": [
+      "LOS",
+      "occupied days",
+      "bed days"
+    ],
+    "drg": [
+      "DRG",
+      "AdjRW",
+      "RW"
+    ],
+    "finance": [
+      "charge/cost/claim amount"
+    ],
+    "provider": [
+      "provider",
+      "ward",
+      "clinic/service"
+    ]
+  },
+  "indicators": [
+    {
+      "indicator_code": "ODS0101",
+      "indicator_name": "ร้อยละผู้ป่วยโรคไส้เลื่อนขาหนีบที่ผ่าตัดแบบ One Day Surgery",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=ODS0101&r=service%2Findex",
+      "measure_type": "percentage",
+      "numerator_label": "จำนวนผู้ป่วยโรคไส้เลื่อนขาหนีบที่เข้ารับการผ่าตัดแบบ One Day Surgery",
+      "denominator_label": "จำนวนผู้ป่วยโรคไส้เลื่อนขาหนีบที่เข้ารับการผ่าตัดทั้งหมด",
+      "formula": "numerator / denominator × 100",
+      "unit": "%",
+      "hosxp_logical_source": [
+        "IPD/ODS encounter",
+        "diagnosis for inguinal hernia",
+        "operation/procedure",
+        "same-day/ODS discharge criteria",
+        "AN",
+        "admit/discharge date"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "FX7001",
+      "indicator_name": "ร้อยละผู้สูงอายุ Admit ด้วยการล้มและมีภาวะกระดูกสะโพกหัก",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX7001&r=service%2Findex",
+      "measure_type": "percentage",
+      "numerator_label": "จำนวนผู้สูงอายุเข้ารับการรักษาในโรงพยาบาลด้วยการล้มและมีภาวะกระดูกสะโพกหัก",
+      "denominator_label": "จำนวนผู้สูงอายุเข้ารับการรักษาในโรงพยาบาลด้วยการล้ม",
+      "formula": "numerator / denominator × 100",
+      "unit": "%",
+      "hosxp_logical_source": [
+        "AN",
+        "age/DOB",
+        "admission diagnosis",
+        "external cause/fall diagnosis",
+        "hip fracture diagnosis",
+        "admit/discharge date"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "FX60033",
+      "indicator_name": "ร้อยละผู้สูงอายุกระดูกสะโพกหักที่ผ่าตัดภายใน 48 ชม. และ LOS ≤5 วัน",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX60033&r=service%2Findex",
+      "measure_type": "percentage",
+      "numerator_label": "จำนวนผู้สูงอายุภาวะกระดูกสะโพกหักที่ได้รับการผ่าตัดภายใน 48 ชั่วโมง และ LOS ≤5 วัน",
+      "denominator_label": "จำนวนผู้สูงอายุภาวะกระดูกสะโพกหักที่ได้รับการผ่าตัดทั้งหมด",
+      "formula": "numerator / denominator × 100",
+      "unit": "%",
+      "hosxp_logical_source": [
+        "AN",
+        "age/DOB",
+        "hip fracture diagnosis",
+        "operation/procedure",
+        "admission datetime",
+        "operation datetime",
+        "discharge datetime/LOS"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "DG0203",
+      "indicator_name": "จำนวนการผ่าตัดไส้ติ่งอักเสบและวันนอนเฉลี่ย",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=DG0203&r=service%2Findex",
+      "measure_type": "average",
+      "numerator_label": "จำนวนวันนอนรวม",
+      "denominator_label": "จำนวนผู้ป่วยผ่าตัดไส้ติ่งอักเสบ",
+      "formula": "total inpatient days / appendicitis surgery cases",
+      "unit": "days/case",
+      "hosxp_logical_source": [
+        "AN",
+        "appendicitis diagnosis",
+        "operation/procedure",
+        "admit date",
+        "discharge date",
+        "LOS"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "DG0204",
+      "indicator_name": "จำนวนการผ่าตัดไส้ติ่งทั้งอักเสบและไม่อักเสบและวันนอนรวม",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=DG0204&r=service%2Findex",
+      "measure_type": "average",
+      "numerator_label": "จำนวนวันนอนรวม",
+      "denominator_label": "จำนวนผู้ป่วยผ่าตัดไส้ติ่งทั้งอักเสบและไม่อักเสบ",
+      "formula": "total inpatient days / appendectomy cases",
+      "unit": "days/case",
+      "hosxp_logical_source": [
+        "AN",
+        "diagnosis",
+        "appendectomy procedure",
+        "admit/discharge date",
+        "LOS"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "FX6007",
+      "indicator_name": "ค่าเฉลี่ยวันนอนผู้สูงอายุกระดูกสะโพกหักกลุ่มไม่ผ่าตัด",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX6007&r=service%2Findex",
+      "measure_type": "average",
+      "numerator_label": "จำนวนวันนอนรวมของผู้สูงอายุกระดูกสะโพกหักกลุ่มไม่ผ่าตัด",
+      "denominator_label": "จำนวนผู้ป่วยผู้สูงอายุกระดูกสะโพกหักกลุ่มไม่ผ่าตัด",
+      "formula": "total inpatient days / non-operative hip-fracture cases",
+      "unit": "days/case",
+      "hosxp_logical_source": [
+        "AN",
+        "age/DOB",
+        "hip fracture diagnosis",
+        "absence of qualifying operation",
+        "admit/discharge date",
+        "LOS"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "FX6008",
+      "indicator_name": "ค่ารักษาพยาบาลเฉลี่ยผู้สูงอายุกระดูกสะโพกหักกลุ่มไม่ผ่าตัด",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX6008&r=service%2Findex",
+      "measure_type": "average",
+      "numerator_label": "ค่ารักษารวมของผู้สูงอายุกระดูกสะโพกหักกลุ่มไม่ผ่าตัด",
+      "denominator_label": "จำนวนผู้ป่วยผู้สูงอายุกระดูกสะโพกหักกลุ่มไม่ผ่าตัด",
+      "formula": "total treatment charge / non-operative hip-fracture cases",
+      "unit": "THB/case",
+      "hosxp_logical_source": [
+        "AN",
+        "age/DOB",
+        "hip fracture diagnosis",
+        "absence of qualifying operation",
+        "charge/cost/claim amount"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "PECMI",
+      "indicator_name": "Average Adjusted RW (CMI) เด็กอายุ 1 เดือน–15 ปี",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=PECMI&r=service%2Findex",
+      "measure_type": "average",
+      "numerator_label": "ผลรวม Adj.RW ของเด็กอายุ 1 เดือน–15 ปี",
+      "denominator_label": "จำนวนเด็กอายุ 1 เดือน–15 ปีที่จำหน่ายทั้งหมด",
+      "formula": "sum AdjRW / discharged pediatric cases",
+      "unit": "AdjRW/case",
+      "hosxp_logical_source": [
+        "AN",
+        "age/DOB",
+        "discharge date",
+        "DRG/AdjRW"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    }
+  ]
+}
