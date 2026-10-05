@@ -1,0 +1,118 @@
+{
+  "schema_version": "nco-cmi-indicator-catalog-v1",
+  "source_system": "CMI / Service Plan Region 1",
+  "source_base_url": "https://cmi.maewanghospital.go.th/web/index.php",
+  "discovery_status": "seed_only_pending_authorised_browser_collection",
+  "years_target": [
+    2565,
+    2566,
+    2567,
+    2568,
+    2569
+  ],
+  "duplicate_policy": {
+    "A04": {
+      "display_default": false,
+      "review_against": "DH0102",
+      "reason": "Same AMI mortality label across historical Core Outcome and Service Plan catalogs; definitions must be reconciled before value migration."
+    }
+  },
+  "indicators": [
+    {
+      "code": "A01",
+      "name": "Crude Death Rate",
+      "family": "core_outcome"
+    },
+    {
+      "code": "A04",
+      "name": "AMI Mortality (Core Outcome)",
+      "family": "core_outcome",
+      "display_default": false
+    },
+    {
+      "code": "A09",
+      "name": "Septicemia / Sepsis Mortality (Core Outcome)",
+      "family": "core_outcome"
+    },
+    {
+      "code": "B01",
+      "name": "Maternal Mortality (Core Outcome)",
+      "family": "core_outcome"
+    },
+    {
+      "code": "C02",
+      "name": "CMI",
+      "family": "core_outcome"
+    },
+    {
+      "code": "D01",
+      "name": "Bed Occupancy",
+      "family": "core_outcome"
+    },
+    {
+      "code": "F10",
+      "name": "Referral leakage to tertiary",
+      "family": "core_outcome"
+    },
+    {
+      "code": "DH0101",
+      "name": "STEMI Mortality",
+      "family": "service_plan"
+    },
+    {
+      "code": "DH0102",
+      "name": "AMI Mortality (Service Plan)",
+      "family": "service_plan"
+    },
+    {
+      "code": "DN0101",
+      "name": "Stroke Mortality",
+      "family": "service_plan"
+    },
+    {
+      "code": "DN0142D",
+      "name": "Ischemic Stroke Death with rtPA",
+      "family": "service_plan"
+    },
+    {
+      "code": "CI0101",
+      "name": "Sepsis Mortality (Service Plan)",
+      "family": "service_plan"
+    },
+    {
+      "code": "PE0102",
+      "name": "Pediatric Pneumonia Mortality",
+      "family": "service_plan"
+    },
+    {
+      "code": "CM0203",
+      "name": "Neonatal Mortality Rate",
+      "family": "service_plan"
+    },
+    {
+      "code": "CM0101",
+      "name": "Maternal mortality — admitted cases",
+      "family": "service_plan"
+    },
+    {
+      "code": "DC0401",
+      "name": "Cancer Mortality",
+      "family": "service_plan"
+    },
+    {
+      "code": "DG0201",
+      "name": "Perforated Appendicitis",
+      "family": "service_plan"
+    },
+    {
+      "code": "PS0001",
+      "name": "Suicide Rate",
+      "family": "service_plan"
+    },
+    {
+      "code": "RH0101",
+      "name": "Stroke Rehabilitation Coverage",
+      "family": "service_plan"
+    }
+  ]
+}
