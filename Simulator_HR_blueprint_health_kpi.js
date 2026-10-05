@@ -36,10 +36,20 @@
     if (!body) return;
     const professionFilter = $("healthKpiProfessionFilter")?.value || "all";
     let allowed = new Set(KPI_CODES);
-    if (professionFilter !== "all") allowed = new Set(relatedKpisForProfession(professionFilter).map((kpi)=>kpi.code));
+    if (professionFilter === "all") {
+      for (const row of state.healthKpiRows || []) {
+        if (PD.healthKpis?.[row.indicator_code]?.display === false) continue;
+        allowed.add(row.indicator_code);
+      }
+    } else {
+      allowed = new Set(relatedKpisForProfession(professionFilter).map((kpi)=>kpi.code));
+    }
     const rows = (state.healthKpiRows || []).filter((row)=>allowed.has(row.indicator_code));
     body.innerHTML = rows.map((row)=>{
-      const kpi = PD.healthKpis?.[row.indicator_code] || { name:row.indicator_name, unit:row.unit, threshold:row.threshold, direction:row.direction };
+      const kpi = PD.healthKpis?.[row.indicator_code] || {
+        name:row.indicator_name, unit:row.unit, threshold:row.threshold, direction:row.direction,
+        sourceUrl:row.source_url, sourceSystem:row.source_system
+      };
       const key = `${row.year}:${row.indicator_code}`;
       return `<tr>
         <td>${row.year}</td>
