@@ -4,6 +4,27 @@
 
 ---
 
+
+## Health KPI canonical source policy
+
+สำหรับ `Health_KPI_History` ให้ใช้ **รหัสจากระบบ CMI / Service Plan ของเขตสุขภาพที่ 1 เป็น canonical code** เมื่อมีตัวชี้วัดเดียวกันอยู่ทั้งใน Core Outcome catalog และ Service Plan catalog เพื่อไม่ให้ผู้ใช้กรอกผลลัพธ์เดียวกันซ้ำสองแถว
+
+| Legacy/Core code | Canonical code ใน Health_KPI_History | Outcome | การจัดการ |
+|---|---|---|---|
+| A04 | DH0102 | AMI Mortality | A04 เป็น legacy alias; import เก่าถูก map เป็น DH0102 |
+| A09 | CI0101 | Sepsis Mortality | A09 เป็น legacy alias; ไม่สร้างแถวซ้ำ |
+| B01 | CM0101 | Maternal Mortality | B01 เป็น legacy alias; ไม่สร้างแถวซ้ำ |
+
+แหล่งตรวจสอบตัวชี้วัด Service Plan โดยตรง:
+`https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=<CODE>&r=service%2Findex`
+
+หลักปฏิบัติ:
+- ชื่อเหมือนกันไม่ได้แปลว่าต้องเก็บสองครั้ง; ให้ตรวจ numerator/denominator และ source ก่อนกำหนด canonical code
+- Excel template ใหม่ต้อง export เฉพาะ canonical row
+- ไฟล์เก่าที่มี alias ต้อง migrate โดยรักษาค่าจริงและ provenance เดิม
+- `Health_KPI_History` เป็น outcome context และไม่เข้า WISN FTE โดยตรง
+- หากระบบ CMI ไม่อนุญาต server-to-server access ให้ใช้ URL ต้นทาง/ไฟล์ Export จาก CMI เป็นหลักฐานแทนการสร้างค่าจำลอง
+
 ## 1) Canonical Outcome Set
 | Code | Name | Direction | Threshold | Unit | Role in NCO |
 |---|---|---|---|---|---|
@@ -73,10 +94,10 @@ HR_GAP = Required_FTE - Actual_Supply_FTE
 Health/Service KPI ใช้เป็น **outcome context** เพื่อประกอบการตอบว่า “ผลลัพธ์บริการ/สุขภาพเป็นอย่างไรในช่วงที่ capacity เป็นแบบนี้” ไม่ใช่หลักฐานเชิงสาเหตุว่าจำนวนบุคลากรเป็นเหตุของ KPI โดยลำพัง
 
 แนวทางเชื่อม:
-- Doctor/ER/Cardio workload → A04, DH0101
-- Doctor/Nurse ER-IPD sepsis workload → A09, CI0101
+- Doctor/ER/Cardio workload → DH0102, DH0101
+- Doctor/Nurse ER-IPD sepsis workload → CI0101
 - Doctor/Nurse stroke workload → DN0101, DN0142D
-- Maternal/Delivery workload → B01, CM0101, CM0203
+- Maternal/Delivery workload → CM0101, CM0203
 - IPD capacity → C02, D01
 - Network/service capability → F10
 - Rehabilitation workload → RH0101 (เมื่อมีค่าจริงจาก source)
