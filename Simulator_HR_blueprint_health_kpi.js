@@ -3,7 +3,7 @@
 (() => {
   "use strict";
   const PD = window.NCO_HR_PROFESSION_DICTIONARY || { healthKpis:{}, workloadDefinitions:{} };
-  const KPI_CODES = Object.keys(PD.healthKpis || {});
+  const KPI_CODES = Object.values(PD.healthKpis || {}).filter((kpi)=>kpi.display !== false).map((kpi)=>kpi.code);
 
   function relatedKpisForProfession(code) {
     const codes = new Set();
@@ -86,7 +86,7 @@
     section.id = "healthKpiPanel";
     section.innerHTML = `
       <div class="panel-header"><div><span class="section-num">5B</span><h3>Health KPI History — CMI / Service Plan</h3></div><p>ใช้ KPI จริงจากระบบ CMI / Service Plan เป็น outcome context ประกอบการวิเคราะห์กำลังคน — <strong>ไม่ใช่หลักฐานเชิงสาเหตุว่ากำลังคนเป็นเหตุของ KPI</strong></p></div>
-      <div class="validation-banner"><strong>หลักการ:</strong> KPI ช่วยตอบว่า “ผลลัพธ์บริการ/สุขภาพเป็นอย่างไรในช่วงที่ capacity เป็นแบบนี้” แต่การเปลี่ยน KPI อาจเกิดจาก case mix, referral, technology, process, access และปัจจัยอื่นร่วมด้วย<br><strong>Canonicalization:</strong> ตัวชี้วัดชื่อเดียวกันจากคนละ catalog ไม่แสดงซ้ำ เช่น A04 → DH0102 (AMI), A09 → CI0101 (Sepsis), B01 → CM0101 (Maternal). Health KPI History ใช้รหัสหลักเพียงแถวเดียว</div>
+      <div class="validation-banner"><strong>หลักการ:</strong> KPI ช่วยตอบว่า “ผลลัพธ์บริการ/สุขภาพเป็นอย่างไรในช่วงที่ capacity เป็นแบบนี้” แต่การเปลี่ยน KPI อาจเกิดจาก case mix, referral, technology, process, access และปัจจัยอื่นร่วมด้วย<br><strong>AMI duplicate review:</strong> A04 (Core Outcome) และ DH0102 (Service Plan) มีชื่อ AMI Mortality ซ้ำกันใน catalog เดิม จึงแสดง DH0102 เป็นค่าเริ่มต้นเพียงแถวเดียว แต่ระบบไม่ย้ายค่า A04 ไป DH0102 อัตโนมัติจนกว่าจะยืนยัน numerator/denominator ว่าเท่ากัน</div>
       <div class="tool-row"><label class="field inline"><span>กรองตามวิชาชีพ</span><select id="healthKpiProfessionFilter"></select></label></div>
       <div class="table-shell tall"><table class="data-table"><thead><tr><th>ปี</th><th>KPI</th><th>ชื่อ</th><th>ค่าจริง</th><th>หน่วย</th><th>Direction</th><th>Canonical threshold</th><th>CMI ต้นทาง</th><th>Source ที่ใช้</th><th>Verify</th><th>Related professions</th><th>Status</th></tr></thead><tbody id="healthKpiBody"></tbody></table></div>`;
     needPanel.parentNode.insertBefore(section, needPanel.nextSibling);
