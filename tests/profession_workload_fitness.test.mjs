@@ -70,7 +70,7 @@ test('UI and Excel copy explain facility reference, profession workload, Data Fi
   assert.match(workloadAdapter, /Profession-specific Historical Workload/);
   assert.match(workloadAdapter, /reference only|อ้างอิงเท่านั้น/i);
   assert.match(workloadAdapter, /Data Fitness/);
-  assert.match(healthKpi, /Health Outcome KPI Context/);
+  assert.match(healthKpi, /Health KPI History — CMI \/ Service Plan/);
   assert.match(workloadAdapter, /Profession_Workload/);
   assert.match(workloadAdapter, /Health_KPI_History/);
   assert.match(workloadAdapter, /Workload_History[\s\S]*reference|facility totals[\s\S]*reference/i);
