@@ -11,6 +11,7 @@ const workloadAdapter = read('Simulator_HR_blueprint_profession_workload.js');
 const healthKpi = read('Simulator_HR_blueprint_health_kpi.js');
 const cmiImport = read('Simulator_HR_blueprint_cmi_import.js');
 const cmiSnapshot = read('Simulator_HR_blueprint_cmi_snapshot.js');
+const cmiDefinition = read('Simulator_HR_blueprint_cmi_definition.js');
 
 const v2Presentation = `${professionDictionary}\n${workloadAdapter}\n${healthKpi}`;
 
@@ -88,7 +89,8 @@ test('formula layer loads v2 modules before Excel and help execute', () => {
   const kpi = formula.indexOf('Simulator_HR_blueprint_health_kpi.js');
   const cmiSnapshotLoader = formula.indexOf('Simulator_HR_blueprint_cmi_snapshot.js');
   const cmiImportLoader = formula.indexOf('Simulator_HR_blueprint_cmi_import.js');
-  assert.ok(dictionary >= 0 && workload > dictionary && kpi > workload && cmiSnapshotLoader > kpi && cmiImportLoader > cmiSnapshotLoader);
+  const cmiDefinitionLoader = formula.indexOf('Simulator_HR_blueprint_cmi_definition.js');
+  assert.ok(dictionary >= 0 && workload > dictionary && kpi > workload && cmiSnapshotLoader > kpi && cmiImportLoader > cmiSnapshotLoader && cmiDefinitionLoader > cmiImportLoader);
 });
 
 
@@ -147,4 +149,19 @@ test('five-year CMI snapshot loader uses validated hospital-code/province matchi
 test('Health KPI table can display snapshot indicators discovered beyond the seed dictionary', () => {
   assert.match(healthKpi, /for \(const row of state\.healthKpiRows/);
   assert.match(healthKpi, /allowed\.add\(row\.indicator_code\)/);
+});
+
+
+test('CMI definition registry is independent from observed-value completeness', () => {
+  assert.match(cmiDefinition, /CMI_KPI_Definitions/);
+  assert.match(cmiDefinition, /นิยามและสูตรใช้ได้แยกจากสถานะค่าจริงย้อนหลัง/);
+  assert.match(cmiDefinition, /hosxp_logical_source/);
+  assert.match(cmiDefinition, /Definition Registry/);
+  assert.match(cmiDefinition, /ค่าจริง 5 ปี/);
+});
+
+test('CMI definitions are included in Excel profile round-trip', () => {
+  assert.match(cmiDefinition, /payload\.cmi_kpi_definitions/);
+  assert.match(cmiDefinition, /rows\.CMI_KPI_Definitions/);
+  assert.match(cmiDefinition, /workbook\.Sheets\.CMI_KPI_Definitions/);
 });
