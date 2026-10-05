@@ -1,0 +1,51 @@
+name: Sync CMI Health KPI
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '25 1 * * *'
+  push:
+    paths:
+      - '.github/workflows/sync-cmi-health-kpi.yml'
+      - 'scripts/sync_cmi_health_kpi.py'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch Health KPI snapshot from CMI Service Plan
+        run: python scripts/sync_cmi_health_kpi.py --min-year 2566 --max-year 2570
+      - name: Validate snapshot
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('output/cmi_health_kpi_region1.json')
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['schema_version']=='nco-cmi-kpi-snapshot-v1'
+          assert d['records'], 'snapshot has no records'
+          codes={r['indicator_code'] for r in d['records']}
+          assert 'DH0102' in codes or any(e.get('indicator_code')=='DH0102' for e in d.get('errors',[]))
+          print('records',len(d['records']),'codes',sorted(codes))
+          PY
+      - name: Commit refreshed CMI Health KPI snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/cmi_health_kpi_region1.json
+          if git diff --cached --quiet; then
+            echo "CMI KPI snapshot unchanged"
+            exit 0
+          fi
+          git commit -m "data: refresh CMI Health KPI snapshot"
+          git push
