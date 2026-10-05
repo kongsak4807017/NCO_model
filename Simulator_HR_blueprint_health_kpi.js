@@ -3,7 +3,7 @@
 (() => {
   "use strict";
   const PD = window.NCO_HR_PROFESSION_DICTIONARY || { healthKpis:{}, workloadDefinitions:{} };
-  const KPI_CODES = ["A01","A04","A09","B01","C02","D01","F10","DH0101","DH0102","DN0101","DN0142D","CI0101","PE0102","CM0203","CM0101","DC0401","DG0201","PS0001","RH0101"];
+  const KPI_CODES = Object.keys(PD.healthKpis || {});
 
   function relatedKpisForProfession(code) {
     const codes = new Set();
@@ -49,12 +49,12 @@
         <td>${profileEscape(kpi.unit || row.unit || "")}</td>
         <td>${profileEscape(kpi.direction || row.direction || "")}</td>
         <td>${profileEscape(kpi.threshold ?? row.threshold ?? "—")}</td>
-        <td><input data-kpi-field="source" data-kpi-key="${key}" value="${profileEscape(row.source || "")}" placeholder="HDC / Service Plan / registry"></td>
+        <td>${kpi.sourceUrl ? `<a href="${profileEscape(kpi.sourceUrl)}" target="_blank" rel="noopener">CMI source</a><br><small>${profileEscape(kpi.sourceSystem || "")}</small>` : profileEscape(kpi.sourceSystem || row.source_system || "Manual / other")}</td>\n        <td><input data-kpi-field="source" data-kpi-key="${key}" value="${profileEscape(row.source || kpi.sourceUrl || "")}" placeholder="URL / report / registry"></td>
         <td><select data-kpi-field="verification_status" data-kpi-key="${key}"><option>Draft</option><option${row.verification_status === "Reviewed" ? " selected" : ""}>Reviewed</option><option${row.verification_status === "Verified" ? " selected" : ""}>Verified</option></select></td>
         <td>${profileEscape(linkedProfessionLabels(row.indicator_code) || "—")}</td>
         <td>${profileEscape(healthKpiValueStatus(row,kpi))}</td>
       </tr>`;
-    }).join("") || `<tr><td colspan="11">ยังไม่มี KPI row สำหรับตัวกรองนี้</td></tr>`;
+    }).join("") || `<tr><td colspan="12">ยังไม่มี KPI row สำหรับตัวกรองนี้</td></tr>`;
   }
   window.renderHealthKpiTable = renderHealthKpiTable;
 
@@ -86,9 +86,9 @@
     section.id = "healthKpiPanel";
     section.innerHTML = `
       <div class="panel-header"><div><span class="section-num">5B</span><h3>Health Outcome KPI Context</h3></div><p>เชื่อม capacity ของวิชาชีพกับ outcome/service KPI ที่เกี่ยวข้องเพื่อประกอบการวิเคราะห์ — <strong>ไม่ใช่หลักฐานเชิงสาเหตุว่ากำลังคนเป็นเหตุของ KPI</strong></p></div>
-      <div class="validation-banner"><strong>หลักการ:</strong> KPI ช่วยตอบว่า “ผลลัพธ์บริการ/สุขภาพเป็นอย่างไรในช่วงที่ capacity เป็นแบบนี้” แต่การเปลี่ยน KPI อาจเกิดจาก case mix, referral, technology, process, access และปัจจัยอื่นร่วมด้วย</div>
+      <div class="validation-banner"><strong>หลักการ:</strong> KPI ช่วยตอบว่า “ผลลัพธ์บริการ/สุขภาพเป็นอย่างไรในช่วงที่ capacity เป็นแบบนี้” แต่การเปลี่ยน KPI อาจเกิดจาก case mix, referral, technology, process, access และปัจจัยอื่นร่วมด้วย<br><strong>Canonicalization:</strong> ตัวชี้วัดชื่อเดียวกันจากคนละ catalog ไม่แสดงซ้ำ เช่น A04 → DH0102 (AMI), A09 → CI0101 (Sepsis), B01 → CM0101 (Maternal). Health KPI History ใช้รหัสหลักเพียงแถวเดียว</div>
       <div class="tool-row"><label class="field inline"><span>กรองตามวิชาชีพ</span><select id="healthKpiProfessionFilter"></select></label></div>
-      <div class="table-shell tall"><table class="data-table"><thead><tr><th>ปี</th><th>KPI</th><th>ชื่อ</th><th>ค่าจริง</th><th>หน่วย</th><th>Direction</th><th>Canonical threshold</th><th>Source</th><th>Verify</th><th>Related professions</th><th>Status</th></tr></thead><tbody id="healthKpiBody"></tbody></table></div>`;
+      <div class="table-shell tall"><table class="data-table"><thead><tr><th>ปี</th><th>KPI</th><th>ชื่อ</th><th>ค่าจริง</th><th>หน่วย</th><th>Direction</th><th>Canonical threshold</th><th>CMI ต้นทาง</th><th>Source ที่ใช้</th><th>Verify</th><th>Related professions</th><th>Status</th></tr></thead><tbody id="healthKpiBody"></tbody></table></div>`;
     needPanel.parentNode.insertBefore(section, needPanel.nextSibling);
     $("healthKpiProfessionFilter")?.addEventListener("change", renderHealthKpiTable);
     $("healthKpiBody")?.addEventListener("input", (event)=>{ if (event.target.dataset.kpiField) updateKpiField(event.target); });
