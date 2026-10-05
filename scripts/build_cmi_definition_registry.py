@@ -169,11 +169,15 @@ def main():
         code=str(item.get("code") or "").upper()
         prior=existing_map.get(code,{})
         page_path=None
-        for year in YEARS:
-            candidate=RAW/str(year)/f"{code}.html"
-            if candidate.exists():
-                page_path=candidate
-                break
+        definition_candidate = RAW/"definitions"/f"{code}.html"
+        if definition_candidate.exists():
+            page_path = definition_candidate
+        else:
+            for year in YEARS:
+                candidate=RAW/str(year)/f"{code}.html"
+                if candidate.exists():
+                    page_path=candidate
+                    break
 
         if page_path:
             derived=derive_from_page(page_path,{**item,"code":code})
