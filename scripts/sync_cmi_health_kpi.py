@@ -17,6 +17,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
+import subprocess
 import sys
 import time
 from dataclasses import dataclass, field
@@ -26,6 +28,7 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode, urljoin, urlparse, parse_qsl, urlunparse
 from http.cookiejar import CookieJar
+from urllib.error import HTTPError
 from urllib.request import Request, build_opener, HTTPCookieProcessor
 
 BASE = "https://cmi.maewanghospital.go.th/web/index.php"
@@ -189,10 +192,23 @@ def request_html(url: str, method: str = "GET", data: dict[str, str] | None = No
         "Cache-Control": "no-cache",
     }
     req = Request(url, data=payload, headers=headers)
-    with OPENER.open(req, timeout=timeout) as res:
-        raw = res.read()
-        charset = res.headers.get_content_charset() or "utf-8"
-        return raw.decode(charset, errors="replace")
+    try:
+        with OPENER.open(req, timeout=timeout) as res:
+            raw = res.read()
+            charset = res.headers.get_content_charset() or "utf-8"
+            return raw.decode(charset, errors="replace")
+    except HTTPError as exc:
+        # Some deployments deny non-browser HTTP clients. GitHub hosted runners
+        # include Chrome, so retry GET requests through a real headless browser.
+        chrome = shutil.which("google-chrome") or shutil.which("chromium") or shutil.which("chromium-browser")
+        if exc.code == 403 and method.upper() == "GET" and chrome:
+            proc = subprocess.run(
+                [chrome, "--headless=new", "--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage", "--dump-dom", url],
+                check=False, capture_output=True, text=True, timeout=max(timeout, 60),
+            )
+            if proc.returncode == 0 and "<html" in proc.stdout.lower():
+                return proc.stdout
+        raise
 
 
 def parse_page(html: str) -> PageParser:
