@@ -105,3 +105,15 @@ test('profession workload template explains how each profession is counted from 
     'รหัสระบบ \\(ห้ามแก้\\)',
   ]) assert.match(workloadAdapter, new RegExp(text, 'i'));
 });
+
+
+test('Health KPI History uses canonical CMI Service Plan codes without duplicate outcome rows', () => {
+  assert.match(professionDictionary, /A04:\s*"DH0102"/);
+  assert.match(professionDictionary, /A09:\s*"CI0101"/);
+  assert.match(professionDictionary, /B01:\s*"CM0101"/);
+  assert.match(professionDictionary, /co_thip_new/);
+  assert.match(workloadAdapter, /canonicalHealthKpiCode/);
+  assert.match(workloadAdapter, /normalizeHealthKpiRows/);
+  assert.match(healthKpi, /Object\.keys\(PD\.healthKpis/);
+  assert.match(healthKpi, /A04 → DH0102/);
+});
