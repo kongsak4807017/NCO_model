@@ -6,6 +6,7 @@ on:
       - 'data/cmi/**'
       - 'output/cmi_5y/**'
       - 'scripts/cmi_collect_browser.py'
+      - 'scripts/build_cmi_definition_registry.py'
       - 'scripts/normalize_cmi_archive.py'
       - 'scripts/import_cmi_excel_exports.py'
       - 'scripts/validate_cmi_snapshot.py'
@@ -32,6 +33,7 @@ jobs:
       - name: Python syntax
         run: |
           python -m py_compile scripts/cmi_collect_browser.py
+          python -m py_compile scripts/build_cmi_definition_registry.py
           python -m py_compile scripts/normalize_cmi_archive.py
           python -m py_compile scripts/import_cmi_excel_exports.py
           python -m py_compile scripts/validate_cmi_snapshot.py
