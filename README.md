@@ -41,6 +41,25 @@
 *   NCO Simulation: `https://kongsak4807017.github.io/NCO_model/simulation.html`
 *   HR Blueprint Simulator: `https://kongsak4807017.github.io/NCO_model/Simulator_HR_blueprint.html`
 
+
+## 🏥 CMI / Service Plan 5-Year Health KPI Pipeline
+
+Health KPI History รองรับฐานข้อมูลย้อนหลัง **พ.ศ. 2565–2569** จากระบบ CMI / Service Plan โดยแยก source provenance และเก็บ numerator/denominator เมื่อแหล่งข้อมูลมีให้
+
+โครงสร้างหลัก:
+
+- `scripts/cmi_collect_browser.py` — collector สำหรับรันบนเครื่องที่ได้รับอนุญาตและเปิดเว็บ CMI ได้
+- `scripts/normalize_cmi_archive.py` — แปลง raw pages เป็นข้อมูลระดับ รพ. ที่ใช้วิเคราะห์ได้
+- `scripts/validate_cmi_snapshot.py` — ตรวจ duplicate, hospcode, provenance และ arithmetic ของ numerator/denominator
+- `data/cmi/catalog/indicators.json` — indicator catalog
+- `data/cmi/manifests/completeness.json` — completeness matrix
+- `output/cmi_5y/health_kpi_records.json` — merged snapshot ที่ HR Blueprint โหลดโดยตรง
+- `docs/CMI_5Y_DATA_PIPELINE.md` — runbook สำหรับเก็บข้อมูลจริง
+
+บนหน้า HR Blueprint ให้ระบุ **รหัสโรงพยาบาล 5 หลัก** แล้วกด **“โหลด CMI 5 ปีย้อนหลัง”** เพื่อเติม Health KPI History จาก snapshot ที่ผ่านการ validate แล้ว
+
+> GitHub-hosted runner ถูกระบบ CMI ปฏิเสธการดึงแบบ server-to-server จึงใช้ authorised browser collection เป็น source acquisition และใช้ GitHub Actions เฉพาะ validation ของ snapshot เพื่อไม่สร้างข้อมูลเทียม
+
 ## 🛠 เทคโนโลยีที่ใช้
 - **PapaParse:** สำหรับประมวลผลไฟล์ CSV ขนาดใหญ่ในบราวเซอร์
 - **Chart.js:** สำหรับแสดงผลกราฟคุณภาพโรงพยาบาล
