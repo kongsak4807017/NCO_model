@@ -1,13 +1,9 @@
 name: Sync CMI Health KPI
 
+# Manual diagnostic only: the CMI site currently returns HTTP 403 to GitHub-hosted runners.
+# Do not schedule until the source explicitly allows server-to-server access.
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '25 1 * * *'
-  push:
-    paths:
-      - '.github/workflows/sync-cmi-health-kpi.yml'
-      - 'scripts/sync_cmi_health_kpi.py'
 
 permissions:
   contents: write
