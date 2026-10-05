@@ -9,6 +9,7 @@ const appsScript = read('integrations/google_apps_script/Code.gs');
 const professionDictionary = read('Simulator_HR_blueprint_profession_dictionary.js');
 const workloadAdapter = read('Simulator_HR_blueprint_profession_workload.js');
 const healthKpi = read('Simulator_HR_blueprint_health_kpi.js');
+const cmiImport = read('Simulator_HR_blueprint_cmi_import.js');
 
 const v2Presentation = `${professionDictionary}\n${workloadAdapter}\n${healthKpi}`;
 
@@ -84,7 +85,8 @@ test('formula layer loads v2 modules before Excel and help execute', () => {
   const dictionary = formula.indexOf('Simulator_HR_blueprint_profession_dictionary.js');
   const workload = formula.indexOf('Simulator_HR_blueprint_profession_workload.js');
   const kpi = formula.indexOf('Simulator_HR_blueprint_health_kpi.js');
-  assert.ok(dictionary >= 0 && workload > dictionary && kpi > workload);
+  const cmiImportLoader = formula.indexOf('Simulator_HR_blueprint_cmi_import.js');
+  assert.ok(dictionary >= 0 && workload > dictionary && kpi > workload && cmiImportLoader > kpi);
 });
 
 
@@ -116,4 +118,15 @@ test('Health KPI History uses canonical CMI Service Plan codes without duplicate
   assert.match(workloadAdapter, /normalizeHealthKpiRows/);
   assert.match(healthKpi, /Object\.keys\(PD\.healthKpis/);
   assert.match(healthKpi, /A04 → DH0102/);
+});
+
+
+test('CMI export import layer maps source KPI/year/scope into Health KPI History', () => {
+  assert.match(cmiImport, /Save as Excel|Export Page Data/);
+  assert.match(cmiImport, /canonicalCode/);
+  assert.match(cmiImport, /detectCode/);
+  assert.match(cmiImport, /detectYear/);
+  assert.match(cmiImport, /hospital-row|province-aggregate/);
+  assert.match(cmiImport, /verification_status = "Reviewed"/);
+  assert.match(cmiImport, /cmiKpiImport/);
 });
