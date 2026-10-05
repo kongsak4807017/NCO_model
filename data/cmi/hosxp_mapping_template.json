@@ -1,0 +1,227 @@
+{
+  "schema_version": "nco-hosxp-cmi-mapping-v1",
+  "facility": {
+    "hospital_code": "",
+    "hospital_name": "",
+    "hosxp_product": "HOSxP/HOSxP XE",
+    "hosxp_version": "",
+    "database_engine": "",
+    "verified_by": "",
+    "verified_at": ""
+  },
+  "policy": {
+    "note": "Map CMI logical concepts to the local HOSxP schema once. Indicator numerator/denominator logic comes from CMI Definition Registry and must not be changed by this mapping.",
+    "phi_policy": "Only aggregate indicator outputs are committed to the NCO repository. Patient-level extracts remain inside the hospital environment."
+  },
+  "logical_fields": {
+    "patient_key": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "deduplication"
+      ],
+      "status": "pending"
+    },
+    "cid_or_hn": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "person-based indicators"
+      ],
+      "status": "pending"
+    },
+    "vn": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "OPD/ER encounters"
+      ],
+      "status": "pending"
+    },
+    "an": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "IPD indicators"
+      ],
+      "status": "pending"
+    },
+    "visit_datetime": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "OPD/ER fiscal period"
+      ],
+      "status": "pending"
+    },
+    "admit_datetime": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "IPD period",
+        "time-to-procedure"
+      ],
+      "status": "pending"
+    },
+    "discharge_datetime": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "IPD period",
+        "LOS"
+      ],
+      "status": "pending"
+    },
+    "birth_date": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "age criteria"
+      ],
+      "status": "pending"
+    },
+    "sex": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "sex-specific indicators"
+      ],
+      "status": "pending"
+    },
+    "principal_diagnosis": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "disease cohort"
+      ],
+      "status": "pending"
+    },
+    "all_diagnoses": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "comorbidity/secondary diagnosis criteria"
+      ],
+      "status": "pending"
+    },
+    "external_cause": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "injury/fall indicators"
+      ],
+      "status": "pending"
+    },
+    "procedure_code": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "procedure/surgery indicators"
+      ],
+      "status": "pending"
+    },
+    "procedure_datetime": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "timeliness indicators"
+      ],
+      "status": "pending"
+    },
+    "discharge_status": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "mortality/outcome"
+      ],
+      "status": "pending"
+    },
+    "death_flag": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "mortality"
+      ],
+      "status": "pending"
+    },
+    "ward_or_service": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "service scope"
+      ],
+      "status": "pending"
+    },
+    "provider": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "profession-specific workload"
+      ],
+      "status": "pending"
+    },
+    "los_days": {
+      "physical_source": "",
+      "physical_field": "",
+      "derivation": "discharge_datetime - admit_datetime or verified HIS LOS field",
+      "required_for": [
+        "LOS indicators"
+      ],
+      "status": "pending"
+    },
+    "drg": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "DRG indicators"
+      ],
+      "status": "pending"
+    },
+    "rw": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "DRG indicators"
+      ],
+      "status": "pending"
+    },
+    "adjrw": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "CMI"
+      ],
+      "status": "pending"
+    },
+    "charge_amount": {
+      "physical_source": "",
+      "physical_field": "",
+      "required_for": [
+        "cost/charge indicators"
+      ],
+      "status": "pending"
+    }
+  },
+  "common_hosxp_examples": {
+    "warning": "Examples only. Verify against the local HOSxP/HOSxP XE schema before use.",
+    "concepts": {
+      "opd_visit": [
+        "ovst",
+        "vn_stat"
+      ],
+      "ipd_admission": [
+        "ipt",
+        "an_stat"
+      ],
+      "ipd_diagnosis": [
+        "iptdiag"
+      ],
+      "ipd_procedure": [
+        "iptoprt"
+      ],
+      "charge_or_drug_transaction": [
+        "opitemrece"
+      ]
+    }
+  }
+}
