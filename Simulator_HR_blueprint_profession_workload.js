@@ -708,6 +708,11 @@
       indicator_code:{label:"รหัส Health KPI",description:"รหัสตัวชี้วัดที่แสดงใน Health KPI History; สำหรับ AMI ค่าเริ่มต้นใช้ DH0102 จาก Service Plan และซ่อน A04 เพื่อลดการกรอกซ้ำ แต่ไม่ย้ายค่าระหว่างสองนิยามอัตโนมัติ",unit:"รหัส",source:"CMI Service Plan / KPI catalog",formula:"Outcome context"},
       indicator_name:{label:"ชื่อ Health KPI",description:"ชื่อตัวชี้วัดผลลัพธ์/คุณภาพที่เกี่ยวข้อง",unit:"ข้อความ",source:"NCO_INDICATOR_STANDARD/API",formula:"Outcome context"},
       value:{label:"ค่าตัวชี้วัดจริง",description:"ค่าจริงของปีนั้น; ถ้าไม่มีข้อมูลให้เว้นว่าง",unit:"ตาม KPI",source:"ระบบตัวชี้วัดที่ทวนสอบ",formula:"ไม่เข้า WISN FTE โดยตรง"},
+      cmi_hospital_code:{label:"รหัสหน่วยบริการ CMI",description:"รหัสโรงพยาบาล 5 หลักที่ใช้ join กับ snapshot CMI",unit:"รหัส 5 หลัก",source:"CMI / Service Plan",formula:"Primary join key"},
+      cmi_hospital_name:{label:"ชื่อหน่วยบริการ CMI",description:"ชื่อโรงพยาบาลจาก source row ใช้เพื่อแสดงผลและตรวจสอบกับรหัสหน่วยบริการ",unit:"ข้อความ",source:"CMI / Service Plan",formula:"Display / QA"},
+      cmi_numerator:{label:"ตัวตั้งจาก CMI",description:"numerator ต้นทางของ KPI เมื่อ CMI แสดงให้ ใช้ทวนสอบค่าร้อยละ/อัตราและ aggregate ระดับจังหวัด",unit:"ตามนิยาม KPI",source:"CMI / Service Plan",formula:"ใช้ตรวจ value = numerator / denominator × scale เมื่อ applicable"},
+      cmi_denominator:{label:"ตัวหารจาก CMI",description:"denominator ต้นทางของ KPI เมื่อ CMI แสดงให้ ห้ามสร้างขึ้นเองหาก source ไม่มี",unit:"ตามนิยาม KPI",source:"CMI / Service Plan",formula:"ใช้ตรวจ value และ weighted aggregate"},
+      cmi_source_sha256:{label:"SHA-256 หลักฐานต้นทาง",description:"hash ของ raw source page ที่ใช้สร้าง observation นี้ เพื่อ audit/reproducibility",unit:"SHA-256",source:"CMI collector",formula:"Data provenance"},
       direction:{label:"ทิศทางที่พึงประสงค์",description:"low/high/range ตาม catalog",unit:"ข้อความ",source:"Indicator catalog",formula:"Outcome interpretation"},
       threshold:{label:"เกณฑ์อ้างอิง",description:"ใช้เฉพาะเกณฑ์ที่มีใน canonical standard; ไม่สร้างเกณฑ์ใหม่เมื่อไม่มี",unit:"ตาม KPI",source:"NCO_INDICATOR_STANDARD",formula:"Outcome interpretation"},
     };
