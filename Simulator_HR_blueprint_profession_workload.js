@@ -49,6 +49,44 @@
     return Array.from(state.selectedProfessions || []);
   }
 
+  function canonicalHealthKpiCode(code) {
+    return PD.kpiAliases?.[String(code)] || String(code || "");
+  }
+
+  function enrichHealthKpiRow(row) {
+    const originalCode = String(row?.indicator_code || "");
+    const canonicalCode = canonicalHealthKpiCode(originalCode);
+    const kpi = PD.healthKpis?.[canonicalCode] || {};
+    return {
+      ...row,
+      indicator_code: canonicalCode,
+      indicator_name: kpi.name || row?.indicator_name || canonicalCode,
+      unit: kpi.unit || row?.unit || "",
+      direction: kpi.direction || row?.direction || "",
+      threshold: kpi.threshold ?? row?.threshold ?? "",
+      source_system: kpi.sourceSystem || row?.source_system || "",
+      source_url: kpi.sourceUrl || row?.source_url || "",
+      source_indicator_code: originalCode || canonicalCode,
+      canonical_indicator_code: canonicalCode,
+      source: row?.source || kpi.sourceUrl || "",
+    };
+  }
+
+  function normalizeHealthKpiRows(rows) {
+    const byKey = new Map();
+    for (const raw of rows || []) {
+      const row = enrichHealthKpiRow(raw);
+      const key = `${row.year}:${row.indicator_code}`;
+      const prior = byKey.get(key);
+      const rowHasValue = row.value !== null && row.value !== undefined && String(row.value).trim() !== "";
+      const priorHasValue = prior && prior.value !== null && prior.value !== undefined && String(prior.value).trim() !== "";
+      const rowWasCanonical = String(raw?.indicator_code || "") === row.indicator_code;
+      const priorWasCanonical = prior && String(prior.source_indicator_code || "") === String(prior.indicator_code || "");
+      if (!prior || (rowHasValue && !priorHasValue) || (rowWasCanonical && !priorWasCanonical)) byKey.set(key, row);
+    }
+    return Array.from(byKey.values());
+  }
+
   function workloadKey(code, year, activityCode) {
     return `${code}:${year}:${activityCode}`;
   }
@@ -116,7 +154,8 @@
     for (const year of years()) {
       for (const kpi of Object.values(PD.healthKpis || {})) {
         const key = `${year}:${kpi.code}`;
-        rows.push(existing.get(key) || {
+        const prior = existing.get(key);
+        rows.push(enrichHealthKpiRow(prior || {
           year,
           indicator_code: kpi.code,
           indicator_name: kpi.name,
@@ -124,10 +163,14 @@
           unit: kpi.unit || "",
           direction: kpi.direction || "",
           threshold: kpi.threshold ?? "",
-          source: "",
+          source_system: kpi.sourceSystem || "",
+          source_url: kpi.sourceUrl || "",
+          source_indicator_code: kpi.code,
+          canonical_indicator_code: kpi.code,
+          source: kpi.sourceUrl || "",
           verification_status: "Draft",
           note: "",
-        });
+        }));
       }
     }
     return rows;
@@ -214,7 +257,7 @@
       complexity_index: numberOrNull(row.complexity_index) ?? 1,
       activity_standard_minutes: numberOrNull(row.activity_standard_minutes),
     }));
-    const kpiRows = (sheets.Health_KPI_History || []).map((row) => ({ ...row, year: numberOrNull(row.year), value: numberOrNull(row.value) }));
+    const kpiRows = normalizeHealthKpiRows((sheets.Health_KPI_History || []).map((row) => ({ ...row, year: numberOrNull(row.year), value: numberOrNull(row.value) })));
     return {
       ...base,
       schema_version: V2_SCHEMA,
@@ -232,7 +275,7 @@
     const legacyCompatible = { ...payload, schema_version: V1_SCHEMA };
     baseApplyProfilePayload(legacyCompatible);
     state.professionWorkloadRows = (payload.profession_workload || []).map((row) => enrichProfessionWorkloadRow({ ...row }));
-    state.healthKpiRows = (payload.health_kpi_history || []).map((row) => ({ ...row }));
+    state.healthKpiRows = normalizeHealthKpiRows(payload.health_kpi_history || []);
     for (const row of state.professionWorkloadRows) {
       if (row.volume !== null && row.volume !== undefined && String(row.volume).trim() !== "") {
         markObserved("professionWorkload", workloadKey(row.profession_code, row.year, row.activity_code));
@@ -649,7 +692,11 @@
       standard_source:{label:"แหล่งที่มาของเวลามาตรฐาน",description:"time-motion study, official service standard หรือ expert consensus ที่ระบุได้",unit:"ข้อความ",source:"ทีมวิชาชีพ",formula:"Data Fitness Gate"},
       standard_status:{label:"สถานะทวนสอบเวลามาตรฐาน",description:"Draft/Reviewed/Verified",unit:"สถานะ",source:"ทีมวิชาชีพ/ผู้ทวนสอบ",formula:"Data Fitness Gate"},
       related_kpi_codes:{label:"Health KPI ที่เกี่ยวข้อง",description:"KPI ใช้เป็น outcome context ไม่ใช่หลักฐานเชิงสาเหตุของ staffing",unit:"รหัส KPI",source:"NCO indicator catalog",formula:"Context only"},
-      indicator_code:{label:"รหัส Health KPI",description:"รหัสตัวชี้วัดจาก NCO/Service Plan catalog",unit:"รหัส",source:"NCO_INDICATOR_STANDARD/API",formula:"Outcome context"},
+      source_system:{label:"ระบบต้นทาง KPI",description:"ระบบที่เป็นแหล่งตรงของตัวชี้วัด เช่น CMI Service Plan",unit:"ข้อความ",source:"CMI source catalog",formula:"Data provenance"},
+      source_url:{label:"ลิงก์ข้อมูลต้นทาง",description:"URL ตัวชี้วัดบนระบบ CMI ที่ใช้ตรวจสอบค่าต้นทาง",unit:"URL",source:"cmi.maewanghospital.go.th",formula:"Data provenance"},
+      source_indicator_code:{label:"รหัสจากแหล่งเดิม",description:"รหัสที่มากับไฟล์เดิม; legacy code เช่น A04 จะถูก map เป็น DH0102 เพื่อป้องกันข้อมูล AMI ซ้ำ",unit:"รหัส",source:"ระบบ/ไฟล์นำเข้า",formula:"Alias migration"},
+      canonical_indicator_code:{label:"รหัส KPI หลักที่ใช้ในโมเดล",description:"รหัส canonical หลังตัด duplicate/alias แล้ว",unit:"รหัส",source:"CMI canonical mapping",formula:"ใช้เป็น key ของ Health KPI History"},
+      indicator_code:{label:"รหัส Health KPI",description:"รหัส canonical ที่แสดงใน Health KPI History; AMI ใช้ DH0102 เพียงแถวเดียว ไม่แสดง A04 ซ้ำ",unit:"รหัส",source:"CMI Service Plan / canonical mapping",formula:"Outcome context"},
       indicator_name:{label:"ชื่อ Health KPI",description:"ชื่อตัวชี้วัดผลลัพธ์/คุณภาพที่เกี่ยวข้อง",unit:"ข้อความ",source:"NCO_INDICATOR_STANDARD/API",formula:"Outcome context"},
       value:{label:"ค่าตัวชี้วัดจริง",description:"ค่าจริงของปีนั้น; ถ้าไม่มีข้อมูลให้เว้นว่าง",unit:"ตาม KPI",source:"ระบบตัวชี้วัดที่ทวนสอบ",formula:"ไม่เข้า WISN FTE โดยตรง"},
       direction:{label:"ทิศทางที่พึงประสงค์",description:"low/high/range ตาม catalog",unit:"ข้อความ",source:"Indicator catalog",formula:"Outcome interpretation"},
