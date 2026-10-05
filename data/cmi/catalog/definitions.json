@@ -57,66 +57,23 @@
   },
   "indicators": [
     {
-      "indicator_code": "ODS0101",
-      "indicator_name": "ร้อยละผู้ป่วยโรคไส้เลื่อนขาหนีบที่ผ่าตัดแบบ One Day Surgery",
+      "indicator_code": "CM0101",
+      "indicator_name": "สัดส่วนการตายของมารดาจากการตั้งครรภ์ และ/หรือการคลอด (เฉพาะ Case Admit)",
       "family": "service_plan",
       "definition_status": "verified_from_cmi_table_headers",
-      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=ODS0101&r=service%2Findex",
-      "measure_type": "percentage",
-      "numerator_label": "จำนวนผู้ป่วยโรคไส้เลื่อนขาหนีบที่เข้ารับการผ่าตัดแบบ One Day Surgery",
-      "denominator_label": "จำนวนผู้ป่วยโรคไส้เลื่อนขาหนีบที่เข้ารับการผ่าตัดทั้งหมด",
-      "formula": "numerator / denominator × 100",
-      "unit": "%",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=CM0101&r=service%2Findex",
+      "measure_type": "rate",
+      "numerator_label": "จำนวนมารดาตายระหว่างการตั้งครรภ์ การคลอด หลังคลอดไม่เกิน 6 สัปดาห์ (เฉพาะ Case Admit)",
+      "denominator_label": "จำนวนทารกเกิดมีชีพ",
+      "output_label": "อัตราต่อแสน",
+      "formula": "numerator / denominator × 100000",
+      "unit": "/100k",
       "hosxp_logical_source": [
-        "IPD/ODS encounter",
-        "diagnosis for inguinal hernia",
-        "operation/procedure",
-        "same-day/ODS discharge criteria",
         "AN",
+        "pregnancy/delivery diagnosis and episode",
+        "death/discharge status",
+        "delivery/live birth records",
         "admit/discharge date"
-      ],
-      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
-    },
-    {
-      "indicator_code": "FX7001",
-      "indicator_name": "ร้อยละผู้สูงอายุ Admit ด้วยการล้มและมีภาวะกระดูกสะโพกหัก",
-      "family": "service_plan",
-      "definition_status": "verified_from_cmi_table_headers",
-      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX7001&r=service%2Findex",
-      "measure_type": "percentage",
-      "numerator_label": "จำนวนผู้สูงอายุเข้ารับการรักษาในโรงพยาบาลด้วยการล้มและมีภาวะกระดูกสะโพกหัก",
-      "denominator_label": "จำนวนผู้สูงอายุเข้ารับการรักษาในโรงพยาบาลด้วยการล้ม",
-      "formula": "numerator / denominator × 100",
-      "unit": "%",
-      "hosxp_logical_source": [
-        "AN",
-        "age/DOB",
-        "admission diagnosis",
-        "external cause/fall diagnosis",
-        "hip fracture diagnosis",
-        "admit/discharge date"
-      ],
-      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
-    },
-    {
-      "indicator_code": "FX60033",
-      "indicator_name": "ร้อยละผู้สูงอายุกระดูกสะโพกหักที่ผ่าตัดภายใน 48 ชม. และ LOS ≤5 วัน",
-      "family": "service_plan",
-      "definition_status": "verified_from_cmi_table_headers",
-      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX60033&r=service%2Findex",
-      "measure_type": "percentage",
-      "numerator_label": "จำนวนผู้สูงอายุภาวะกระดูกสะโพกหักที่ได้รับการผ่าตัดภายใน 48 ชั่วโมง และ LOS ≤5 วัน",
-      "denominator_label": "จำนวนผู้สูงอายุภาวะกระดูกสะโพกหักที่ได้รับการผ่าตัดทั้งหมด",
-      "formula": "numerator / denominator × 100",
-      "unit": "%",
-      "hosxp_logical_source": [
-        "AN",
-        "age/DOB",
-        "hip fracture diagnosis",
-        "operation/procedure",
-        "admission datetime",
-        "operation datetime",
-        "discharge datetime/LOS"
       ],
       "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
     },
@@ -162,6 +119,28 @@
       "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
     },
     {
+      "indicator_code": "FX60033",
+      "indicator_name": "ร้อยละผู้สูงอายุกระดูกสะโพกหักที่ผ่าตัดภายใน 48 ชม. และ LOS ≤5 วัน",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX60033&r=service%2Findex",
+      "measure_type": "percentage",
+      "numerator_label": "จำนวนผู้สูงอายุภาวะกระดูกสะโพกหักที่ได้รับการผ่าตัดภายใน 48 ชั่วโมง และ LOS ≤5 วัน",
+      "denominator_label": "จำนวนผู้สูงอายุภาวะกระดูกสะโพกหักที่ได้รับการผ่าตัดทั้งหมด",
+      "formula": "numerator / denominator × 100",
+      "unit": "%",
+      "hosxp_logical_source": [
+        "AN",
+        "age/DOB",
+        "hip fracture diagnosis",
+        "operation/procedure",
+        "admission datetime",
+        "operation datetime",
+        "discharge datetime/LOS"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
       "indicator_code": "FX6007",
       "indicator_name": "ค่าเฉลี่ยวันนอนผู้สูงอายุกระดูกสะโพกหักกลุ่มไม่ผ่าตัด",
       "family": "service_plan",
@@ -199,6 +178,48 @@
         "hip fracture diagnosis",
         "absence of qualifying operation",
         "charge/cost/claim amount"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "FX7001",
+      "indicator_name": "ร้อยละผู้สูงอายุ Admit ด้วยการล้มและมีภาวะกระดูกสะโพกหัก",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=FX7001&r=service%2Findex",
+      "measure_type": "percentage",
+      "numerator_label": "จำนวนผู้สูงอายุเข้ารับการรักษาในโรงพยาบาลด้วยการล้มและมีภาวะกระดูกสะโพกหัก",
+      "denominator_label": "จำนวนผู้สูงอายุเข้ารับการรักษาในโรงพยาบาลด้วยการล้ม",
+      "formula": "numerator / denominator × 100",
+      "unit": "%",
+      "hosxp_logical_source": [
+        "AN",
+        "age/DOB",
+        "admission diagnosis",
+        "external cause/fall diagnosis",
+        "hip fracture diagnosis",
+        "admit/discharge date"
+      ],
+      "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
+    },
+    {
+      "indicator_code": "ODS0101",
+      "indicator_name": "ร้อยละผู้ป่วยโรคไส้เลื่อนขาหนีบที่ผ่าตัดแบบ One Day Surgery",
+      "family": "service_plan",
+      "definition_status": "verified_from_cmi_table_headers",
+      "source_url": "https://cmi.maewanghospital.go.th/web/index.php?co_thip_new=ODS0101&r=service%2Findex",
+      "measure_type": "percentage",
+      "numerator_label": "จำนวนผู้ป่วยโรคไส้เลื่อนขาหนีบที่เข้ารับการผ่าตัดแบบ One Day Surgery",
+      "denominator_label": "จำนวนผู้ป่วยโรคไส้เลื่อนขาหนีบที่เข้ารับการผ่าตัดทั้งหมด",
+      "formula": "numerator / denominator × 100",
+      "unit": "%",
+      "hosxp_logical_source": [
+        "IPD/ODS encounter",
+        "diagnosis for inguinal hernia",
+        "operation/procedure",
+        "same-day/ODS discharge criteria",
+        "AN",
+        "admit/discharge date"
       ],
       "hosxp_mapping_status": "logical_ready_physical_mapping_pending"
     },
