@@ -7,6 +7,7 @@ on:
       - 'output/cmi_5y/**'
       - 'scripts/cmi_collect_browser.py'
       - 'scripts/normalize_cmi_archive.py'
+      - 'scripts/import_cmi_excel_exports.py'
       - 'scripts/validate_cmi_snapshot.py'
       - 'requirements-cmi.txt'
       - '.github/workflows/validate-cmi-snapshot.yml'
@@ -32,6 +33,7 @@ jobs:
         run: |
           python -m py_compile scripts/cmi_collect_browser.py
           python -m py_compile scripts/normalize_cmi_archive.py
+          python -m py_compile scripts/import_cmi_excel_exports.py
           python -m py_compile scripts/validate_cmi_snapshot.py
       - name: Validate committed snapshot
         run: python scripts/validate_cmi_snapshot.py
