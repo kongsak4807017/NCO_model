@@ -16,6 +16,7 @@ on:
       - 'Simulator_HR_blueprint_health_kpi.js'
       - 'Simulator_HR_blueprint_cmi_import.js'
       - 'Simulator_HR_blueprint_cmi_snapshot.js'
+      - 'Simulator_HR_blueprint_cmi_definition.js'
       - 'Simulator_HR_blueprint_mock_chiangrai.js'
       - 'Simulator_HR_blueprint_v2_trace.js'
       - 'Simulator_HR_blueprint_formula_copy.js'
@@ -44,6 +45,7 @@ on:
       - 'Simulator_HR_blueprint_health_kpi.js'
       - 'Simulator_HR_blueprint_cmi_import.js'
       - 'Simulator_HR_blueprint_cmi_snapshot.js'
+      - 'Simulator_HR_blueprint_cmi_definition.js'
       - 'Simulator_HR_blueprint_mock_chiangrai.js'
       - 'Simulator_HR_blueprint_v2_trace.js'
       - 'Simulator_HR_blueprint_formula_copy.js'
@@ -73,6 +75,7 @@ jobs:
       - run: node --check Simulator_HR_blueprint_health_kpi.js
       - run: node --check Simulator_HR_blueprint_cmi_import.js
       - run: node --check Simulator_HR_blueprint_cmi_snapshot.js
+      - run: node --check Simulator_HR_blueprint_cmi_definition.js
       - run: node --check Simulator_HR_blueprint_mock_chiangrai.js
       - run: node --check Simulator_HR_blueprint_v2_trace.js
       - run: node --check Simulator_HR_blueprint_formula_copy.js
