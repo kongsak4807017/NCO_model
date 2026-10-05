@@ -194,6 +194,37 @@ async def collect_indicator(page, indicator: dict, years: list[int], raw_dir: Pa
     url = indicator.get("source_url") or source_url_for(code, indicator.get("family", "service_plan"))
     result = {"code": code, "source_url": url, "years": {}, "errors": []}
 
+    # Definition metadata is collected independently from fiscal-year observations.
+    # This makes numerator/denominator/formula metadata usable even if a historical
+    # year is absent or the indicator was introduced later.
+    try:
+        await page.goto(url, wait_until="domcontentloaded", timeout=60000)
+        await page.wait_for_timeout(1000)
+        definition_html = await page.content()
+        definition_text = await page.locator("body").inner_text()
+        if not re.search(r"\b403\b|forbidden|access denied", definition_text, flags=re.I):
+            definition_dir = raw_dir / "definitions"
+            definition_dir.mkdir(parents=True, exist_ok=True)
+            definition_path = definition_dir / f"{code}.html"
+            definition_meta_path = definition_dir / f"{code}.meta.json"
+            definition_path.write_text(definition_html, encoding="utf-8")
+            definition_meta = {
+                "schema_version": "nco-cmi-definition-source-v1",
+                "indicator_code": code,
+                "indicator_name": indicator.get("name") or code,
+                "family": indicator.get("family"),
+                "source_url": page.url,
+                "source_url_requested": url,
+                "collected_at": now_iso(),
+                "sha256": sha256_text(definition_html),
+            }
+            definition_meta_path.write_text(json.dumps(definition_meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            result["definition"] = {"status": "saved", "file": str(definition_path), "sha256": definition_meta["sha256"]}
+        else:
+            result["definition"] = {"status": "access_denied"}
+    except Exception as exc:
+        result["definition"] = {"status": "error", "error": str(exc)}
+
     for year in years:
         try:
             await page.goto(url, wait_until="domcontentloaded", timeout=60000)
