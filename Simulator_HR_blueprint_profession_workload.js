@@ -161,7 +161,7 @@
     const existing = new Map((state.healthKpiRows || []).map((row) => [`${row.year}:${row.indicator_code}`, row]));
     const rows = [];
     for (const year of years()) {
-      for (const kpi of Object.values(PD.healthKpis || {})) {
+      for (const kpi of Object.values(PD.healthKpis || {}).filter((item) => item.display !== false)) {
         const key = `${year}:${kpi.code}`;
         const prior = existing.get(key);
         rows.push(enrichHealthKpiRow(prior || {
@@ -703,9 +703,9 @@
       related_kpi_codes:{label:"Health KPI ที่เกี่ยวข้อง",description:"KPI ใช้เป็น outcome context ไม่ใช่หลักฐานเชิงสาเหตุของ staffing",unit:"รหัส KPI",source:"NCO indicator catalog",formula:"Context only"},
       source_system:{label:"ระบบต้นทาง KPI",description:"ระบบที่เป็นแหล่งตรงของตัวชี้วัด เช่น CMI Service Plan",unit:"ข้อความ",source:"CMI source catalog",formula:"Data provenance"},
       source_url:{label:"ลิงก์ข้อมูลต้นทาง",description:"URL ตัวชี้วัดบนระบบ CMI ที่ใช้ตรวจสอบค่าต้นทาง",unit:"URL",source:"cmi.maewanghospital.go.th",formula:"Data provenance"},
-      source_indicator_code:{label:"รหัสจากแหล่งเดิม",description:"รหัสที่มากับไฟล์เดิม; legacy code เช่น A04 จะถูก map เป็น DH0102 เพื่อป้องกันข้อมูล AMI ซ้ำ",unit:"รหัส",source:"ระบบ/ไฟล์นำเข้า",formula:"Alias migration"},
-      canonical_indicator_code:{label:"รหัส KPI หลักที่ใช้ในโมเดล",description:"รหัส canonical หลังตัด duplicate/alias แล้ว",unit:"รหัส",source:"CMI canonical mapping",formula:"ใช้เป็น key ของ Health KPI History"},
-      indicator_code:{label:"รหัส Health KPI",description:"รหัส canonical ที่แสดงใน Health KPI History; AMI ใช้ DH0102 เพียงแถวเดียว ไม่แสดง A04 ซ้ำ",unit:"รหัส",source:"CMI Service Plan / canonical mapping",formula:"Outcome context"},
+      source_indicator_code:{label:"รหัสจากแหล่งเดิม",description:"รหัสที่มากับแหล่งข้อมูล/ไฟล์นำเข้า ใช้ตรวจ provenance; ระบบไม่ย้ายค่าข้าม KPI อัตโนมัติหากยังไม่ยืนยันว่า numerator/denominator เท่ากัน",unit:"รหัส",source:"ระบบ/ไฟล์นำเข้า",formula:"Data provenance"},
+      canonical_indicator_code:{label:"รหัส KPI ที่ใช้ในแถวนี้",description:"รหัสที่ใช้เป็น key ของ Health KPI History; ตัวชี้วัดที่ชื่อคล้ายกันแต่ต่าง catalog จะไม่ถูกรวมค่าจนกว่าจะยืนยันนิยามเท่ากัน",unit:"รหัส",source:"KPI catalog",formula:"ใช้เป็น key ของ Health KPI History"},
+      indicator_code:{label:"รหัส Health KPI",description:"รหัสตัวชี้วัดที่แสดงใน Health KPI History; สำหรับ AMI ค่าเริ่มต้นใช้ DH0102 จาก Service Plan และซ่อน A04 เพื่อลดการกรอกซ้ำ แต่ไม่ย้ายค่าระหว่างสองนิยามอัตโนมัติ",unit:"รหัส",source:"CMI Service Plan / KPI catalog",formula:"Outcome context"},
       indicator_name:{label:"ชื่อ Health KPI",description:"ชื่อตัวชี้วัดผลลัพธ์/คุณภาพที่เกี่ยวข้อง",unit:"ข้อความ",source:"NCO_INDICATOR_STANDARD/API",formula:"Outcome context"},
       value:{label:"ค่าตัวชี้วัดจริง",description:"ค่าจริงของปีนั้น; ถ้าไม่มีข้อมูลให้เว้นว่าง",unit:"ตาม KPI",source:"ระบบตัวชี้วัดที่ทวนสอบ",formula:"ไม่เข้า WISN FTE โดยตรง"},
       direction:{label:"ทิศทางที่พึงประสงค์",description:"low/high/range ตาม catalog",unit:"ข้อความ",source:"Indicator catalog",formula:"Outcome interpretation"},
@@ -726,7 +726,7 @@
         const idx = rows.findIndex((row)=>row?.[0] === "Workload_History");
         if (idx >= 0) rows[idx][2] = "ประชากรและ facility totals เพื่อ reference/reconcile เท่านั้น ไม่ใช้เป็น profession WISN numerator";
         rows.push(["Profession_Workload", "ทีมวิชาชีพ + IT/HIS + เวชระเบียน", "เริ่มจาก ‘งานที่วิชาชีพทำจริง’ → ‘วิธีดึง/วิธีนับจาก HIS’ → ‘ตัวตั้งที่ต้องนับ’ → กรอก ‘จำนวนงานจริงของวิชาชีพจาก HIS’ และระบุแหล่งข้อมูลจริงที่ใช้"]);
-        rows.push(["Health_KPI_History", "ระบบ CMI / Service Plan + ยุทธศาสตร์/คุณภาพ", "ใช้รหัส canonical จาก CMI Service Plan; ไม่กรอก alias ซ้ำ (A04→DH0102, A09→CI0101, B01→CM0101). ค่า KPI สามารถนำเข้าจากไฟล์ Save as Excel / Export Page Data ของระบบ CMI"]);
+        rows.push(["Health_KPI_History", "ระบบ CMI / Service Plan + ยุทธศาสตร์/คุณภาพ", "ใช้รหัสจาก CMI / Service Plan พร้อมนิยามต้นทาง; AMI แสดง DH0102 เป็นค่าเริ่มต้นและซ่อน A04 เพื่อลดแถวซ้ำ โดยไม่ย้ายค่าข้ามนิยามอัตโนมัติ. ค่า KPI สามารถนำเข้าจากไฟล์ Save as Excel / Export Page Data ของระบบ CMI"]);
         return rows;
       };
     }
