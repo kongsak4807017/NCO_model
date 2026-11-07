@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NCO | Physician Specialty Mapping</title>
+  <style>
+    :root { color-scheme:dark; --bg:#0e1723; --card:#182536; --line:#304055; --text:#e6edf5; --muted:#a9b9cd; --accent:#7adfc7; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:15px/1.6 system-ui,"Noto Sans Thai",sans-serif; color:var(--text); background:var(--bg); }
+    main { max-width:1300px; margin:auto; padding:22px; }
+    a { color:var(--accent); } h1 { font-size:clamp(1.4rem,3vw,2.1rem); margin:0 0 7px; }
+    h2 { font-size:1.15rem; margin:0 0 12px; } p { margin:.4rem 0 1rem; }
+    .muted,small { color:var(--muted); }
+    .panel { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin:14px 0; }
+    .row { display:flex; flex-wrap:wrap; align-items:end; gap:12px; }
+    label { display:block; color:var(--muted); min-width:200px; flex:1; }
+    input,select,button { font:inherit; }
+    input[type=file],input[type=search],select { display:block; width:100%; background:#101b29; border:1px solid #52637c; border-radius:8px; color:var(--text); padding:9px; margin-top:6px; }
+    button { cursor:pointer; padding:10px 14px; background:var(--accent); color:#0c2130; border:0; border-radius:8px; font-weight:650; }
+    button.secondary { color:var(--text); background:#2b435a; }
+    button:disabled { cursor:not-allowed; opacity:.55; }
+    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible { outline:2px solid #d4a86c; outline-offset:2px; }
+    .flag { padding:10px 12px; margin:10px 0; background:#23354a; border-radius:8px; border-left:4px solid #f2c577; }
+    .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:9px; margin:12px 0; }
+    .stat { padding:12px; border:1px solid var(--line); border-radius:9px; }
+    .stat strong { display:block; font-size:1.7rem; }
+    .table-wrap { overflow-x:auto; max-height:520px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th,td { text-align:left; padding:10px; border-bottom:1px solid var(--line); vertical-align:top; }
+    th { position:sticky; top:0; background:#243349; white-space:nowrap; }
+    .num { text-align:right; font-variant-numeric:tabular-nums; }
+    .badge { display:inline-block; border-radius:9px; padding:2px 8px; background:#3d4e63; }
+    .badge.verified { background:#1f6157; }.badge.provisional { background:#64532f; }.badge.blocked { background:#733c45; }
+    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+  </style>
+</head>
+<body>
+<main>
+  <p><a href="Simulator_HR_blueprint.html">← กลับ HR Blueprint</a></p>
+  <h1>Physician Specialty Mapping | NCO</h1>
+  <p class="muted">วิเคราะห์อัตรากำลังแพทย์รายสาขา/อนุสาขา แยกจากยอดแพทย์รวม โดยใช้ข้อมูลจริงและมาตรฐานกิจกรรมที่ทวนสอบได้</p>
+  <div class="flag"><strong>ขอบเขต:</strong> เครื่องมือนี้เป็นการจัดทำข้อมูลประกอบการวางแผน ไม่ใช่กรอบอัตรากำลังที่อนุมัติแล้ว ไม่ใช้ตัวเลข CMI รวมแทนปริมาณงานแพทย์เฉพาะทาง และไม่ตีความข้อมูลที่หายไปเป็นศูนย์</div>
+
+  <section class="panel" aria-label="Import files">
+    <h2>1. นำเข้าข้อมูลที่ตรวจสอบแหล่งที่มาได้</h2>
+    <p>ใช้ไฟล์ CSV (UTF-8) ตามหัวตารางด้านล่าง ห้ามส่งชื่อ–นามสกุล, เลขบัตรประชาชน หรือข้อมูลผู้ป่วย ให้นำรหัสแพทย์ที่ทำ pseudonymization แล้วมาใช้ระบุคนเดียวกันข้ามสาขา</p>
+    <div class="row">
+      <label>กำลังคนแพทย์รายสาขา (Supply)<input type="file" id="supplyFile" accept=".csv,text/csv"></label>
+      <label>ปริมาณงาน + เวลามาตรฐานรายสาขา (Workload)<input type="file" id="workloadFile" accept=".csv,text/csv"></label>
+      <label>บัญชีเทียบชื่อสาขา HROPS/HIS (ถ้ามี)<input type="file" id="crosswalkFile" accept=".csv,text/csv"></label>
+    </div>
+    <div class="row">
+      <button type="button" class="secondary" data-template="supply">ดาวน์โหลดแม่แบบ Supply</button>
+      <button type="button" class="secondary" data-template="workload">ดาวน์โหลดแม่แบบ Workload</button>
+      <button type="button" class="secondary" data-template="crosswalk">ดาวน์โหลดแม่แบบ Crosswalk</button>
+      <button type="button" id="calculate">ประมวลผล Mapping</button>
+    </div>
+    <p id="catalogStatus" role="status" class="muted">กำลังโหลดบัญชีสาขาแพทย์...</p>
+  </section>
+
+  <section class="panel">
+    <h2>2. ผลลัพธ์และ Data Fitness Gate</h2>
+    <p class="muted">Required FTE = [Σ(จำนวนงาน × นาทีต่อหน่วย) ÷ AWT] × [1 ÷ (1 − CAS%)] + (IAS ชั่วโมง × 60 ÷ AWT) โดย CAS/IAS และ Activity Standard ต้องมีหลักฐานของสาขานั้น</p>
+    <div id="summary" class="stats" aria-live="polite"></div>
+    <div class="row">
+      <label>รหัสโรงพยาบาล<input id="filterHospital" type="search" placeholder="เช่น 12345"></label>
+      <label>สาขา/อนุสาขา<input id="filterSpecialty" type="search" placeholder="ค้นหาชื่อสาขา"></label>
+      <button type="button" class="secondary" id="downloadResults" disabled>ส่งออกผล CSV</button>
+      <button type="button" class="secondary" id="downloadIssues" disabled>ส่งออกข้อผิดพลาด CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table><thead><tr><th>โรงพยาบาล</th><th>ปี</th><th>สาขา</th><th>Headcount</th><th>Supply FTE</th><th>Required FTE</th><th>Gap FTE</th><th>Data Fitness</th><th>ข้อสังเกต</th></tr></thead><tbody id="resultsBody"><tr><td colspan="9">กรุณานำเข้า Supply และ Workload เพื่อเริ่มต้น</td></tr></tbody></table>
+    </div>
+    <h2 style="margin-top:20px">สิ่งที่ต้องแก้ก่อนใช้ผล</h2>
+    <div class="table-wrap">
+      <table><thead><tr><th>ไฟล์</th><th>บรรทัด</th><th>รายละเอียด</th></tr></thead><tbody id="issuesBody"><tr><td colspan="3">ยังไม่มีข้อมูลตรวจสอบ</td></tr></tbody></table>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>3. เกณฑ์ก่อนนำเสนอผู้บริหาร</h2>
+    <p>สถานะ <strong>VERIFIED</strong> หมายถึงผ่านกติกาข้อมูลที่ตั้งไว้ในเครื่องมือนี้ ไม่ได้หมายถึงได้รับอนุมัติกรอบตำแหน่งหรือผ่านข้อกฎหมายแล้ว ต้องเทียบ HROPS, หนังสืออนุมัติ/วุฒิบัตร, การมอบหมายงานจริง, Service Plan และหลักเกณฑ์ สธ. ฉบับที่มีผลบังคับใช้ก่อนเสนอเพิ่ม/เกลี่ยตำแหน่ง</p>
+    <p class="muted">บัญชีสาขา/อนุสาขาอ้างอิง <a href="https://tmc.or.th/tcgme/file_download/%E0%B8%AA%E0%B8%B2%E0%B8%82%E0%B8%B2-%E0%B8%AD%E0%B8%99%E0%B8%B8%E0%B8%AA%E0%B8%B2%E0%B8%82%E0%B8%B2%20%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%81%E0%B8%9E%E0%B8%97%E0%B8%A2%E0%B8%AA%E0%B8%A0%E0%B8%B2%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%A3%E0%B8%AD%E0%B8%87%20TMC.pdf" target="_blank" rel="noopener">แพทยสภา</a> และหลักเกณฑ์กำหนดตำแหน่ง/เปลี่ยนด้านความเชี่ยวชาญควรตรวจที่ <a href="https://hr.moph.go.th/site/hr_moph/?p=302853" target="_blank" rel="noopener">กองบริหารทรัพยากรบุคคล สธ.</a></p>
+  </section>
+</main>
+<script src="physician_specialty_mapping.js"></script>
+<script>
+  "use strict";
+  const tool = window.NCOPhysicianSpecialtyMapping;
+  let catalog = null, latest = null;
+  const el = (id) => document.getElementById(id);
+  const format = (number) => number == null ? "—" : Number(number).toLocaleString("th-TH",{maximumFractionDigits:3});
+  const renderCells = (body, rows, columns, emptyText) => {
+    body.replaceChildren();
+    if (!rows.length) {
+      const tr = body.insertRow(), td = tr.insertCell(); td.colSpan = columns.length; td.textContent = emptyText; return;
+    }
+    for (const row of rows) {
+      const tr = body.insertRow();
+      for (const col of columns) {
+        const td = tr.insertCell(); td.textContent = row[col] == null ? "—" : String(row[col]);
+        if (["headcount","actual_fte","required_fte","gap_fte"].includes(col)) td.classList.add("num");
+        if (col === "data_fitness") {
+          td.textContent = ""; const badge = document.createElement("span");
+          badge.className = "badge " + row[col].toLowerCase(); badge.textContent = row[col]; td.append(badge);
+        }
+      }
+    }
+  };
+  const download = (filename, text) => {
+    const url = URL.createObjectURL(new Blob(["\uFEFF",text],{type:"text/csv;charset=utf-8"}));
+    const link = document.createElement("a"); link.href=url; link.download=filename; document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url),1000);
+  };
+  for (const btn of document.querySelectorAll("[data-template]")) {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.template;
+      download("physician_specialty_" + key + "_template.csv",tool.toCsv([],tool.HEADERS[key]));
+    });
+  }
+  const filteredResults = () => {
+    const hospital = el("filterHospital").value.trim(), search = el("filterSpecialty").value.trim().toLocaleLowerCase();
+    return (latest?.results || []).filter((r) =>
+      (!hospital || r.hospital_code.includes(hospital)) && (!search || (r.specialty_name+" "+r.specialty_code).toLocaleLowerCase().includes(search)));
+  };
+  function render() {
+    const results = latest?.results || [], issues = latest?.issues || [];
+    const totals = { VERIFIED:0, PROVISIONAL:0, BLOCKED:0 };
+    results.forEach((r) => totals[r.data_fitness]++);
+    const items = [["บัญชีสาขา",catalog?.specialties?.length||0],["สาขา/ปีที่พบ",results.length],["VERIFIED",totals.VERIFIED],["PROVISIONAL",totals.PROVISIONAL],["BLOCKED",totals.BLOCKED],["ประเด็นต้องแก้",issues.length]];
+    el("summary").replaceChildren(...items.map(([label, value]) => {
+      const card=document.createElement("div");card.className="stat";
+      const strong=document.createElement("strong");strong.textContent=String(value);
+      const small=document.createElement("span");small.textContent=label;card.append(strong,small);return card;
+    }));
+    const view=filteredResults().map((row) => ({...row, headcount:format(row.headcount), actual_fte:format(row.actual_fte),
+      required_fte:format(row.required_fte),gap_fte:format(row.gap_fte)}));
+    renderCells(el("resultsBody"),view,["hospital_code","year","specialty_name","headcount","actual_fte","required_fte","gap_fte","data_fitness","reasons"],"ยังไม่มีข้อมูล หรือไม่พบรายการตามตัวกรอง");
+    renderCells(el("issuesBody"),issues,["kind","row","detail"],"ไม่พบความผิดพลาดระดับแถว");
+    el("downloadResults").disabled=!results.length; el("downloadIssues").disabled=!issues.length;
+  }
+  const readRows = async (input) => input.files?.[0] ? tool.parseCsv(await input.files[0].text()) : [];
+  el("calculate").addEventListener("click", async () => {
+    if (!catalog) { el("catalogStatus").textContent="ไม่พบบัญชีสาขา จึงไม่อนุญาตให้คำนวณ"; return; }
+    try {
+      const [supply,workload,crosswalk] = await Promise.all([readRows(el("supplyFile")),readRows(el("workloadFile")),readRows(el("crosswalkFile"))]);
+      latest = tool.compute({catalog,supply,workload,crosswalk});
+      el("catalogStatus").textContent = "คำนวณจาก Supply "+supply.length+" แถว, Workload "+workload.length+" แถว; ข้อมูลไม่ถูกส่งขึ้นเซิร์ฟเวอร์";
+      render();
+    } catch (error) {
+      latest=null;el("catalogStatus").textContent="ไม่สามารถประมวลผล: "+error.message;render();
+    }
+  });
+  ["filterHospital","filterSpecialty"].forEach((id)=>el(id).addEventListener("input",render));
+  el("downloadResults").addEventListener("click",()=>{
+    if(!latest)return;
+    download("nco_physician_specialty_fte_review.csv",tool.toCsv(filteredResults(),["hospital_code","year","specialty_code","specialty_name","headcount","actual_fte","required_fte","gap_fte","data_fitness","reasons","source_count"]));
+  });
+  el("downloadIssues").addEventListener("click",()=>{
+    if(!latest)return;
+    download("nco_physician_specialty_issues.csv",tool.toCsv(latest.issues,["kind","row","detail"]));
+  });
+  fetch("data/physician_specialties_tmc.json",{cache:"no-store"}).then((r)=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then((data)=>{
+    tool.normalizeCatalog(data);catalog=data;
+    el("catalogStatus").textContent="พร้อมใช้งาน: "+data.specialties.length+" สาขา/อนุสาขา (บัญชีอ้างอิงแพทยสภา ไม่ใช่ข้อมูลแพทย์รายบุคคล)";
+    render();
+  }).catch((error)=>{el("catalogStatus").textContent="โหลดบัญชีแพทยสภาไม่สำเร็จ: "+error.message;el("calculate").disabled=true;});
+</script>
+</body>
+</html>
