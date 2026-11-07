@@ -1,0 +1,727 @@
+{
+  "schema_version": "nco-physician-specialty-catalog-v1",
+  "catalog_date": "2026-11-07",
+  "source_title": "สาขาและอนุสาขาการฝึกอบรมแพทย์ประจำบ้านที่แพทยสภารับรอง",
+  "source_url": "https://tmc.or.th/tcgme/file_download/%E0%B8%AA%E0%B8%B2%E0%B8%82%E0%B8%B2-%E0%B8%AD%E0%B8%99%E0%B8%B8%E0%B8%AA%E0%B8%B2%E0%B8%82%E0%B8%B2%20%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%81%E0%B8%9E%E0%B8%97%E0%B8%A2%E0%B8%AA%E0%B8%A0%E0%B8%B2%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%A3%E0%B8%AD%E0%B8%87%20TMC.pdf",
+  "notes": [
+    "Internal IDs TMC-1-01 etc are project-generated stable catalog identifiers, not official Medical Council codes.",
+    "Lists 14 Category 1, 27 Category 2 and 61 Category 3 recognized training paths in the referenced PDF; verify future updates at the source.",
+    "Doctor licenses/certifications, approved position specialties and service assignments must be independently validated; a catalog entry alone does not authorize scope or staffing."
+  ],
+  "specialties": [
+    {
+      "code": "TMC-1-01",
+      "name_th": "พยาธิวิทยากายวิภาค",
+      "name_en": "Anatomic Pathology",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-02",
+      "name_th": "พยาธิวิทยาคลินิก",
+      "name_en": "Clinical Pathology",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-03",
+      "name_th": "เวชศาสตร์บริการโลหิต",
+      "name_en": "Transfusion Medicine",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-04",
+      "name_th": "จิตเวชศาสตร์",
+      "name_en": "Psychiatry",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-05",
+      "name_th": "จิตเวชศาสตร์เด็กและวัยรุ่น",
+      "name_en": "Child and Adolescent Psychiatry",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-06",
+      "name_th": "จิตเวชศาสตร์การเสพติด",
+      "name_en": "Addiction Psychiatry",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-07",
+      "name_th": "นิติเวชศาสตร์",
+      "name_en": "Forensic Medicine",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-08",
+      "name_th": "ประสาทศัลยศาสตร์",
+      "name_en": "Neurological Surgery",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-09",
+      "name_th": "รังสีรักษาและมะเร็งวิทยา",
+      "name_en": "Radiation Oncology",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-10",
+      "name_th": "เวชศาสตร์นิวเคลียร์",
+      "name_en": "Nuclear Medicine",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-11",
+      "name_th": "เวชศาสตร์ครอบครัว",
+      "name_en": "Family Medicine",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-12",
+      "name_th": "เวชศาสตร์ฉุกเฉิน",
+      "name_en": "Emergency Medicine",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-13",
+      "name_th": "อายุรศาสตร์มะเร็งวิทยา",
+      "name_en": "Medical Oncology",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-1-14",
+      "name_th": "อายุรศาสตร์โรคเลือด",
+      "name_en": "Hematology",
+      "training_category": 1,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-01",
+      "name_th": "กุมารศัลยศาสตร์",
+      "name_en": "Pediatric Surgery",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-02",
+      "name_th": "ศัลยศาสตร์",
+      "name_en": "Surgery",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-03",
+      "name_th": "ศัลยศาสตร์ทรวงอก",
+      "name_en": "Thoracic Surgery",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-04",
+      "name_th": "โลหิตวิทยาและมะเร็งในเด็ก",
+      "name_en": "Pediatric Hematology and Oncology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-05",
+      "name_th": "รังสีวิทยาวินิจฉัย",
+      "name_en": "Diagnostic Radiology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-06",
+      "name_th": "วิสัญญีวิทยา",
+      "name_en": "Anesthesiology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-07",
+      "name_th": "เวชศาสตร์ฟื้นฟู",
+      "name_en": "Rehabilitation Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-08",
+      "name_th": "สูติศาสตร์และนรีเวชวิทยา",
+      "name_en": "Obstetrics and Gynaecology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-09",
+      "name_th": "กุมารเวชศาสตร์",
+      "name_en": "Pediatrics",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-10",
+      "name_th": "ประสาทวิทยา",
+      "name_en": "Neurology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-11",
+      "name_th": "อายุรศาสตร์",
+      "name_en": "Internal Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-12",
+      "name_th": "ศัลยศาสตร์ยูโรวิทยา",
+      "name_en": "Urology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-13",
+      "name_th": "โสต ศอ นาสิกวิทยา",
+      "name_en": "Otolaryngology-Head and Neck Surgery",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-14",
+      "name_th": "ออร์โธปิดิกส์",
+      "name_en": "Orthopaedics",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-15",
+      "name_th": "จักษุวิทยา",
+      "name_en": "Ophthalmology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-16",
+      "name_th": "ตจวิทยา",
+      "name_en": "Dermatology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-17",
+      "name_th": "ศัลยศาสตร์ตกแต่ง",
+      "name_en": "Plastic Surgery",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-18",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงสาธารณสุขศาสตร์",
+      "name_en": "Preventive Medicine Public Health",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-19",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงเวชศาสตร์การบิน",
+      "name_en": "Preventive Medicine Aviation Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-20",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงระบาดวิทยา",
+      "name_en": "Preventive Medicine Epidemiology",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-21",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงเวชศาสตร์ป้องกันคลินิก",
+      "name_en": "Preventive Medicine Clinical Preventive Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-22",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงอาชีวเวชศาสตร์",
+      "name_en": "Preventive Medicine Occupational Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-23",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงสุขภาพจิตชุมชน",
+      "name_en": "Preventive Medicine Community Mental Health",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-24",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงเวชศาสตร์ทางทะเล",
+      "name_en": "Preventive Medicine Maritime Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-25",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงเวชศาสตร์การเดินทางและท่องเที่ยว",
+      "name_en": "Preventive Medicine Travel Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-26",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงเวชศาสตร์การจราจร",
+      "name_en": "Preventive Medicine Traffic Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-2-27",
+      "name_th": "เวชศาสตร์ป้องกัน แขนงเวชศาสตร์วิถีชีวิต",
+      "name_en": "Preventive Medicine Lifestyle Medicine",
+      "training_category": 2,
+      "level": "specialty"
+    },
+    {
+      "code": "TMC-3-01",
+      "name_th": "กุมารเวชศาสตร์โรคหัวใจ",
+      "name_en": "Pediatric Cardiology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-02",
+      "name_th": "กุมารเวชศาสตร์โรคระบบการหายใจ",
+      "name_en": "Pediatric Pulmonology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-03",
+      "name_th": "กุมารเวชศาสตร์โรคไต",
+      "name_en": "Pediatric Nephrology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-04",
+      "name_th": "กุมารเวชศาสตร์ทารกแรกเกิดและปริกำเนิด",
+      "name_en": "Neonatal-Perinatal Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-05",
+      "name_th": "กุมารเวชศาสตร์โรคต่อมไร้ท่อและเมแทบอลิซึม",
+      "name_en": "Pediatric Endocrinology and Metabolism",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-06",
+      "name_th": "กุมารเวชศาสตร์โรคภูมิแพ้และภูมิคุ้มกัน",
+      "name_en": "Pediatric Allergy and Immunology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-07",
+      "name_th": "กุมารเวชศาสตร์โรคติดเชื้อ",
+      "name_en": "Pediatric Infectious Diseases",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-08",
+      "name_th": "กุมารเวชศาสตร์ประสาทวิทยา",
+      "name_en": "Pediatric Neurology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-09",
+      "name_th": "กุมารเวชศาสตร์พัฒนาการและพฤติกรรม",
+      "name_en": "Developmental and Behavioral Pediatrics",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-10",
+      "name_th": "กุมารเวชศาสตร์โรคทางเดินอาหารและตับ",
+      "name_en": "Pediatric Gastroenterology and Hepatology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-11",
+      "name_th": "กุมารเวชศาสตร์ผิววิทยา",
+      "name_en": "Pediatric Dermatology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-12",
+      "name_th": "กุมารเวชศาสตร์โภชนาการ",
+      "name_en": "Pediatric Nutrition",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-13",
+      "name_th": "กุมารเวชศาสตร์การนอนหลับ",
+      "name_en": "Pediatric Sleep Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-14",
+      "name_th": "กุมารเวชศาสตร์เวชบำบัดวิกฤต",
+      "name_en": "Pediatric Critical Care Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-15",
+      "name_th": "กุมารเวชศาสตร์โรคข้อและรูมาติซั่ม",
+      "name_en": "Pediatric Rheumatology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-16",
+      "name_th": "จิตเวชศาสตร์การนอนหลับ",
+      "name_en": "Psychiatric Sleep Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-17",
+      "name_th": "จิตเวชศาสตร์ผู้สูงอายุ",
+      "name_en": "Geriatric Psychiatry",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-18",
+      "name_th": "ตจพยาธิวิทยา",
+      "name_en": "Dermatopathology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-19",
+      "name_th": "โลหิตพยาธิวิทยา",
+      "name_en": "Hematopathology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-20",
+      "name_th": "ภาพวินิจฉัยขั้นสูง",
+      "name_en": "Advanced Diagnostic Body Imaging",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-21",
+      "name_th": "ภาพวินิจฉัยระบบประสาท",
+      "name_en": "Diagnostic Neuroimaging",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-22",
+      "name_th": "รังสีร่วมรักษาระบบประสาท",
+      "name_en": "Interventional Neuroradiology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-23",
+      "name_th": "รังสีร่วมรักษาของลำตัว",
+      "name_en": "Body Interventional Radiology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-24",
+      "name_th": "วิสัญญีวิทยาสำหรับเด็ก",
+      "name_en": "Pediatric Anesthesia",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-25",
+      "name_th": "วิสัญญีวิทยาสำหรับผู้ป่วยโรคระบบประสาท",
+      "name_en": "Neuroanesthesia",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-26",
+      "name_th": "วิสัญญีวิทยาสำหรับการผ่าตัดหัวใจ หลอดเลือดใหญ่และทรวงอก",
+      "name_en": "Cardiovascular and Thoracic Anesthesia",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-27",
+      "name_th": "เวชศาสตร์ความปวด (วิสัญญีวิทยา)",
+      "name_en": "Pain Medicine (Anesthesiology)",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-28",
+      "name_th": "เวชศาสตร์ฉุกเฉินนอกโรงพยาบาล",
+      "name_en": "Prehospital Emergency Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-29",
+      "name_th": "ศัลยศาสตร์ลำไส้ใหญ่และทวารหนัก",
+      "name_en": "Colon and Rectal Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-30",
+      "name_th": "ศัลยศาสตร์หลอดเลือด",
+      "name_en": "Vascular Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-31",
+      "name_th": "ศัลยศาสตร์อุบัติเหตุ",
+      "name_en": "Trauma Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-32",
+      "name_th": "ศัลยศาสตร์มะเร็งวิทยา",
+      "name_en": "Surgical Oncology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-33",
+      "name_th": "ศัลยศาสตร์เต้านม",
+      "name_en": "Breast Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-34",
+      "name_th": "ศัลยศาสตร์ตับ ตับอ่อน และทางเดินน้ำดี",
+      "name_en": "Hepato-Pancreato-Biliary Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-35",
+      "name_th": "ศัลยศาสตร์ผ่านกล้อง",
+      "name_en": "Endoscopic and Laparoscopic Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-36",
+      "name_th": "มะเร็งวิทยานรีเวช",
+      "name_en": "Gynaecological Oncology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-37",
+      "name_th": "เวชศาสตร์การเจริญพันธุ์",
+      "name_en": "Reproductive Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-38",
+      "name_th": "เวชศาสตร์มารดาและทารกในครรภ์",
+      "name_en": "Maternal and Fetal Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-39",
+      "name_th": "เวชศาสตร์เชิงกรานสตรีและศัลยกรรมซ่อมเสริม",
+      "name_en": "Female Pelvic Medicine and Reconstructive Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-40",
+      "name_th": "เวชศาสตร์ทางเพศ",
+      "name_en": "Sexual Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-41",
+      "name_th": "การผ่าตัดทางนรีเวชที่มีการรุกล้ำน้อย",
+      "name_en": "Minimally Invasive Gynecologic Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-42",
+      "name_th": "ศัลยศาสตร์ตกแต่งและเสริมสร้างใบหน้า",
+      "name_en": "Facial Plastic and Reconstructive Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-43",
+      "name_th": "โสต คอ นาสิกวิทยาการนอนหลับ",
+      "name_en": "Sleep Otolaryngology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-44",
+      "name_th": "ศัลยศาสตร์มะเร็งศีรษะและคอ",
+      "name_en": "Head and Neck Surgical Oncology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-45",
+      "name_th": "ออร์โธปิดิกส์เด็ก",
+      "name_en": "Pediatric orthopedic",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-46",
+      "name_th": "เนื้องอกกระดูกและระบบเนื้อเยื่อเกี่ยวพัน",
+      "name_en": "Musculoskeletal Oncology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-47",
+      "name_th": "อายุรศาสตร์โรคไต",
+      "name_en": "Nephrology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-48",
+      "name_th": "อายุรศาสตร์โรคระบบทางเดินอาหาร",
+      "name_en": "Gastroenterology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-49",
+      "name_th": "อายุรศาสตร์โรคระบบการหายใจและภาวะวิกฤตโรคระบบการหายใจ",
+      "name_en": "Pulmonary Medicine and Pulmonary Critical Care",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-50",
+      "name_th": "เวชบำบัดวิกฤต",
+      "name_en": "Critical Care Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-51",
+      "name_th": "อายุรศาสตร์โรคข้อและรูมาติสซั่ม",
+      "name_en": "Rheumatology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-52",
+      "name_th": "อายุรศาสตร์โรคต่อมไร้ท่อและเมแทบอลิซึม",
+      "name_en": "Endocrinology and Metabolism",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-53",
+      "name_th": "อายุรศาสตร์โรคติดเชื้อ",
+      "name_en": "Infectious Diseases",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-54",
+      "name_th": "อายุรศาสตร์ภูมิแพ้และภูมิคุ้มกันทางคลินิก",
+      "name_en": "Allergy and Clinical Immunology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-55",
+      "name_th": "อายุรศาสตร์โรคหัวใจ",
+      "name_en": "Cardiology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-56",
+      "name_th": "อายุรศาสตร์ผู้สูงอายุ",
+      "name_en": "Geriatric Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-57",
+      "name_th": "เวชเภสัชและพิษวิทยา",
+      "name_en": "Clinical Pharmacology and Toxicology",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-58",
+      "name_th": "โภชนศาสตร์คลินิก",
+      "name_en": "Clinical Nutrition",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-59",
+      "name_th": "อายุรศาสตร์การนอนหลับ",
+      "name_en": "Sleep Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-60",
+      "name_th": "เวชศาสตร์ประคับประคอง",
+      "name_en": "Palliative Medicine",
+      "training_category": 3,
+      "level": "subspecialty"
+    },
+    {
+      "code": "TMC-3-61",
+      "name_th": "จักษุศัลยและเสริมสร้าง",
+      "name_en": "Ophthalmic Plastic and Reconstructive Surgery",
+      "training_category": 3,
+      "level": "subspecialty"
+    }
+  ]
+}

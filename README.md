@@ -40,6 +40,11 @@
 *   Pitch deck: `https://kongsak4807017.github.io/NCO_model/`
 *   NCO Simulation: `https://kongsak4807017.github.io/NCO_model/simulation.html`
 *   HR Blueprint Simulator: `https://kongsak4807017.github.io/NCO_model/Simulator_HR_blueprint.html`
+*   Physician Specialty Mapping (สาขา/อนุสาขาแพทย์): `https://kongsak4807017.github.io/NCO_model/physician_specialty_mapping.html`
+
+### Physician Specialty Mapping (pilot data-mapping layer)
+
+หน้ารองรับการนำเข้า CSV อัตรากำลังแพทย์รายสาขาและ workload จริงเพื่อคำนวณ FTE แยกสาขา โดยไม่ย้ายข้อมูลแพทย์รวมหรือ CMI มาสรุปเป็นสาขาอัตโนมัติ ใช้บัญชีอ้างอิงสาขา/อนุสาขาที่แพทยสภารับรอง 102 รายการ และมี Data Fitness Gate ป้องกันการนับแพทย์ซ้ำข้ามสาขา ผลยังไม่ใช่กรอบอัตรากำลังที่อนุมัติแล้ว ดูวิธีนำเข้าข้อมูลและข้อจำกัดที่ [docs/PHYSICIAN_SPECIALTY_MAPPING.md](docs/PHYSICIAN_SPECIALTY_MAPPING.md)
 
 
 ## 🏥 CMI / Service Plan 5-Year Health KPI Pipeline
