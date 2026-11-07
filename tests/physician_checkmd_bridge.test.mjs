@@ -1,0 +1,17 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {createRequire} from "node:module";
+import {readFileSync} from "node:fs";
+const require=createRequire(import.meta.url);
+const b=require("../physician_checkmd_bridge.js");
+const catalog=JSON.parse(readFileSync(new URL("../data/physician_specialties_tmc.json",import.meta.url),"utf8"));
+const sample="นพ. สมชาย ใจดี\nเป็นผู้ประกอบวิชาชีพเวชกรรมตั้งแต่ พ.ศ. 2553\n* สาขา อายุรศาสตร์ ( Internal Medicine )\n* อนุสาขา อายุรศาสตร์โรคหัวใจ ( Cardiology )";
+const p=()=>b.parseOfficialResult({firstName:"สมชาย",lastName:"ใจดี",text:sample,catalog});
+test("maps user-pasted official result names and specialty credentials",()=>{const x=p();assert.equal(x.usable,true);assert.deepEqual(x.specialties.map(y=>y.name_th),["อายุรศาสตร์","อายุรศาสตร์โรคหัวใจ"]);});
+test("blocks mismatched names and plain CheckMD search form",()=>{assert.equal(b.parseOfficialResult({firstName:"สมหญิง",lastName:"ใจดี",text:sample,catalog}).usable,false);assert.equal(b.parseOfficialResult({firstName:"สมชาย",lastName:"ใจดี",text:"ชื่อ นามสกุล ค้นหา",catalog}).usable,false);});
+test("rejects unknown specialty names instead of fuzzy matching",()=>{assert.equal(b.parseOfficialResult({firstName:"สมชาย",lastName:"ใจดี",text:sample.replace("อายุรศาสตร์โรคหัวใจ","แพทย์ผู้เชี่ยวชาญXYZ"),catalog}).usable,false);});
+test("accepts only canonical checkmd QR links",()=>{assert.equal(b.isOfficialProofUrl("https://checkmd.tmc.or.th/QrCode?p="+("a".repeat(64))),true);assert.equal(b.isOfficialProofUrl("https://checkmd.tmc.or.th.evil.com/QrCode?p="+("a".repeat(64))),false);});
+test("never declares input independently Verified or exports name",()=>{const x=p(),row=b.makeSupplyRow({parsed:x,specialtyCode:x.specialties[0].code,hospitalCode:"12345",year:"2569",physicianKey:"HR57-001",fte:"0.7",reviewed:true});assert.equal(row.verification_status,"Reviewed");assert.ok(!JSON.stringify(row).includes("สมชาย"));});
+test("checks HR pseudonym, hospital code and FTE",()=>{const x=p(),base={parsed:x,specialtyCode:x.specialties[0].code,hospitalCode:"12345",year:"2569",physicianKey:"HR57-001",fte:"1"};for(const patch of [{hospitalCode:"123"},{physicianKey:"1234567890123"},{fte:"1.1"},{specialtyCode:"bogus"}])assert.throws(()=>b.makeSupplyRow({...base,...patch}));});
+test("blocks duplicate and >1 total FTE across specialities for one person",()=>{const x=p(),base={parsed:x,hospitalCode:"12345",year:"2569",physicianKey:"HR57-001",fte:"0.7"},a=b.makeSupplyRow({...base,specialtyCode:x.specialties[0].code}),d=b.makeSupplyRow({...base,specialtyCode:x.specialties[1].code});assert.throws(()=>b.enqueue([a],a));assert.throws(()=>b.enqueue([a],d),/1.0/);});
+test("front page offers assisted name workflow and no CheckMD scraping",()=>{const html=readFileSync(new URL("../physician_specialty_mapping.html",import.meta.url),"utf8");assert.match(html,/id="tmcFirst"/);assert.match(html,/id="tmcLast"/);assert.match(html,/getSupplyRows/);assert.doesNotMatch(readFileSync(new URL("../physician_checkmd_bridge.js",import.meta.url),"utf8"),/fetch\(["']https:\/\/checkmd/);});

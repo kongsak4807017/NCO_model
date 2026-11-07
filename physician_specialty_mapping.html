@@ -32,7 +32,7 @@
     .num { text-align:right; font-variant-numeric:tabular-nums; }
     .badge { display:inline-block; border-radius:9px; padding:2px 8px; background:#3d4e63; }
     .badge.verified { background:#1f6157; }.badge.provisional { background:#64532f; }.badge.blocked { background:#733c45; }
-    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
+    textarea { display:block; width:100%; margin-top:6px; padding:10px; color:var(--text); background:#101b29; border:1px solid #52637c; border-radius:8px; font:inherit; } .tmc-launch { display:inline-flex; align-items:center; padding:10px 14px; border-radius:8px; background:var(--accent); color:#0c2130; font-weight:650; text-decoration:none; } .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
   </style>
 </head>
 <body>
@@ -42,8 +42,37 @@
   <p class="muted">วิเคราะห์อัตรากำลังแพทย์รายสาขา/อนุสาขา แยกจากยอดแพทย์รวม โดยใช้ข้อมูลจริงและมาตรฐานกิจกรรมที่ทวนสอบได้</p>
   <div class="flag"><strong>ขอบเขต:</strong> เครื่องมือนี้เป็นการจัดทำข้อมูลประกอบการวางแผน ไม่ใช่กรอบอัตรากำลังที่อนุมัติแล้ว ไม่ใช้ตัวเลข CMI รวมแทนปริมาณงานแพทย์เฉพาะทาง และไม่ตีความข้อมูลที่หายไปเป็นศูนย์</div>
 
-  <section class="panel" aria-label="Import files">
-    <h2>1. นำเข้าข้อมูลที่ตรวจสอบแหล่งที่มาได้</h2>
+  <section class="panel" id="tmcNameFirst">
+  <h2>1. เริ่มจากชื่อ–นามสกุลแพทย์ และตรวจสอบกับแพทยสภา</h2>
+  <p>กรอกชื่อ–นามสกุล เปิดเว็บแพทยสภาเพื่อตรวจสอบ แล้วคัดลอกข้อความผลตรวจกลับมาวางหน้านี้เพื่อจับคู่สาขา <strong>ระบบยังไม่ได้เชื่อม API แพทยสภา จึงไม่ค้นหรือยืนยันแทนเว็บทางการโดยอัตโนมัติ</strong></p>
+  <div class="row">
+    <label>ชื่อ (ไม่ใส่ นพ./พญ.)<input id="tmcFirst" autocomplete="off" placeholder="ชื่อภาษาไทย"></label>
+    <label>นามสกุล<input id="tmcLast" autocomplete="off" placeholder="นามสกุลภาษาไทย"></label>
+  </div>
+  <div class="row"><button type="button" class="secondary" id="tmcCopyFirst">คัดลอกชื่อ</button><button type="button" class="secondary" id="tmcCopyLast">คัดลอกนามสกุล</button>
+    <a class="tmc-launch" href="https://checkmd.tmc.or.th/v3" target="_blank" rel="noopener noreferrer">เปิดเว็บแพทยสภา ↗</a>
+  </div>
+  <p class="muted">วิธีใช้: เปิดเว็บแพทยสภา → วางชื่อ/นามสกุลคนละช่องและค้นหา → คัดลอกข้อความผลตรวจที่มีชื่อและสาขา/อนุสาขา → กลับมาวางที่นี่</p>
+  <label>ข้อความผลตรวจที่คัดลอกมาจากเว็บแพทยสภา<textarea id="tmcText" rows="5" placeholder="นพ. ...&#10;เป็นผู้ประกอบวิชาชีพเวชกรรมตั้งแต่ พ.ศ. ...&#10;สาขา ..."></textarea></label>
+  <label>ลิงก์ QR ผลตรวจ (ถ้ามี)<input id="tmcProof" type="url" placeholder="https://checkmd.tmc.or.th/QrCode?p=..."></label>
+  <button type="button" id="tmcRead">อ่านผลตรวจและจับคู่สาขา</button>
+  <p class="flag" id="tmcStatus" role="status" aria-live="polite">รอกรอกชื่อและนำผลจากแพทยสภามาวาง</p>
+  <h2>2. ระบุสาขาที่แพทย์ปฏิบัติงานจริง</h2>
+  <p class="muted">แพทยสภาแสดงวุฒิ/ความเชี่ยวชาญ แต่ไม่ได้ระบุว่าแพทย์ทำงานที่โรงพยาบาลใดและใช้เวลากี่ส่วน ต้องให้ฝ่ายบุคคลยืนยัน โดยไม่เหมารวมวุฒิหลายสาขาเป็นหลายคน</p>
+  <div class="row">
+    <label>สาขาที่ปฏิบัติงาน<select id="tmcSelect"><option value="">อ่านผลตรวจก่อน</option></select></label>
+    <label>รหัสแพทย์ภายใน (ไม่ใช่ชื่อ/เลขบัตร)<input id="tmcKey" autocomplete="off" placeholder="เช่น HR57-001"></label>
+    <label>รหัสโรงพยาบาล 5 หลัก<input id="tmcHospital" inputmode="numeric" maxlength="5"></label>
+    <label>ปีงบประมาณ พ.ศ.<input id="tmcYear" inputmode="numeric" value="2569"></label>
+    <label>FTE ของสาขานี้ (0–1)<input id="tmcFte" type="number" min="0.01" max="1" step="0.05" value="1"></label>
+  </div>
+  <label><input id="tmcReviewed" type="checkbox"> เจ้าหน้าที่ได้ตรวจเทียบกับเว็บแพทยสภาแล้ว (สถานะ Reviewed ไม่ใช่ Verified อัตโนมัติ)</label>
+  <div class="row"><button id="tmcAdd" type="button">เพิ่มรายการ</button><button id="tmcExport" type="button" class="secondary" disabled>ส่งออก Supply CSV</button></div>
+  <p id="tmcCount" class="muted"></p><ul id="tmcRows"></ul>
+  <p class="muted">ชื่อและข้อความผลตรวจประมวลผลเฉพาะบนเบราว์เซอร์ ไม่ส่งขึ้น GitHub หรือเซิร์ฟเวอร์ หากจะสรุปอัตรากำลังขาด/เกิน ต้องมีข้อมูลภาระงานจริงและผ่านการรับรองจาก HR เพิ่มเติม</p>
+</section>
+<section class="panel" aria-label="Import files">
+    <h2>3. นำเข้า Supply/Workload สำหรับคำนวณ FTE (ขั้นสูง)</h2>
     <p>ใช้ไฟล์ CSV (UTF-8) ตามหัวตารางด้านล่าง ห้ามส่งชื่อ–นามสกุล, เลขบัตรประชาชน หรือข้อมูลผู้ป่วย ให้นำรหัสแพทย์ที่ทำ pseudonymization แล้วมาใช้ระบุคนเดียวกันข้ามสาขา</p>
     <div class="row">
       <label>กำลังคนแพทย์รายสาขา (Supply)<input type="file" id="supplyFile" accept=".csv,text/csv"></label>
@@ -60,7 +89,7 @@
   </section>
 
   <section class="panel">
-    <h2>2. ผลลัพธ์และ Data Fitness Gate</h2>
+    <h2>4. ผลคำนวณ FTE และ Data Fitness Gate</h2>
     <p class="muted">Required FTE = [Σ(จำนวนงาน × นาทีต่อหน่วย) ÷ AWT] × [1 ÷ (1 − CAS%)] + (IAS ชั่วโมง × 60 ÷ AWT) โดย CAS/IAS และ Activity Standard ต้องมีหลักฐานของสาขานั้น</p>
     <div id="summary" class="stats" aria-live="polite"></div>
     <div class="row">
@@ -78,12 +107,13 @@
     </div>
   </section>
   <section class="panel">
-    <h2>3. เกณฑ์ก่อนนำเสนอผู้บริหาร</h2>
+    <h2>5. เกณฑ์ก่อนนำเสนอผู้บริหาร</h2>
     <p>สถานะ <strong>VERIFIED</strong> หมายถึงผ่านกติกาข้อมูลที่ตั้งไว้ในเครื่องมือนี้ ไม่ได้หมายถึงได้รับอนุมัติกรอบตำแหน่งหรือผ่านข้อกฎหมายแล้ว ต้องเทียบ HROPS, หนังสืออนุมัติ/วุฒิบัตร, การมอบหมายงานจริง, Service Plan และหลักเกณฑ์ สธ. ฉบับที่มีผลบังคับใช้ก่อนเสนอเพิ่ม/เกลี่ยตำแหน่ง</p>
     <p class="muted">บัญชีสาขา/อนุสาขาอ้างอิง <a href="https://tmc.or.th/tcgme/file_download/%E0%B8%AA%E0%B8%B2%E0%B8%82%E0%B8%B2-%E0%B8%AD%E0%B8%99%E0%B8%B8%E0%B8%AA%E0%B8%B2%E0%B8%82%E0%B8%B2%20%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%81%E0%B8%9E%E0%B8%97%E0%B8%A2%E0%B8%AA%E0%B8%A0%E0%B8%B2%E0%B8%A3%E0%B8%B1%E0%B8%9A%E0%B8%A3%E0%B8%AD%E0%B8%87%20TMC.pdf" target="_blank" rel="noopener">แพทยสภา</a> และหลักเกณฑ์กำหนดตำแหน่ง/เปลี่ยนด้านความเชี่ยวชาญควรตรวจที่ <a href="https://hr.moph.go.th/site/hr_moph/?p=302853" target="_blank" rel="noopener">กองบริหารทรัพยากรบุคคล สธ.</a></p>
   </section>
 </main>
 <script src="physician_specialty_mapping.js"></script>
+<script src="physician_checkmd_bridge.js"></script>
 <script>
   "use strict";
   const tool = window.NCOPhysicianSpecialtyMapping;
@@ -144,8 +174,9 @@
     if (!catalog) { el("catalogStatus").textContent="ไม่พบบัญชีสาขา จึงไม่อนุญาตให้คำนวณ"; return; }
     try {
       const [supply,workload,crosswalk] = await Promise.all([readRows(el("supplyFile")),readRows(el("workloadFile")),readRows(el("crosswalkFile"))]);
-      latest = tool.compute({catalog,supply,workload,crosswalk});
-      el("catalogStatus").textContent = "คำนวณจาก Supply "+supply.length+" แถว, Workload "+workload.length+" แถว; ข้อมูลไม่ถูกส่งขึ้นเซิร์ฟเวอร์";
+      const combinedSupply = [...supply,...(window.NCOCheckMDBridge?.getSupplyRows() || [])];
+      latest = tool.compute({catalog,supply:combinedSupply,workload,crosswalk});
+      el("catalogStatus").textContent = "คำนวณจาก Supply "+combinedSupply.length+" แถว, Workload "+workload.length+" แถว; ข้อมูลไม่ถูกส่งขึ้นเซิร์ฟเวอร์";
       render();
     } catch (error) {
       latest=null;el("catalogStatus").textContent="ไม่สามารถประมวลผล: "+error.message;render();
@@ -162,6 +193,7 @@
   });
   fetch("data/physician_specialties_tmc.json",{cache:"no-store"}).then((r)=>{if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then((data)=>{
     tool.normalizeCatalog(data);catalog=data;
+    window.NCOCheckMDBridge?.setCatalog(data);
     el("catalogStatus").textContent="พร้อมใช้งาน: "+data.specialties.length+" สาขา/อนุสาขา (บัญชีอ้างอิงแพทยสภา ไม่ใช่ข้อมูลแพทย์รายบุคคล)";
     render();
   }).catch((error)=>{el("catalogStatus").textContent="โหลดบัญชีแพทยสภาไม่สำเร็จ: "+error.message;el("calculate").disabled=true;});
