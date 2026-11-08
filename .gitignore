@@ -50,3 +50,6 @@ API/data/
 API/**/__pycache__/
 output/playwright/
 API/debug_hdc_view_state.py
+
+# Local HR-derived aggregate; contains potentially identifying small cells
+output/region1_physician_specialty_*.json

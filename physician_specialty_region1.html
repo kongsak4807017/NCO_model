@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NCO Region 1 | แพทย์เฉพาะทางรายจังหวัดและโรงพยาบาล</title>
+<style>
+:root{color-scheme:light;--navy:#153a51;--muted:#526474;--line:#d9e2e8;--bg:#f5f7fb}
+*{box-sizing:border-box}body{margin:0;color:#172f3e;background:var(--bg);font:15px/1.6 system-ui,"Noto Sans Thai",sans-serif}
+main{max-width:1330px;padding:24px;margin:auto}header{background:var(--navy);color:white;border-radius:14px;padding:25px}
+h1{font-size:clamp(1.3rem,3vw,2rem);margin:0 0 8px}h2{font-size:1.15rem;margin-top:0}
+section{background:white;border:1px solid var(--line);border-radius:13px;margin-top:18px;padding:18px}
+p{margin:6px 0 13px}.muted{color:var(--muted)}
+a{color:#186f9d}header a{color:#b7ecfa}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}
+.stat{background:#f0f6fa;border-radius:10px;padding:15px}.stat strong{display:block;font-size:1.55rem}
+.filters{display:flex;gap:16px;align-items:end;flex-wrap:wrap}
+label{display:block;flex:1;min-width:220px}input,select{display:block;width:100%;padding:10px;border:1px solid #97abb9;border-radius:9px;font:inherit}
+.table-wrap{overflow:auto;max-height:580px}table{border-collapse:collapse;min-width:880px;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}
+th{background:#eaf1f5;position:sticky;top:0}.notice{border-left:4px solid #b57832;padding:10px 15px;background:#fff5e7}
+</style></head>
+<body><main>
+<header><h1>ภาพรวมแพทย์เฉพาะทาง เขตสุขภาพที่ 1</h1>
+<p>วิเคราะห์อัตรากำลังจากฐาน HR รายหน่วยบริการและจังหวัด — ไม่ต้องกรอกแพทย์รายคนหรือไฟล์ CSV</p>
+<a href="physician_specialty_mapping.html">กลับเครื่องมือวิเคราะห์ FTE รายสาขา</a></header>
+<section><h2>ข้อมูลต้นทาง</h2>
+<p class="notice" id="status" role="status">กำลังตรวจว่ามีชุดข้อมูลที่ได้รับอนุมัติแล้วหรือไม่</p>
+<div class="filters"><label>เปิดไฟล์สรุปจากฐานข้อมูล HR (JSON รวมรายโรงพยาบาล ไม่ใช่รายชื่อบุคคล)
+<input type="file" id="file" accept=".json,application/json"></label>
+<p>ตัวส่งออกใช้ฐาน hr_blueprint.db ภายในหน่วยงาน และไม่ส่งข้อมูลบุคคลเข้า GitHub</p></div>
+<p class="muted" id="source">แหล่งข้อมูลยังไม่เชื่อมต่อ</p></section>
+<section><h2>ภาพรวมเขต</h2><div class="grid">
+<div class="stat">แพทย์ไม่ซ้ำทั้งเขต<strong id="uniqueDoctors">—</strong></div>
+<div class="stat">หน่วยบริการในข้อมูล<strong id="hospitalCount">—</strong></div>
+<div class="stat">รายการแพทย์รายหน่วยที่จับคู่สาขาได้<strong id="mapped">—</strong></div>
+<div class="stat">สถานะ CheckMD<strong id="verification">—</strong></div></div>
+<p class="muted">จำนวนรายหน่วยบริการอาจรวมแพทย์หมุนเวียนคนเดียวมากกว่าหนึ่งแห่ง แต่แพทย์ไม่ซ้ำระดับจังหวัด/เขตจะนับจากรหัสบุคคลภายใน หากฐานไม่มีรหัส จะใช้ชื่อในหน่วยความจำระหว่างประมวลผลเท่านั้น</p></section>
+<section><h2>เปรียบเทียบรายจังหวัด</h2><div class="table-wrap"><table id="provinces">
+<thead><tr><th>จังหวัด</th><th>แพทย์ไม่ซ้ำ</th><th>รพ./หน่วย</th><th>รายการแพทย์รายหน่วย</th><th>จับคู่สาขาได้</th><th>ต้องทวนสอบ</th><th>สาขาที่พบมาก</th></tr></thead><tbody></tbody></table></div></section>
+<section><h2>เจาะลึกรายหน่วยบริการ</h2>
+<div class="filters"><label>เลือกจังหวัด<select id="province"><option value="all">ทุกจังหวัด</option></select></label>
+<label>ค้นหาโรงพยาบาล / รหัส / สาขา<input id="search" type="search" placeholder="เช่น อายุรศาสตร์ หรือ เชียงราย"></label></div>
+<p class="muted" id="visible"></p><div class="table-wrap"><table id="hospitals">
+<thead><tr><th>จังหวัด</th><th>HCODE</th><th>หน่วยบริการ</th><th>แพทย์ทั้งหมด</th><th>จับคู่ได้</th><th>รอตรวจ</th><th>สาขาและจำนวนตาม HR</th></tr></thead><tbody></tbody></table></div>
+<p class="muted">ข้อมูลที่แสดงเป็นการจัดกลุ่มจากตำแหน่งหรือวุฒิตาม HR ไม่ใช่ผลตรวจสอบแพทยสภาอัตโนมัติ และยังไม่ใช่ผลคำนวณความขาดแคลนด้วย WISN</p></section>
+</main><script src="physician_specialty_region1.js"></script></body></html>
