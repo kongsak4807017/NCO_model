@@ -29,6 +29,10 @@ on:
       - 'scripts/generate_region1_district_hr_baseline.py'
       - 'tests/*.test.mjs'
       - 'tests/test_generate_region1_district_hr_baseline.py'
+      - 'scripts/build_region1_physician_specialties.py'
+      - 'physician_specialty_region1.js'
+      - 'physician_specialty_region1.html'
+      - 'tests/test_region1_physician_specialties.py'
       - '.github/workflows/historical-hr-blueprint.yml'
   pull_request:
     paths:
@@ -58,6 +62,10 @@ on:
       - 'scripts/generate_region1_district_hr_baseline.py'
       - 'tests/*.test.mjs'
       - 'tests/test_generate_region1_district_hr_baseline.py'
+      - 'scripts/build_region1_physician_specialties.py'
+      - 'physician_specialty_region1.js'
+      - 'physician_specialty_region1.html'
+      - 'tests/test_region1_physician_specialties.py'
       - '.github/workflows/historical-hr-blueprint.yml'
 
 jobs:
@@ -86,3 +94,6 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m unittest tests.test_generate_region1_district_hr_baseline
+      - run: python -m py_compile scripts/build_region1_physician_specialties.py
+      - run: python -m unittest tests.test_region1_physician_specialties
+      - run: node --check physician_specialty_region1.js
